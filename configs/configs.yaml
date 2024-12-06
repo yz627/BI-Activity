@@ -17,4 +17,8 @@ Redis:
   read_timeout: 5
   write_timeout: 5
 
+LoginStatus:
+  expiration_time: 86400
+  login_flag: "login_status"
+
 Jwt:

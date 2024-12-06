@@ -9,8 +9,8 @@ import (
 var _ login.AuthRepo = (*authRepo)(nil)
 
 type authRepo struct {
-	data *dao.Data
-	log  *logrus.Logger
+	db  *dao.Data
+	log *logrus.Logger
 }
 
 func NewAuthRepo(data *dao.Data, log *logrus.Logger) login.AuthRepo {

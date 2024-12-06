@@ -1,7 +1,7 @@
-package reponse
+package response
 
 import (
-	"bi-activity/reponse/errors"
+	"bi-activity/response/errors"
 	"fmt"
 	"net/http"
 )

@@ -27,3 +27,8 @@ type Server struct {
 	Name string `yaml:"name"`
 	Port string `yaml:"port"`
 }
+
+type LoginStatus struct {
+	ExpirationTime int64  `yaml:"expiration_time"`
+	LoginFlag      string `yaml:"login_flag"`
+}
