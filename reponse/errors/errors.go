@@ -1,17 +1,29 @@
 package errors
 
+type SelfError struct {
+	Err string
+}
+
+func NewSelfError(err string) SelfError {
+	return SelfError{Err: err}
+}
+
+func (s SelfError) Error() string {
+	return s.Err
+}
+
 var (
-	LoginAccountOrPasswordError = "账号或密码错误"
+	LoginAccountOrPasswordError = NewSelfError("账号或密码错误")
 )
 
 var (
-	Err = map[string]int{
+	ErrStatus = map[SelfError]int{
 		LoginAccountOrPasswordError: 400,
 	}
 )
 
 var (
-	ErrSelf = map[string]int{
+	SelfErrStatus = map[SelfError]int{
 		LoginAccountOrPasswordError: 400100,
 	}
 )

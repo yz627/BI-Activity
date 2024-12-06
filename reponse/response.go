@@ -1,6 +1,10 @@
 package reponse
 
-import "bi-activity/reponse/errors"
+import (
+	"bi-activity/reponse/errors"
+	"fmt"
+	"net/http"
+)
 
 type Response struct {
 	Status int         `json:"status"`
@@ -29,15 +33,28 @@ func (r *Response) WithError(err string) *Response {
 	return r
 }
 
-func Fail(err string) (int, *Response) {
-	return errors.Err[err], &Response{
-		Status: errors.ErrSelf[err],
-		Error:  err,
+func Fail(err errors.SelfError) (int, *Response) {
+	return errors.ErrStatus[err], &Response{
+		Status: errors.SelfErrStatus[err],
+		Error:  err.Err,
 	}
 }
 
-func Success() (int, *Response) {
-	return 200, &Response{
-		Status: 200,
+func Failf(err errors.SelfError, format string, args ...interface{}) (int, *Response) {
+	return errors.ErrStatus[err], &Response{
+		Status: errors.SelfErrStatus[err],
+		Error:  err.Error(),
+		Msg:    fmt.Sprintf(format, args...),
 	}
+}
+
+func Success(data ...interface{}) (int, *Response) {
+	res := &Response{
+		Status: http.StatusOK,
+	}
+
+	if len(data) > 0 {
+		res.WithData(data[0])
+	}
+	return http.StatusOK, res
 }
