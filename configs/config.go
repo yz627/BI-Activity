@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	configPath = "."
+	configPath = ".\\..\\configs"
 )
 
 // Config 全局配置信息

@@ -6,8 +6,8 @@ Database:
   network: tcp
   addr: 127.0.0.1:3306
   user: root
-  password: 123456
-  db: test
+  password: mysql0924a..
+  db: bi-activity
 
 Redis:
   network: 127.0.0.1
@@ -23,3 +23,5 @@ UserStatus:
   login_flag: "login_status"
 
 Jwt:
+  secret_key: your-secret-key
+  expiration_time: 86400  # 24小时

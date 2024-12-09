@@ -2,13 +2,15 @@ package dao
 
 import (
 	"bi-activity/configs"
+	"bi-activity/models"
 	"context"
+	"time"
+
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"time"
 )
 
 type Data struct {
@@ -19,7 +21,7 @@ type Redis struct {
 	rdb redis.Cmdable
 }
 
-func NewDateDao(c *configs.Database, logger *logrus.Logger) *Data {
+func NewDataDao(c *configs.Database, logger *logrus.Logger) *Data {
 	db, err := gorm.Open(mysql.Open(c.DSN()), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true, // 禁用外键约束
 		NamingStrategy: schema.NamingStrategy{
@@ -29,6 +31,19 @@ func NewDateDao(c *configs.Database, logger *logrus.Logger) *Data {
 
 	if err != nil {
 		logger.Fatalf("mysql connect error: %v", err)
+	}
+
+	// 执行数据库迁移
+	err = db.AutoMigrate(
+		&models.Student{},            // 自动创建 student 表
+		&models.Image{},              // 自动创建 image 表
+		&models.College{},            // 自动创建 college 表
+		&models.Activity{},           // 自动创建 activity 表
+		&models.Participant{},        // 自动创建 participant 表
+		&models.StudentActivityAudit{}, // 自动创建 student_activity_audit 表
+	)
+	if err != nil {
+		logger.Fatalf("database migration failed: %v", err)
 	}
 
 	return &Data{db: db}
