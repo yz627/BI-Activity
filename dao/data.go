@@ -48,6 +48,10 @@ func NewDateDao(c *configs.Database, logger *logrus.Logger) (*Data, func()) {
 	}
 }
 
+func (d *Data) DB() *gorm.DB {
+	return d.db
+}
+
 // NewRedisDao Redis连接实例
 // *Redis redis连接实例
 // func() 函数返回值，返回一个函数，用于释放资源
