@@ -20,6 +20,14 @@ func main() {
 		&models.College{},
 		&models.ActivityType{},
 		&models.InviteCode{},
+		&models.Activity{},
+		&models.Admin{},
+		&models.JoinCollegeAudit{},
+		&models.Participant{},
+		&models.StudentActivityAudit{},
+		&models.CollegeRegistrationAudit{},
+		&models.CollegeNameToAccount{},
+		&models.Problem{},
 	)
 	if err != nil {
 		panic(err)

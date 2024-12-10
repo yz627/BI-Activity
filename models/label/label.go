@@ -1,0 +1,60 @@
+package label
+
+// 审核状态
+const (
+	AuditStatusPending  = iota + 1 // 待审核
+	AuditStatusPassed              // 已通过
+	AuditStatusRejected            // 已拒绝
+)
+
+// 性别
+const (
+	GenderFemale = iota + 1 // 女生
+	GenderMale              // 男生
+)
+
+// 邀请码状态
+const (
+	InviteCodeStatusUnused = iota + 1 // 未使用
+	InviteCodeStatusUsed              // 已使用
+)
+
+// 图片类型
+const (
+	ImageTypeAvatar   = iota + 1 // 1-头像
+	ImageTypeCollege             // 2-学院图标
+	ImageTypeBanner              // 3-轮播图
+	ImageTypeActivity            // 4-活动图片
+)
+
+// 校园
+const (
+	CampusZhuHai    = iota + 1 // 珠海校区
+	CampusGuangZhou            // 广州校区
+	CampusShenZhen             // 深圳校区
+)
+
+// 活动性质
+const (
+	ActivityNatureStudent = iota + 1 // 学生活动
+	ActivityNatureCollege            // 学院活动
+)
+
+// 活动状态
+const (
+	ActivityStatusNotStart   = iota + 1 // 活动状态 未开始
+	ActivityStatusProceeding            // 活动状态 进行中
+	ActivityStatusEnded                 // 活动状态 已结束
+)
+
+// 招募限制
+const (
+	RecruitmentRestrictionUnlimited = iota + 1 // 招募人员无限制
+	RecruitmentRestrictionCollege              // 学院内招募
+)
+
+// 管理员权限
+const (
+	RoleSuperAdmin = iota + 1 // 一级管理员
+	RoleAdmin                 // 二级管理员
+)
