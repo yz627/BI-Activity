@@ -12,3 +12,9 @@
 - `response` 响应封装
     - `errors` 错误封装
 - `middleware` 中间件
+
+### 环境构建
+1. MySQL 8.0版本
+  - 数据库配置见 `configs/configs.yaml`
+  - 运行`init.sql`创建数据库
+  - 运行`cmd/flag/main.go`迁移数据表
