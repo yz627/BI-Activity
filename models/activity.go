@@ -21,4 +21,5 @@ type Activity struct {
 	ActivityDate         time.Time `gorm:"column:activity_date"` // 活动时间
 	StartTime            time.Time // 活动开始时间
 	EndTime              time.Time // 活动结束时间
+	// TODO
 }
