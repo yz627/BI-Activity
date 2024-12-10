@@ -19,7 +19,10 @@ type Redis struct {
 	rdb redis.Cmdable
 }
 
-func NewDateDao(c *configs.Database, logger *logrus.Logger) *Data {
+// NewDateDao MySQL数据库连接实例
+// *Data 数据库连接实例
+// func() 函数返回值，返回一个函数，用于释放资源
+func NewDateDao(c *configs.Database, logger *logrus.Logger) (*Data, func()) {
 	db, err := gorm.Open(mysql.Open(c.DSN()), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true, // 禁用外键约束
 		NamingStrategy: schema.NamingStrategy{
@@ -31,10 +34,24 @@ func NewDateDao(c *configs.Database, logger *logrus.Logger) *Data {
 		logger.Fatalf("mysql connect error: %v", err)
 	}
 
-	return &Data{db: db}
+	return &Data{db: db}, func() {
+		logger.Info("closing the data resources")
+
+		sqlDB, err := db.DB()
+		if err != nil {
+			logger.Errorf("close db error: %v", err)
+		}
+
+		if err := sqlDB.Close(); err != nil {
+			logger.Errorf("close db error: %v", err)
+		}
+	}
 }
 
-func NewRedisDao(c *configs.Redis, logger *logrus.Logger) *Redis {
+// NewRedisDao Redis连接实例
+// *Redis redis连接实例
+// func() 函数返回值，返回一个函数，用于释放资源
+func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:         c.Addr,                                     // redis地址
 		ReadTimeout:  time.Duration(c.ReadTimeout),               // 读取超时时间
@@ -52,6 +69,12 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) *Redis {
 		logger.Fatalf("redis connect error: %v", err)
 	}
 	return &Redis{
-		rdb: rdb,
-	}
+			rdb: rdb,
+		}, func() {
+			logger.Info("closing the redis resources")
+
+			if err := rdb.Close(); err != nil {
+				logger.Errorf("close redis error: %v", err)
+			}
+		}
 }

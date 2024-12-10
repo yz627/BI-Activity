@@ -6,8 +6,8 @@ Database:
   network: tcp
   addr: 127.0.0.1:3306
   user: root
-  password: 123456
-  db: test
+  password: mysql0924a..
+  db: bi_activity
 
 Redis:
   network: 127.0.0.1
