@@ -1,7 +1,7 @@
 package testcase
 
 import (
-	"bi-activity/dao"
+	"bi-activity/dao/student_dao"
 	"bi-activity/models"
 	"log"
 
@@ -29,7 +29,7 @@ func testCreateStudent(db *gorm.DB) {
 		Nickname:     "Johnny",
 	}
 
-	err := dao.CreateStudent(db, student)
+	err := student_dao.CreateStudent(db, student)
 	if err != nil {
 		log.Fatalf("testCreateStudent failed: %v", err)
 	}
@@ -37,8 +37,8 @@ func testCreateStudent(db *gorm.DB) {
 }
 
 func testGetStudentByID(db *gorm.DB) {
-	id := uint64(1)
-	student, err := dao.GetStudentByID(db, id)
+	id := uint(1)
+	student, err := student_dao.GetStudentByID(db, id)
 	if err != nil {
 		log.Fatalf("testGetStudentByID failed: %v", err)
 	}
@@ -47,7 +47,7 @@ func testGetStudentByID(db *gorm.DB) {
 
 func testDelStudentByID(db *gorm.DB) {
 	id := uint64(1)
-	err := dao.DeleteStudentByID(db, id)
+	err := student_dao.DeleteStudentByID(db, id)
 	if err != nil {
 		log.Fatalf("testDelStudentByID failed: %v", err)
 	}

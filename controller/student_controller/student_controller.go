@@ -1,7 +1,7 @@
-package controller
+package student_controller
 
 import (
-	"bi-activity/dao"
+	"bi-activity/dao/student_dao"
 	"bi-activity/global"
 	"bi-activity/models"
 	"net/http"
@@ -19,7 +19,7 @@ func GetStudent(c *gin.Context) {
 		return
 	}
 
-	student, err := dao.GetStudentByID(global.Db, id)
+	student, err := student_dao.GetStudentByID(global.Db, uint(id))
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
@@ -36,7 +36,7 @@ func AddStudent(c *gin.Context) {
 		return
 	}
 
-	if err := dao.CreateStudent(global.Db, &student); err != nil {
+	if err := student_dao.CreateStudent(global.Db, &student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create student"})
 		return
 	}
@@ -59,7 +59,7 @@ func UpdateStudent(c *gin.Context) {
 	}
 
 	student.ID = uint(id)
-	if err := dao.UpdateStudent(global.Db, &student); err != nil {
+	if err := student_dao.UpdateStudent(global.Db, &student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update student"})
 		return
 	}
@@ -75,7 +75,7 @@ func DeleteStudent(c *gin.Context) {
 		return
 	}
 
-	if err := dao.DeleteStudentByID(global.Db, id); err != nil {
+	if err := student_dao.DeleteStudentByID(global.Db, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete student"})
 		return
 	}

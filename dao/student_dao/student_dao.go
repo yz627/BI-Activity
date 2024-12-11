@@ -1,4 +1,4 @@
-package dao
+package student_dao
 
 import (
 	"bi-activity/models"
@@ -10,7 +10,7 @@ func CreateStudent(db *gorm.DB, student *models.Student) error {
 	return db.Create(student).Error 
 }
 
-func GetStudentByID(db *gorm.DB, id uint64) (*models.Student, error) {
+func GetStudentByID(db *gorm.DB, id uint) (*models.Student, error) {
 	var student models.Student
 	err := db.Where("id = ?", id).First(&student).Error
 	if err != nil {
