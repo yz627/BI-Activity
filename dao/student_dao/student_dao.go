@@ -2,39 +2,68 @@ package student_dao
 
 import (
 	"bi-activity/models"
-
-	"gorm.io/gorm"
+	"bi-activity/dao"
 )
 
-func CreateStudent(db *gorm.DB, student *models.Student) error {
-	return db.Create(student).Error 
+type StudentDao interface {
+    Create(student *models.Student) error
+    GetByID(id uint) (*models.Student, error)
+    GetByEmail(email string) (*models.Student, error)
+    Update(student *models.Student) error
+    Delete(id uint) error
+
+	PhoneExists(phone string) (bool, error)
+    EmailExists(email string) (bool, error)
 }
 
-func GetStudentByID(db *gorm.DB, id uint) (*models.Student, error) {
-	var student models.Student
-	err := db.Where("id = ?", id).First(&student).Error
-	if err != nil {
-		return nil, err
-	}
-	return &student, nil
+type studentDao struct {
+    data *dao.Data
 }
 
-// 通过邮件查询
-func GetStudentByEmail(db *gorm.DB, email string) (*models.Student, error) {
-	var student models.Student
-	err := db.Where("student_email = ?", email).First(&student).Error
-	if err != nil {
-		return nil, err 
-	}
-	return &student, nil
+func NewStudentDao(data *dao.Data) StudentDao {
+    return &studentDao{
+        data: data,
+    }
 }
 
-// 更新信息
-func UpdateStudent(db *gorm.DB, student *models.Student) error {
-	return db.Save(student).Error
+func (d *studentDao) Create(student *models.Student) error {
+    return d.data.Db.Create(student).Error
 }
 
-// 删除信息
-func DeleteStudentByID(db *gorm.DB, id uint64) error {
-	return db.Delete(&models.Student{}, id).Error
+func (d *studentDao) GetByID(id uint) (*models.Student, error) {
+    var student models.Student
+    err := d.data.Db.Where("id = ?", id).First(&student).Error
+    if err != nil {
+        return nil, err
+    }
+    return &student, nil
+}
+
+func (d *studentDao) GetByEmail(email string) (*models.Student, error) {
+    var student models.Student
+    err := d.data.Db.Where("student_email = ?", email).First(&student).Error
+    if err != nil {
+        return nil, err
+    }
+    return &student, nil
+}
+
+func (d *studentDao) Update(student *models.Student) error {
+    return d.data.Db.Save(student).Error
+}
+
+func (d *studentDao) Delete(id uint) error {
+    return d.data.Db.Delete(&models.Student{}, id).Error
+}
+
+func (d *studentDao) PhoneExists(phone string) (bool, error) {
+    var count int64
+    err := d.data.Db.Model(&models.Student{}).Where("student_phone = ?", phone).Count(&count).Error
+    return count > 0, err
+}
+
+func (d *studentDao) EmailExists(email string) (bool, error) {
+    var count int64
+    err := d.data.Db.Model(&models.Student{}).Where("student_email = ?", email).Count(&count).Error
+    return count > 0, err
 }

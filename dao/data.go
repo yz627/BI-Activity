@@ -19,7 +19,8 @@ type Data struct {
 }
 
 type Redis struct {
-	rdb redis.Cmdable
+	Rdb redis.Cmdable
+	RDB *redis.Client
 }
 
 func NewDataDao(c *configs.Database, logger *logrus.Logger) *Data {
@@ -55,8 +56,8 @@ func NewDataDao(c *configs.Database, logger *logrus.Logger) *Data {
 func NewRedisDao(c *configs.Redis, logger *logrus.Logger) *Redis {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:         c.Addr,                                     // redis地址
-		ReadTimeout:  time.Duration(c.ReadTimeout),               // 读取超时时间
-		WriteTimeout: time.Duration(c.WriteTimeout),              // 写入超时时间
+		ReadTimeout:  time.Second * time.Duration(c.ReadTimeout),               // 读取超时时间
+		WriteTimeout: time.Second * time.Duration(c.WriteTimeout),              // 写入超时时间
 		DialTimeout:  time.Second * time.Duration(c.DialTimeout), // 连接超时时间
 		PoolSize:     c.PoolSize,                                 // 连接池大小
 		Password:     c.Password,                                 // 密码
@@ -65,11 +66,13 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) *Redis {
 	timeout, cancelFunc := context.WithTimeout(context.Background(), time.Second*2)
 	defer cancelFunc()
 	err := rdb.Ping(timeout).Err()
+
 	// redis 连接失败，退出程序
 	if err != nil {
 		logger.Fatalf("redis connect error: %v", err)
 	}
 	return &Redis{
-		rdb: rdb,
+		Rdb: rdb,
+		RDB: rdb,
 	}
 }

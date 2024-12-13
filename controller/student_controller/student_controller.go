@@ -1,84 +1,111 @@
 package student_controller
 
 import (
-	"bi-activity/dao/student_dao"
-	"bi-activity/global"
-	"bi-activity/models"
+	"bi-activity/response/errors/student_error"
+	"bi-activity/response/student_response"
+	"bi-activity/service/student_service"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetStudent(c *gin.Context) {
-	idStr := c.Param("id") 
-	id, err := strconv.ParseUint(idStr, 10, 64)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid student ID"})
-		return
-	}
-
-	student, err := student_dao.GetStudentByID(global.Db, uint(id))
-
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, student) 
+type StudentController struct {
+	studentService student_service.StudentService
 }
 
-func AddStudent(c *gin.Context) {
-	var student models.Student
-	if err := c.ShouldBindJSON(&student); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := student_dao.CreateStudent(global.Db, &student); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create student"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Student created successfully"})
+func NewStudentController(studentService student_service.StudentService) *StudentController {
+    return &StudentController{
+        studentService: studentService,
+    }
 }
 
-func UpdateStudent(c *gin.Context) {
-	idStr := c.Param("id") 
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid student ID"})
-		return
-	}
+func (c *StudentController) GetStudent(ctx *gin.Context) {
+    // 解析ID
+    idStr := ctx.Param("id")
+    id, err := strconv.ParseUint(idStr, 10, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidStudentID,
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+        ))
+        return
+    }
 
-	var student models.Student
-	if err := c.ShouldBindJSON(&student); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    // 获取学生信息
+    studentInfo, err := c.studentService.GetStudent(uint(id))
+    if err != nil {
+        errCode := student_error.GetErrorCode(err)
+        ctx.JSON(http.StatusNotFound, student_response.Error(
+            errCode,
+            student_error.GetErrorMsg(errCode),
+        ))
+        return
+    }
 
-	student.ID = uint(id)
-	if err := student_dao.UpdateStudent(global.Db, &student); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update student"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Student updated successfully"})
+    // 返回成功响应
+    ctx.JSON(http.StatusOK, student_response.Success(studentInfo))
 }
 
-func DeleteStudent(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid student ID"})
-		return
-	}
+func (c *StudentController) UpdateStudent(ctx *gin.Context) {
+    // 解析ID
+    idStr := ctx.Param("id")
+    id, err := strconv.ParseUint(idStr, 10, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidStudentID,
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+        ))
+        return
+    }
 
-	if err := student_dao.DeleteStudentByID(global.Db, id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete student"})
-		return
-	}
+    // 绑定请求数据
+    var req student_response.UpdateStudentRequest
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidStudentID,
+            err.Error(),
+        ))
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "Student deleted successfully"})
+    // 更新学生信息
+    if err := c.studentService.UpdateStudent(uint(id), &req); err != nil {
+        errCode := student_error.GetErrorCode(err)
+        ctx.JSON(http.StatusInternalServerError, student_response.Error(
+            errCode,
+            student_error.GetErrorMsg(errCode),
+        ))
+        return
+    }
+
+    // 返回成功响应
+    ctx.JSON(http.StatusOK, student_response.Success(nil))
+}
+
+// DeleteStudent 删除学生
+func (c *StudentController) DeleteStudent(ctx *gin.Context) {
+    // 解析ID
+    idStr := ctx.Param("id")
+    id, err := strconv.ParseUint(idStr, 10, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidStudentID,
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+        ))
+        return
+    }
+
+    // 删除学生
+    if err := c.studentService.DeleteStudent(uint(id)); err != nil {
+        errCode := student_error.GetErrorCode(err)
+        ctx.JSON(http.StatusInternalServerError, student_response.Error(
+            errCode,
+            student_error.GetErrorMsg(errCode),
+        ))
+        return
+    }
+
+    // 返回成功响应
+    ctx.JSON(http.StatusOK, student_response.Success(nil))
 }

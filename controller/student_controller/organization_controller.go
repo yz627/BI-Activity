@@ -30,7 +30,7 @@ func (c *OrganizationController) GetStudentOrganization(ctx *gin.Context) {
     if err != nil {
         ctx.JSON(http.StatusBadRequest, student_response.Error(
             student_error.ErrInvalidStudentID,
-            student_error.GetOrganizationErrMsg(student_error.ErrInvalidStudentID),
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
         ))
         return
     }
@@ -43,7 +43,7 @@ func (c *OrganizationController) GetStudentOrganization(ctx *gin.Context) {
 	   if code != -1 {
 		   ctx.JSON(http.StatusBadRequest, student_response.Error(
 			   code,
-			   student_error.GetOrganizationErrMsg(code),
+			   student_error.GetErrorMsg(code),
 		   ))
 		   return
 	   }
@@ -67,7 +67,7 @@ func (c *OrganizationController) UpdateStudentOrganization(ctx *gin.Context) {
     if err != nil {
         ctx.JSON(http.StatusBadRequest, student_response.Error(
             student_error.ErrInvalidStudentID,
-            student_error.GetOrganizationErrMsg(student_error.ErrInvalidStudentID),
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
         ))
         return
     }
@@ -89,7 +89,7 @@ func (c *OrganizationController) UpdateStudentOrganization(ctx *gin.Context) {
         if code != -1 {
             ctx.JSON(http.StatusBadRequest, student_response.Error(
                 code,
-                student_error.GetOrganizationErrMsg(code),
+                student_error.GetErrorMsg(code),
             ))
             return
         }
@@ -107,7 +107,7 @@ func (c *OrganizationController) RemoveStudentOrganization(ctx *gin.Context) {
     if err != nil {
         ctx.JSON(http.StatusBadRequest, student_response.Error(
             student_error.ErrInvalidStudentID,
-            student_error.GetOrganizationErrMsg(student_error.ErrInvalidStudentID),
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
         ))
         return
     }
@@ -119,7 +119,7 @@ func (c *OrganizationController) RemoveStudentOrganization(ctx *gin.Context) {
         if code != -1 {
             ctx.JSON(http.StatusBadRequest, student_response.Error(
                 code,
-                student_error.GetOrganizationErrMsg(code),
+                student_error.GetErrorMsg(code),
             ))
             return
         }
@@ -138,7 +138,7 @@ func (c *OrganizationController) GetOrganizationList(ctx *gin.Context) {
 		if code != -1 {
 			ctx.JSON(http.StatusBadRequest, student_response.Error(
 				code,
-				student_error.GetOrganizationErrMsg(code),
+				student_error.GetErrorMsg(code),
 			))
 			return
 		}
