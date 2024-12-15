@@ -9,9 +9,9 @@ var (
     ErrInvalidStudentIDError = errors.New("invalid student id")
 
     // 组织相关错误
-    ErrCollegeNotFoundError      = errors.New("college not found")
-    ErrStudentNoOrganizationError = errors.New("student has no organization")
-    ErrCollegeListNotFoundError  = errors.New("there is no college")
+    ErrCollegeNotFoundError     = errors.New("college not found")
+    ErrStudentNoCollegeError    = errors.New("student has no college")
+    ErrCollegeListNotFoundError = errors.New("there is no college")
 
     // 安全设置相关错误
     ErrPasswordIncorrectError  = errors.New("password incorrect")
@@ -22,4 +22,19 @@ var (
     ErrThirdPartyBoundError   = errors.New("third party account already bound")
     ErrPhoneRequiredError     = errors.New("phone number required")
     ErrPasswordNotMatchError  = errors.New("passwords do not match")
+
+    // 活动相关错误
+    ErrActivityNotFoundError     = errors.New("activity not found")
+    ErrInvalidActivityIDError    = errors.New("invalid activity id")
+    ErrActivityStatusInvalidError = errors.New("invalid activity status")
+    ErrActivityFullError         = errors.New("activity is full")
+    ErrActivityExpiredError      = errors.New("activity expired")
+    ErrActivityNotStartedError   = errors.New("activity not started")
+    ErrActivityFinishedError     = errors.New("activity finished")
+    ErrActivityAuditingError     = errors.New("activity is under audit")
+    ErrActivityRejectedError     = errors.New("activity rejected")
+
+    // 参与者相关错误
+    ErrParticipantNotFoundError    = errors.New("participant not found")
+    ErrParticipantInvalidError     = errors.New("invalid participant")
 )

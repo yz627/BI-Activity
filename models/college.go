@@ -1,7 +1,7 @@
 package models
 
 type College struct {
-	ID                  uint64 `gorm:"primaryKey;autoIncrement" json:"id"`                           // 主键，自动递增
+	ID                  uint `gorm:"primaryKey;autoIncrement" json:"id"`                           // 主键，自动递增
 	CollegeAccount      string `gorm:"type:varchar(64);unique;not null" json:"college_account"`      // 学院账号，唯一
 	CollegeName         string `gorm:"type:varchar(64);not null" json:"college_name"`                // 学院名称
 	Password            string `gorm:"type:varchar(255);not null" json:"password"`                  // 密码
@@ -13,5 +13,5 @@ type College struct {
 	Campus              int    `gorm:"type:int;not null" json:"campus"`                             // 校园 ID
 	CollegeAddress      string `gorm:"type:varchar(255);not null" json:"college_address"`           // 学院地址
 	CollegeIntroduction string `gorm:"type:text" json:"college_introduction"`                       // 学院简介
-	CollegeAvatarID     uint64 `gorm:"type:bigint" json:"college_avatar_id"`                        // 学院头像 ID
+	CollegeAvatarID     uint `gorm:"type:bigint" json:"college_avatar_id"`                        // 学院头像 ID
 }

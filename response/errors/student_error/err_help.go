@@ -19,11 +19,11 @@ func GetErrorCode(err error) int {
     case errors.Is(err, ErrInvalidStudentIDError):
         return ErrInvalidStudentID
     
-    // 组织相关错误
+    // 学院相关错误
     case errors.Is(err, ErrCollegeNotFoundError):
         return ErrCollegeNotFound
-    case errors.Is(err, ErrStudentNoOrganizationError):
-        return ErrStudentNoOrganization
+    case errors.Is(err, ErrStudentNoCollegeError):
+        return ErrStudentNoCollege
     case errors.Is(err, ErrCollegeListNotFoundError):
         return ErrCollegeListNotFound
     
@@ -44,6 +44,53 @@ func GetErrorCode(err error) int {
         return ErrPhoneRequired
     case errors.Is(err, ErrPasswordNotMatchError):
         return ErrPasswordNotMatch
+
+    // 活动相关错误
+    case errors.Is(err, ErrActivityNotFoundError):
+        return ErrActivityNotFound
+    case errors.Is(err, ErrInvalidActivityIDError):
+        return ErrInvalidActivityID
+    case errors.Is(err, ErrActivityStatusInvalidError):
+        return ErrActivityStatusInvalid
+    case errors.Is(err, ErrActivityFullError):
+        return ErrActivityFull
+    case errors.Is(err, ErrActivityExpiredError):
+        return ErrActivityExpired
+    case errors.Is(err, ErrActivityNotStartedError):
+        return ErrActivityNotStarted
+    case errors.Is(err, ErrActivityFinishedError):
+        return ErrActivityFinished
+    case errors.Is(err, ErrActivityAuditingError):
+        return ErrActivityAuditing
+    case errors.Is(err, ErrActivityRejectedError):
+        return ErrActivityRejected
+
+    // 活动相关错误
+    case errors.Is(err, ErrActivityNotFoundError):
+        return ErrActivityNotFound
+    case errors.Is(err, ErrInvalidActivityIDError):
+        return ErrInvalidActivityID
+    case errors.Is(err, ErrActivityStatusInvalidError):
+        return ErrActivityStatusInvalid
+    case errors.Is(err, ErrActivityFullError):
+        return ErrActivityFull
+    case errors.Is(err, ErrActivityExpiredError):
+        return ErrActivityExpired
+    case errors.Is(err, ErrActivityNotStartedError):
+        return ErrActivityNotStarted
+    case errors.Is(err, ErrActivityFinishedError):
+        return ErrActivityFinished
+    case errors.Is(err, ErrActivityAuditingError):
+        return ErrActivityAuditing
+    case errors.Is(err, ErrActivityRejectedError):
+        return ErrActivityRejected
+
+    // 参与者相关错误
+    case errors.Is(err, ErrParticipantNotFoundError):
+        return ErrParticipantNotFound
+    case errors.Is(err, ErrParticipantInvalidError):
+        return ErrParticipantInvalid
+
     default:
         return -1
     }
