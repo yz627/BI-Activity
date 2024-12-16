@@ -1,4 +1,4 @@
-package Home
+package controller
 
 import (
 	"bi-activity/response"
@@ -13,8 +13,9 @@ type ImageHandler struct {
 	srv *service.ImageService
 }
 
-func NewImageHandler(log *logrus.Logger) *ImageHandler {
+func NewImageHandler(srv *service.ImageService, log *logrus.Logger) *ImageHandler {
 	return &ImageHandler{
+		srv: srv,
 		log: log,
 	}
 }
@@ -23,7 +24,7 @@ func NewImageHandler(log *logrus.Logger) *ImageHandler {
 // 返回轮播图列表：[image_id, image_url]
 func (h *ImageHandler) LoopImage(c *gin.Context) {
 	// 获取轮播图
-	images, err := h.srv.LoopImages(c)
+	images, err := h.srv.LoopImages(c.Request.Context())
 
 	if err != nil {
 		status, resp := response.Fail(err.(errors.SelfError))

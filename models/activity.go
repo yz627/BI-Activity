@@ -25,4 +25,8 @@ type Activity struct {
 	RecruitmentDeadline     time.Time `gorm:"column:recruitment_deadline"`                            // 活动截止时间
 	ContactName             string    `gorm:"type:varchar(10);column:contact_name;null"`              // 活动联系人姓名
 	ContactDetails          string    `gorm:"type:varchar(20);column:contact_details;null"`           // 活动联系人联系方式
+
+	// 关联, 用于获取数据
+	ActivityType  ActivityType `gorm:"foreignKey:ActivityTypeID"`  // 活动类型
+	ActivityImage Image        `gorm:"foreignKey:ActivityImageID"` // 活动图片
 }

@@ -4,7 +4,6 @@ import (
 	"bi-activity/configs"
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service"
 	"github.com/sirupsen/logrus"
 	"testing"
 )
@@ -20,5 +19,5 @@ func TestImageDataCase_GetImageByType(t *testing.T) {
 		t.Error(response.Failf(errors.ServerError, "获取图片失败"))
 	}
 	_, resp := response.Success(list)
-	t.Log(resp.Data.([]*service.Image)[0])
+	t.Log(resp.Data)
 }

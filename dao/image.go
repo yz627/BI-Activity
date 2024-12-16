@@ -52,9 +52,9 @@ func (i *imageDataCase) GetImageByType(ctx context.Context, imageType int) (list
 
 // GetAllBannerImage 获取轮播图
 func (i *imageDataCase) GetAllBannerImage(ctx context.Context) (list []*models.Image, err error) {
-	imgList := make([]*models.Image, 0)
-	err = i.db.db.WithContext(ctx).Where("type = ?", label.ImageTypeBanner).Find(&imgList).Error
+	err = i.db.db.WithContext(ctx).Where("type = ?", label.ImageTypeBanner).Find(&list).Error
 	if err != nil {
+		i.log.Errorln("GetAllBannerImage:", err)
 		return nil, err
 	}
 

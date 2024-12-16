@@ -1,20 +1,37 @@
 package utils
 
 import (
-	"bi-activity/models"
-	"bi-activity/service"
 	"testing"
 )
 
-func TestStructCopy(t *testing.T) {
-	img := &models.Image{
-		FileName: "test",
-		Url:      "test",
+type User struct {
+	ID    uint
+	Name  string
+	Image *Image
+}
+
+type Image struct {
+	ID  uint
+	Url string
+}
+
+type UserInfo struct {
+	ID   uint
+	Name string
+	Url  string
+}
+
+func TestStructCopy2(t *testing.T) {
+	user := &User{
+		ID:   1,
+		Name: "test",
+		Image: &Image{
+			ID:  2,
+			Url: "test",
+		},
 	}
-	img.Model.ID = 1
 
-	resImg := &service.RespImage{}
-
-	StructCopy(img, resImg)
-	t.Log(resImg)
+	userInfo := &UserInfo{}
+	StructCopy(user, userInfo)
+	t.Log(userInfo)
 }

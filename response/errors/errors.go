@@ -25,6 +25,15 @@ var (
 
 	ErrImageType  = NewSelfError("图片类型错误")
 	GetImageError = NewSelfError("获取图片失败")
+
+	// activity-type
+
+	ErrActivityType      = NewSelfError("活动类型错误")
+	GetActivityTypeError = NewSelfError("获取活动类型失败")
+
+	// activity
+
+	GetActivityError = NewSelfError("获取活动类型失败")
 )
 
 var (

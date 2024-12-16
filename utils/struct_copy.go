@@ -4,6 +4,7 @@ import "reflect"
 
 // StructCopy 拷贝结构体,不指定具体类型，解耦
 // from 和 to 必须为指针类型
+// TODO: BUG 对于嵌套结构体，无法拷贝
 func StructCopy(from, to any) {
 	fValue := reflect.ValueOf(from)
 	tValue := reflect.ValueOf(to)

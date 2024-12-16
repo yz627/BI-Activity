@@ -1,17 +1,21 @@
-package Home
+package controller
 
 import (
+	"bi-activity/response"
+	"bi-activity/response/errors"
+	"bi-activity/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type ActivityHandler struct {
 	log *logrus.Logger
-	// TODO: add service
+	srv *service.ActivityService
 }
 
-func NewActivityHandler(log *logrus.Logger) *ActivityHandler {
+func NewActivityHandler(srv *service.ActivityService, log *logrus.Logger) *ActivityHandler {
 	return &ActivityHandler{
+		srv: srv,
 		log: log,
 	}
 }
@@ -19,10 +23,16 @@ func NewActivityHandler(log *logrus.Logger) *ActivityHandler {
 // ActivityType 首页的活动类型请求
 // 返回： 活动类型id，活动类型名称，活动类型图标URL
 func (h *ActivityHandler) ActivityType(c *gin.Context) {
-	// TODO: 获取活动类型列表
-	panic("implement me")
+	list, err := h.srv.ActivityAllTypes(c.Request.Context())
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+	}
+
+	c.JSON(response.Success(list))
 }
 
+// PopularActivityList 获取热门活动列表
+// 热门活动的依据：按照活动详情的查看次数
 func (h *ActivityHandler) PopularActivityList(c *gin.Context) {
 	// TODO: 获取热门活动列表
 	panic("implement me")
