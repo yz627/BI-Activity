@@ -1,6 +1,8 @@
 package Home
 
 import (
+	"bi-activity/response"
+	"bi-activity/response/errors"
 	"bi-activity/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -20,6 +22,13 @@ func NewImageHandler(log *logrus.Logger) *ImageHandler {
 // LoopImage 获取首页轮播图
 // 返回轮播图列表：[image_id, image_url]
 func (h *ImageHandler) LoopImage(c *gin.Context) {
-	// TODO: implement
-	panic("implement me")
+	// 获取轮播图
+	images, err := h.srv.LoopImages(c)
+
+	if err != nil {
+		status, resp := response.Fail(err.(errors.SelfError))
+		c.JSON(status, resp)
+	}
+
+	c.JSON(response.Success(images))
 }
