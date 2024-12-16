@@ -25,3 +25,9 @@ UserStatus:
 Jwt:
   secret_key: your-secret-key
   expiration_time: 86400  # 24小时
+
+OSS:
+  Endpoint: "oss-cn-shenzhen.aliyuncs.com"
+    
+  BucketName: "bi-activity"
+  BasePath: "uploads"

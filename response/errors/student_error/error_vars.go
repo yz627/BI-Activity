@@ -23,6 +23,12 @@ var (
     ErrPhoneRequiredError     = errors.New("phone number required")
     ErrPasswordNotMatchError  = errors.New("passwords do not match")
 
+    // 图片相关
+    ErrImageNotFoundError     = errors.New("image not found")
+    ErrImageUploadFailedError = errors.New("image upload failed")
+    ErrInvalidImageTypeError  = errors.New("invalid image type")
+    ErrImageSizeTooLargeError = errors.New("image size too large")
+
     // 活动相关错误
     ErrActivityNotFoundError     = errors.New("activity not found")
     ErrInvalidActivityIDError    = errors.New("invalid activity id")

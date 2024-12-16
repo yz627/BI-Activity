@@ -1,13 +1,13 @@
 package router
 
 import (
+	"bi-activity/configs"
 	"bi-activity/controller/student_controller"
 	"bi-activity/dao"
 	"bi-activity/dao/student_dao"
 	"bi-activity/middleware"
 	"bi-activity/service/student_service"
 	"bi-activity/utils/student_utils/student_verify"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,18 +24,21 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 	activityDao := student_dao.NewActivityDao(data)
 	participantDao := student_dao.NewParticipantDao(data)
 	studentActivityAuditDao := student_dao.NewActivityAuditDao(data)
+	imageDao := student_dao.NewImageDao(data)
 
 	// 初始化 Service
 	studentService := student_service.NewStudentService(studentDao)
 	collegeService := student_service.NewCollegeService(collegeDao, studentDao)
 	securityService := student_service.NewSecurityService(studentDao, codeVerifier)
 	activityService := student_service.NewActivityService(activityDao, participantDao, studentActivityAuditDao, studentDao, collegeDao)
+	imageService := student_service.NewImageService(imageDao, configs.GlobalOSSUploader)
 
 	// 初始化 Controller
 	studentController := student_controller.NewStudentController(studentService)
 	collegeController := student_controller.NewCollegeController(collegeService)
 	securityController := student_controller.NewSecurityController(securityService)
 	activityController := student_controller.NewActivityController(activityService)
+	imageController := student_controller.NewImageController(imageService)
 
 	// 学生登录模块路由组
 	// studentLogin := r.Group("/api/studentLogin")
@@ -102,6 +105,14 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 			// 录取相关
 			activityManage.GET("/participants/:activityId", activityController.GetParticipants)           // 获取参与者列表
 			activityManage.PUT("/participant/:participantId", activityController.UpdateParticipantStatus) // 更新参与者状态
+		}
+
+		// 图片相关路由
+		image := studentPersonalCenter.Group("/image")
+		{
+			image.POST("/upload", imageController.UploadImage)  // 上传图片
+			image.GET("/:id", imageController.GetImage)        // 获取图片信息
+			image.DELETE("/:id", imageController.DeleteImage)  // 删除图片
 		}
 
 	}

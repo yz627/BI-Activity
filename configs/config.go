@@ -16,6 +16,7 @@ type Config struct {
 	Redis      *Redis      `yaml:"Redis"`
 	Server     *Server     `yaml:"Server"`
 	UserStatus *UserStatus `yaml:"UserStatus"`
+	OSS        *OSS        `yaml:"OSS"`
 }
 
 func InitConfig(path ...string) *Config {
@@ -36,6 +37,9 @@ func InitConfig(path ...string) *Config {
 	if err != nil {
 		logrus.Fatalf("config file unmarshal failed: %s", err)
 	}
+
+	InitOSS(&config)
+
 	return &config
 }
 
@@ -76,4 +80,13 @@ type Server struct {
 type UserStatus struct {
 	ExpirationTime int64  `yaml:"expiration_time" mapstructure:"expiration_time"` // 登录过期时间
 	LoginFlag      string `yaml:"login_flag" mapstructure:"login_flag"`           // 登录标识
+}
+
+// OSS OSS配置信息
+type OSS struct {
+    Endpoint        string `yaml:"Endpoint"`
+    AccessKeyID     string `yaml:"AccessKeyID"`
+    AccessKeySecret string `yaml:"AccessKeySecret"`
+    BucketName      string `yaml:"BucketName"`
+    BasePath        string `yaml:"BasePath"`
 }

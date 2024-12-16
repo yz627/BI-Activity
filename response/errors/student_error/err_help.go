@@ -45,6 +45,16 @@ func GetErrorCode(err error) int {
     case errors.Is(err, ErrPasswordNotMatchError):
         return ErrPasswordNotMatch
 
+    // 图片相关错误
+    case errors.Is(err, ErrImageNotFoundError):
+        return ErrImageNotFound
+    case errors.Is(err, ErrImageUploadFailedError):
+        return ErrImageUploadFailed
+    case errors.Is(err, ErrInvalidImageTypeError):
+        return ErrInvalidImageType
+    case errors.Is(err, ErrImageSizeTooLargeError):
+        return ErrImageSizeTooLarge
+
     // 活动相关错误
     case errors.Is(err, ErrActivityNotFoundError):
         return ErrActivityNotFound

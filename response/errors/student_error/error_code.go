@@ -22,6 +22,12 @@ const (
     ErrPhoneRequired       = 10207
     ErrPasswordNotMatch    = 10208
 
+    // 图片相关错误码 (10301-10399)
+    ErrImageNotFound     = 10301
+    ErrImageUploadFailed = 10302
+    ErrInvalidImageType  = 10303
+    ErrImageSizeTooLarge = 10304
+
     // 活动相关错误码 (10401-10499)
     ErrActivityNotFound     = 10401  // 活动不存在
     ErrInvalidActivityID    = 10402  // 无效的活动ID
@@ -58,6 +64,12 @@ var errMsgMap = map[int]string{
     ErrThirdPartyBound:    "第三方账号已被绑定",
     ErrPhoneRequired:      "请先绑定手机号",
     ErrPasswordNotMatch:   "两次输入的密码不一致",
+
+    // 图片相关
+    ErrImageNotFound:     "图片不存在",
+    ErrImageUploadFailed: "图片上传失败",
+    ErrInvalidImageType:  "不支持的图片类型",
+    ErrImageSizeTooLarge: "图片大小超出限制",
 
     // 活动相关错误
     ErrActivityNotFound:     "活动不存在",
