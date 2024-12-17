@@ -6,7 +6,7 @@ import (
 )
 
 type RedisRepo interface {
-	UpdateActivityViewCount(ctx context.Context, data interface{}, count int) error
+	UpdateActivityViewCount(ctx context.Context, key string, value interface{}) error
 	GetPopularActivities(ctx context.Context) ([]string, error)
 }
 
@@ -22,8 +22,12 @@ func NewRedisDataCase(rdb *Redis, logger *logrus.Logger) RedisRepo {
 	}
 }
 
-func (r *redisDataCase) UpdateActivityViewCount(ctx context.Context, data interface{}, count int) error {
-	//TODO implement me
+// UpdateActivityViewCount 向redis中更新活动-浏览量的数据
+// key 	 为活动ID
+// value 为活动信息
+// 存储为redis的有序集合： zset
+func (r *redisDataCase) UpdateActivityViewCount(ctx context.Context, key string, value interface{}) error {
+	// TODO: 存储为redis的有序集合： zset
 	panic("implement me")
 }
 
