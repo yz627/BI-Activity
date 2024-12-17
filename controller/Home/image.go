@@ -1,19 +1,19 @@
-package controller
+package Home
 
 import (
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service"
+	"bi-activity/service/Home"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type ImageHandler struct {
 	log *logrus.Logger
-	srv *service.ImageService
+	srv *Home.ImageService
 }
 
-func NewImageHandler(srv *service.ImageService, log *logrus.Logger) *ImageHandler {
+func NewImageHandler(srv *Home.ImageService, log *logrus.Logger) *ImageHandler {
 	return &ImageHandler{
 		srv: srv,
 		log: log,

@@ -33,7 +33,8 @@ var (
 
 	// activity
 
-	GetActivityError = NewSelfError("获取活动类型失败")
+	GetActivityError        = NewSelfError("获取活动类型失败")
+	GetPopularActivityError = NewSelfError("获取热门活动失败")
 )
 
 var (

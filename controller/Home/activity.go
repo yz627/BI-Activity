@@ -1,19 +1,19 @@
-package controller
+package Home
 
 import (
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service"
+	"bi-activity/service/Home"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type ActivityHandler struct {
 	log *logrus.Logger
-	srv *service.ActivityService
+	srv *Home.ActivityService
 }
 
-func NewActivityHandler(srv *service.ActivityService, log *logrus.Logger) *ActivityHandler {
+func NewActivityHandler(srv *Home.ActivityService, log *logrus.Logger) *ActivityHandler {
 	return &ActivityHandler{
 		srv: srv,
 		log: log,

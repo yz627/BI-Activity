@@ -2,9 +2,9 @@ package main
 
 import (
 	"bi-activity/configs"
-	"bi-activity/controller"
+	Home2 "bi-activity/controller/Home"
 	"bi-activity/dao"
-	"bi-activity/service"
+	"bi-activity/service/Home"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -15,12 +15,12 @@ func main() {
 	defer fn()
 
 	imgData := dao.NewImageDataCase(data, logrus.New())
-	imgService := service.NewImageService(imgData, logrus.New())
-	imgHandler := controller.NewImageHandler(imgService, logrus.New())
+	imgService := Home.NewImageService(imgData, logrus.New())
+	imgHandler := Home2.NewImageHandler(imgService, logrus.New())
 
 	activityData := dao.NewActivityDataCase(data, logrus.New())
-	activityService := service.NewActivityService(activityData, logrus.New())
-	activityHandler := controller.NewActivityHandler(activityService, logrus.New())
+	activityService := Home.NewActivityService(activityData, logrus.New())
+	activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
 
 	r := gin.Default()
 	r.GET("/home/loop-images", imgHandler.LoopImage)

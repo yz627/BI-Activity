@@ -1,4 +1,4 @@
-package service
+package Home
 
 import (
 	"bi-activity/dao"
@@ -8,12 +8,6 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 )
-
-type Image struct {
-	ID       uint
-	FileName string
-	Url      string
-}
 
 type ImageService struct {
 	ir  dao.ImageRepo // 图片操作接口
@@ -27,6 +21,7 @@ func NewImageService(ir dao.ImageRepo, log *logrus.Logger) *ImageService {
 	}
 }
 
+// LoopImages 轮播图
 func (s *ImageService) LoopImages(ctx context.Context) (list []*Image, err error) {
 	resp, err := s.ir.GetAllBannerImage(ctx)
 	if err != nil {
