@@ -21,6 +21,9 @@ const (
     ErrThirdPartyBound     = 10206
     ErrPhoneRequired       = 10207
     ErrPasswordNotMatch    = 10208
+    ErrEmailSendFailed     = 10209
+    ErrInvalidPhone        = 10210  
+    ErrPhoneSendFailed     = 10211 
 
     // 图片相关错误码 (10301-10399)
     ErrImageNotFound     = 10301
@@ -64,6 +67,9 @@ var errMsgMap = map[int]string{
     ErrThirdPartyBound:    "第三方账号已被绑定",
     ErrPhoneRequired:      "请先绑定手机号",
     ErrPasswordNotMatch:   "两次输入的密码不一致",
+    ErrEmailSendFailed:    "验证码发送失败",
+    ErrInvalidPhone:       "无效的手机号",
+    ErrPhoneSendFailed:    "短信发送失败",
 
     // 图片相关
     ErrImageNotFound:     "图片不存在",

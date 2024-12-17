@@ -22,6 +22,9 @@ var (
     ErrThirdPartyBoundError   = errors.New("third party account already bound")
     ErrPhoneRequiredError     = errors.New("phone number required")
     ErrPasswordNotMatchError  = errors.New("passwords do not match")
+    ErrEmailSendFailedError = errors.New("email send failed")
+    ErrInvalidPhoneError      = errors.New("invalid phone number")
+    ErrPhoneSendFailedError   = errors.New("send sms failed")
 
     // 图片相关
     ErrImageNotFoundError     = errors.New("image not found")

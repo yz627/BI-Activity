@@ -1,12 +1,14 @@
 package student_service
 
 import (
-    "bi-activity/dao/student_dao"
-    "bi-activity/response/student_response"
-    "bi-activity/response/errors/student_error"
-    "bi-activity/utils/student_utils/student_encrypt"
-    "bi-activity/utils/student_utils/student_mask"
-    "bi-activity/utils/student_utils/student_verify"
+	"bi-activity/dao/student_dao"
+	"bi-activity/response/errors/student_error"
+	"bi-activity/response/student_response"
+	"bi-activity/utils/student_utils/student_encrypt"
+	"bi-activity/utils/student_utils/student_mask"
+	"bi-activity/utils/student_utils/student_sms"
+	"bi-activity/utils/student_utils/student_verify"
+	"fmt"
 )
 
 type SecurityService interface {
@@ -17,17 +19,21 @@ type SecurityService interface {
     BindEmail(studentID uint, req *student_response.BindEmailRequest) error
     UnbindEmail(studentID uint) error
     DeleteAccount(studentID uint, req *student_response.DeleteAccountRequest) error
+    SendEmailCode(email string) error
+    SendPhoneCode(studentID uint, phone string) error
 }
 
 type SecurityServiceImpl struct {
     studentDao student_dao.StudentDao
     codeVerifier *student_verify.CodeVerifier
+    smsSender    *student_sms.SMSSender 
 }
 
-func NewSecurityService(studentDao student_dao.StudentDao, codeVerifier *student_verify.CodeVerifier) SecurityService {
+func NewSecurityService(studentDao student_dao.StudentDao, codeVerifier *student_verify.CodeVerifier, smsSender *student_sms.SMSSender) SecurityService {
     return &SecurityServiceImpl{
         studentDao: studentDao,
         codeVerifier: codeVerifier,
+        smsSender:    smsSender,
     }
 }
 
@@ -169,4 +175,52 @@ func (s *SecurityServiceImpl) DeleteAccount(studentID uint, req *student_respons
 
     // 执行账号注销（软删除）
     return s.studentDao.Delete(studentID)
+}
+
+func (s *SecurityServiceImpl) SendEmailCode(email string) error {
+    // 检查邮箱是否已被使用
+    exists, err := s.studentDao.EmailExists(email)
+    if err != nil {
+        return err
+    }
+    if exists {
+        return student_error.ErrEmailExistsError
+    }
+
+    // 发送验证码
+    return s.codeVerifier.SendEmailCode(email)
+}
+
+// 实现发送验证码方法
+func (s *SecurityServiceImpl) SendPhoneCode(studentID uint, phone string) error {
+    fmt.Printf("Trying to send code to phone: %s\n", phone)
+    // 验证手机号格式
+    if !student_sms.ValidatePhone(phone) {
+        return student_error.ErrInvalidPhoneError
+    }
+
+    // 检查手机号是否已被使用
+    exists, err := s.studentDao.PhoneExists(phone)
+    if err != nil {
+        return err
+    }
+    if exists {
+        return student_error.ErrPhoneExistsError
+    }
+
+    // 生成验证码
+    code := student_verify.GenerateCode()
+
+    // 发送验证码
+    if err := s.smsSender.SendCode(phone, code); err != nil {
+        fmt.Printf("SMS send error: %v\n", err)
+        return student_error.ErrPhoneSendFailedError
+    }
+
+    // 保存验证码到 Redis
+    if err := s.codeVerifier.SaveCode("verify:phone:"+phone, code); err != nil {
+        return err
+    }
+
+    return nil
 }

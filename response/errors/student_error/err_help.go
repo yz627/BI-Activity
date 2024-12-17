@@ -44,6 +44,12 @@ func GetErrorCode(err error) int {
         return ErrPhoneRequired
     case errors.Is(err, ErrPasswordNotMatchError):
         return ErrPasswordNotMatch
+    case errors.Is(err, ErrEmailSendFailedError):
+        return ErrEmailSendFailed
+    case errors.Is(err, ErrInvalidPhoneError):
+        return ErrInvalidPhone
+    case errors.Is(err, ErrPhoneSendFailedError):
+        return ErrPhoneSendFailed
 
     // 图片相关错误
     case errors.Is(err, ErrImageNotFoundError):

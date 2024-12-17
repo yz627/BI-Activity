@@ -29,7 +29,7 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 	// 初始化 Service
 	studentService := student_service.NewStudentService(studentDao)
 	collegeService := student_service.NewCollegeService(collegeDao, studentDao)
-	securityService := student_service.NewSecurityService(studentDao, codeVerifier)
+	securityService := student_service.NewSecurityService(studentDao, codeVerifier, configs.GlobalSMSSender)
 	activityService := student_service.NewActivityService(activityDao, participantDao, studentActivityAuditDao, studentDao, collegeDao)
 	imageService := student_service.NewImageService(imageDao, configs.GlobalOSSUploader)
 
@@ -39,15 +39,6 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 	securityController := student_controller.NewSecurityController(securityService)
 	activityController := student_controller.NewActivityController(activityService)
 	imageController := student_controller.NewImageController(imageService)
-
-	// 学生登录模块路由组
-	// studentLogin := r.Group("/api/studentLogin")
-	{
-		// studentLogin.POST("/login", studentController.Login)
-		// studentLogin.POST("/register", studentController.Register)
-		// studentLogin.POST("/forgetPassword", studentController.ForgetPassword)
-		// studentLogin.POST("/resetPassword", studentController.ResetPassword)
-	}
 
 	// 学生个人中心模块路由组
 	studentPersonalCenter := r.Group("/api/studentPersonalCenter")
@@ -83,10 +74,12 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 			// 手机号相关
 			securitySettings.POST("/:id/phone", securityController.BindPhone)
 			securitySettings.DELETE("/:id/phone", securityController.UnbindPhone)
+			securitySettings.POST("/:id/phone/code", securityController.SendPhoneCode)
 
 			// 邮箱相关
 			securitySettings.POST("/:id/email", securityController.BindEmail)
 			securitySettings.DELETE("/:id/email", securityController.UnbindEmail)
+			securitySettings.POST("/:id/email/code", securityController.SendEmailCode)
 
 			// 注销账号
 			securitySettings.DELETE("/:id/account", securityController.DeleteAccount)

@@ -2,12 +2,14 @@
 package student_controller
 
 import (
-    "bi-activity/service/student_service"
-    "bi-activity/response/student_response"
-    "bi-activity/response/errors/student_error"
-    "strconv"
-    "github.com/gin-gonic/gin"
-    "net/http"
+	"bi-activity/response/errors/student_error"
+	"bi-activity/response/student_response"
+	"bi-activity/service/student_service"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SecurityController struct {
@@ -95,8 +97,8 @@ func (c *SecurityController) BindPhone(ctx *gin.Context) {
     var req student_response.BindPhoneRequest
     if err := ctx.ShouldBindJSON(&req); err != nil {
         ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            err.Error(),
+            student_error.ErrInvalidPhone,
+            student_error.GetErrorMsg(student_error.ErrInvalidPhone),
         ))
         return
     }
@@ -216,6 +218,70 @@ func (c *SecurityController) DeleteAccount(ctx *gin.Context) {
     }
 
     if err := c.securityService.DeleteAccount(uint(id), &req); err != nil {
+        errCode := student_error.GetErrorCode(err)
+        ctx.JSON(http.StatusInternalServerError, student_response.Error(
+            errCode,
+            student_error.GetErrorMsg(errCode),
+        ))
+        return
+    }
+
+    ctx.JSON(http.StatusOK, student_response.Success(nil))
+}
+
+func (c *SecurityController) SendEmailCode(ctx *gin.Context) {
+    // 从请求体获取邮箱
+    var req struct {
+        Email string `json:"email" binding:"required,email"`
+    }
+    
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidStudentID,
+            err.Error(),
+        ))
+        return
+    }
+
+    if err := c.securityService.SendEmailCode(req.Email); err != nil {
+        ctx.JSON(http.StatusInternalServerError, student_response.Error(
+            student_error.GetErrorCode(err),
+            student_error.GetErrorMsg(student_error.GetErrorCode(err)),
+        ))
+        return
+    }
+
+    ctx.JSON(http.StatusOK, student_response.Success(nil))
+}
+
+// SendPhoneCode 发送手机验证码
+func (c *SecurityController) SendPhoneCode(ctx *gin.Context) {
+    // 获取学生ID
+    fmt.Println("Receiving SendPhoneCode request")
+    idStr := ctx.Param("id")
+    id, err := strconv.ParseUint(idStr, 10, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidStudentID,
+            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+        ))
+        return
+    }
+
+    // 获取手机号
+    var req struct {
+        Phone string `json:"phone" binding:"required"`
+    }
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidPhone,
+            student_error.GetErrorMsg(student_error.ErrInvalidPhone),
+        ))
+        return
+    }
+
+    // 发送验证码
+    if err := c.securityService.SendPhoneCode(uint(id), req.Phone); err != nil {
         errCode := student_error.GetErrorCode(err)
         ctx.JSON(http.StatusInternalServerError, student_response.Error(
             errCode,

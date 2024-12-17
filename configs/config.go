@@ -1,13 +1,18 @@
 package configs
 
 import (
+	"bi-activity/utils/student_utils/student_email"
+	"bi-activity/utils/student_utils/student_sms"
 	"fmt"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 var (
 	configPath = ".\\..\\configs"
+	GlobalEmailSender *student_email.EmailSender
+	GlobalSMSSender *student_sms.SMSSender
 )
 
 // Config 全局配置信息
@@ -17,6 +22,8 @@ type Config struct {
 	Server     *Server     `yaml:"Server"`
 	UserStatus *UserStatus `yaml:"UserStatus"`
 	OSS        *OSS        `yaml:"OSS"`
+	Email      *Email      `yaml:"Email"`
+	SMS        *SMS        `yaml:"SMS"`
 }
 
 func InitConfig(path ...string) *Config {
@@ -39,8 +46,31 @@ func InitConfig(path ...string) *Config {
 	}
 
 	InitOSS(&config)
+	InitEmail(&config)
+	InitSMS(&config)
 
 	return &config
+}
+
+// InitSMS 初始化短信发送器
+func InitSMS(config *Config) {
+    GlobalSMSSender = student_sms.NewSMSSender(student_sms.SMSConfig{
+        AccessKeyId:     config.SMS.AccessKeyId,
+        AccessKeySecret: config.SMS.AccessKeySecret,
+        SignName:        config.SMS.SignName,
+        TemplateCode:    config.SMS.TemplateCode,
+        RegionId:        config.SMS.RegionId,
+    })
+}
+
+func InitEmail(config *Config) {
+    GlobalEmailSender = student_email.NewEmailSender(student_email.EmailConfig{
+        Host:     config.Email.Host,
+        Port:     config.Email.Port,
+        Username: config.Email.Username,
+        Password: config.Email.Password,
+        From:     config.Email.From,
+    })
 }
 
 // Database 数据库配置映射
@@ -89,4 +119,21 @@ type OSS struct {
     AccessKeySecret string `yaml:"AccessKeySecret"`
     BucketName      string `yaml:"BucketName"`
     BasePath        string `yaml:"BasePath"`
+}
+
+// 邮件配置结构
+type Email struct {
+    Host     string `yaml:"Host"`
+    Port     int    `yaml:"Port"`
+    Username string `yaml:"Username"`
+    Password string `yaml:"Password"`
+    From     string `yaml:"From"`
+}
+
+type SMS struct {
+    AccessKeyId     string `yaml:"AccessKeyId"`
+    AccessKeySecret string `yaml:"AccessKeySecret"`
+    SignName        string `yaml:"SignName"`
+    TemplateCode    string `yaml:"TemplateCode"`
+    RegionId        string `yaml:"RegionId"`
 }
