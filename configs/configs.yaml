@@ -28,6 +28,16 @@ Jwt:
 
 OSS:
   Endpoint: "oss-cn-shenzhen.aliyuncs.com"
-    
   BucketName: "bi-activity"
   BasePath: "uploads"
+
+Email:
+  Host: "smtp.qq.com"  
+  Port: 587
+  Username: "1184615922@qq.com"
+  From: "1184615922@qq.com"
+
+SMS:
+  SignName: "Bi活动"
+  TemplateCode: "SMS_476280302"
+  RegionId: "cn-hangzhou"
