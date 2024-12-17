@@ -22,9 +22,9 @@ const (
 // 图片类型
 const (
 	ImageTypeAvatar   = iota + 1 // 1-头像
-	ImageTypeCollege             // 2-学院图标
+	ImageTypeCollege             // 2-活动图片
 	ImageTypeBanner              // 3-轮播图
-	ImageTypeActivity            // 4-活动图片
+	ImageTypeActivity            // 4-学院图标
 )
 
 // 校园

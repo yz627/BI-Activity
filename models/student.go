@@ -2,17 +2,21 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 type Student struct {
-	gorm.Model        // 主键ID、创建时间、更新时间、删除时间
-	Name       string `gorm:"type:varchar(255);column:name;null"`      // 学生姓名
-	Phone      string `gorm:"type:varchar(64);column:phone;null"`      // 学生手机号
-	StudentID  string `gorm:"type:varchar(30);column:student_id;null"` // 学生学号
-	Email      string `gorm:"type:varchar(255);column:email;null"`     // 学生邮箱
-	Password   string `gorm:"type:varchar(255);column:password;null"`  // 学生密码
-	Gender     int    `gorm:"type:tinyint;column:gender;null"`         // 学生性别 1-女 2-男
-	NickName   string `gorm:"type:varchar(255);column:nick_name;null"` // 学生昵称
-	AvatarID   uint   `gorm:"column:avatar_id;null"`                   // 学生头像ID
-	CollegeID  uint   `gorm:"column:college_id;null"`                  // 学生所属学院ID
+	ID              uint           `gorm:"primaryKey;autoIncrement" json:"id"`
+	StudentPhone    string         `gorm:"unique;type:varchar(64);null" json:"student_phone"`
+	StudentEmail    string         `gorm:"unique;type:varchar(255);null" json:"student_email"`
+	StudentID       string         `gorm:"unique;type:varchar(30);null" json:"student_id"`
+	Password        string         `gorm:"type:varchar(255);null" json:"-"` // 密码不应该在JSON中返回
+	StudentName     string         `gorm:"type:varchar(255);null" json:"student_name"`
+	Gender          int            `gorm:"type:tinyint" json:"gender"`
+	Nickname        string         `gorm:"type:varchar(20)" json:"nickname"`
+	StudentAvatarID uint           `json:"student_avatar_id"`
+	CollegeID       uint           `json:"college_id"`
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
+	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`
 }

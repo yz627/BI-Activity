@@ -1,10 +1,16 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type StudentActivityAudit struct {
-	gorm.Model
-	ActivityID uint
-	CollegeID  uint
-	Status     int // 1-待审核，2-已通过，3-已拒绝
+	ID         uint           `gorm:"primaryKey;autoIncrement" json:"id"`  // 主键ID
+	CollegeID  uint           `gorm:"type:bigint;null" json:"college_id"`  // 学院ID
+	ActivityID uint           `gorm:"type:bigint;null" json:"activity_id"` // 活动ID
+	Status     int            `gorm:"type:tinyint;null" json:"status"`     // 审核状态：例如通过、未通过等
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }
