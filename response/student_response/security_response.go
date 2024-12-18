@@ -39,3 +39,13 @@ type BindEmailRequest struct {
 type DeleteAccountRequest struct {
     Password string `json:"password" binding:"required"`  // 密码
 }
+
+type CaptchaResponse struct {
+    CaptchaId    string `json:"captcha_id"`
+    CaptchaImage string `json:"captcha_image"`  // base64格式的图片
+}
+
+type VerifyCaptchaRequest struct {
+    CaptchaId   string `json:"captcha_id" binding:"required"`
+    CaptchaCode string `json:"captcha_code" binding:"required"`
+}

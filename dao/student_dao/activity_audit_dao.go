@@ -22,12 +22,12 @@ func NewActivityAuditDao(data *dao.Data) ActivityAuditDao {
 }
 
 func (d *activityAuditDao) Create(audit *models.StudentActivityAudit) error {
-    return d.data.Db.Create(audit).Error
+    return d.data.DB().Create(audit).Error
 }
 
 func (d *activityAuditDao) GetByActivityID(activityID uint) (*models.StudentActivityAudit, error) {
     var audit models.StudentActivityAudit
-    err := d.data.Db.Where("activity_id = ?", activityID).First(&audit).Error
+    err := d.data.DB().Where("activity_id = ?", activityID).First(&audit).Error
     if err != nil {
         return nil, err
     }
@@ -35,5 +35,5 @@ func (d *activityAuditDao) GetByActivityID(activityID uint) (*models.StudentActi
 }
 
 func (d *activityAuditDao) UpdateStatus(id uint, status int) error {
-    return d.data.Db.Model(&models.StudentActivityAudit{}).Where("id = ?", id).Update("status", status).Error
+    return d.data.DB().Model(&models.StudentActivityAudit{}).Where("id = ?", id).Update("status", status).Error
 }

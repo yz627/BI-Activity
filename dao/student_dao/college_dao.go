@@ -30,7 +30,7 @@ func NewCollegeDao(data *dao.Data) CollegeDao {
 // GetByID 根据ID获取学院信息
 func (d *collegeDao) GetByID(id uint) (*models.College, error) {
     var college models.College
-    err := d.data.Db.Where("id = ?", id).First(&college).Error
+    err := d.data.DB().Where("id = ?", id).First(&college).Error
     if err != nil {
         return nil, err
     }
@@ -40,7 +40,7 @@ func (d *collegeDao) GetByID(id uint) (*models.College, error) {
 // GetCollegeList 获取学院列表
 func (d *collegeDao) GetCollegeList() ([]models.College, error) {
     var colleges []models.College
-    err := d.data.Db.Find(&colleges).Error
+    err := d.data.DB().Find(&colleges).Error
     if err != nil {
         return nil, err
     }
@@ -50,13 +50,13 @@ func (d *collegeDao) GetCollegeList() ([]models.College, error) {
 // GetStudentCollege 获取学生所属学院
 func (d *collegeDao) GetStudentCollege(studentID uint) (*models.College, error) {
     var student models.Student
-    err := d.data.Db.Where("id = ?", studentID).First(&student).Error
+    err := d.data.DB().Where("id = ?", studentID).First(&student).Error
     if err != nil {
         return nil, err
     }
 
     var college models.College
-    err = d.data.Db.Where("id = ?", student.CollegeID).First(&college).Error
+    err = d.data.DB().Where("id = ?", student.CollegeID).First(&college).Error
     if err != nil {
         return nil, err
     }
@@ -65,20 +65,20 @@ func (d *collegeDao) GetStudentCollege(studentID uint) (*models.College, error) 
 
 // UpdateStudentCollege 更新学生所属学院
 func (d *collegeDao) UpdateStudentCollege(studentID uint, collegeID uint) error {
-    return d.data.Db.Model(&models.Student{}).Where("id = ?", studentID).
+    return d.data.DB().Model(&models.Student{}).Where("id = ?", studentID).
         Update("college_id", collegeID).Error
 }
 
 // RemoveStudentCollege 移除学生所属学院
 func (d *collegeDao) RemoveStudentCollege(studentID uint) error {
-    return d.data.Db.Model(&models.Student{}).Where("id = ?", studentID).
+    return d.data.DB().Model(&models.Student{}).Where("id = ?", studentID).
         Update("college_id", nil).Error
 }
 
 // CollegeExists 检查学院是否存在
 func (d *collegeDao) CollegeExists(collegeID uint) (bool, error) {
     var count int64
-    err := d.data.Db.Model(&models.College{}).Where("id = ?", collegeID).Count(&count).Error
+    err := d.data.DB().Model(&models.College{}).Where("id = ?", collegeID).Count(&count).Error
     if err != nil {
         return false, err
     }

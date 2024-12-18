@@ -292,3 +292,41 @@ func (c *SecurityController) SendPhoneCode(ctx *gin.Context) {
 
     ctx.JSON(http.StatusOK, student_response.Success(nil))
 }
+
+// 获取验证码 
+func (c *SecurityController) GetCaptcha(ctx *gin.Context) {
+    captcha, err := c.securityService.GenerateCaptcha()
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, student_response.Error(
+            student_error.GetErrorCode(err),
+            student_error.GetErrorMsg(student_error.GetErrorCode(err)),
+        ))
+        return
+    }
+
+    ctx.JSON(http.StatusOK, student_response.Success(captcha))
+}
+
+// 验证验证码
+func (c *SecurityController) VerifyCaptcha(ctx *gin.Context) {
+    var req student_response.VerifyCaptchaRequest
+
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.ErrInvalidParams,
+            student_error.GetErrorMsg(student_error.ErrInvalidParams),
+        ))
+        return 
+    }
+
+    err := c.securityService.VerifyCaptcha(req.CaptchaId, req.CaptchaCode)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, student_response.Error(
+            student_error.GetErrorCode(err),
+            student_error.GetErrorMsg(student_error.GetErrorCode(err)),
+        ))
+        return
+    }
+
+    ctx.JSON(http.StatusOK, student_response.Success(nil))
+}

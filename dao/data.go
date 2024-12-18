@@ -2,7 +2,6 @@ package dao
 
 import (
 	"bi-activity/configs"
-	"bi-activity/global"
 	"bi-activity/models"
 	"context"
 	"time"
@@ -15,11 +14,11 @@ import (
 )
 
 type Data struct {
-	Db *gorm.DB
+	db *gorm.DB
 }
 
 type Redis struct {
-	Rdb redis.Cmdable
+	rdb redis.Cmdable
 	RDB *redis.Client
 }
 
@@ -48,9 +47,7 @@ func NewDataDao(c *configs.Database, logger *logrus.Logger) *Data {
 		logger.Fatalf("database migration failed: %v", err)
 	}
 
-	global.Db = db
-
-	return &Data{Db: db}
+	return &Data{db: db}
 }
 
 func NewRedisDao(c *configs.Redis, logger *logrus.Logger) *Redis {
@@ -72,7 +69,14 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) *Redis {
 		logger.Fatalf("redis connect error: %v", err)
 	}
 	return &Redis{
-		Rdb: rdb,
+		rdb: rdb,
 		RDB: rdb,
 	}
 }
+
+func (d *Data) DB() *gorm.DB {
+	return d.db
+}
+
+
+

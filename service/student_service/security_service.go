@@ -4,6 +4,7 @@ import (
 	"bi-activity/dao/student_dao"
 	"bi-activity/response/errors/student_error"
 	"bi-activity/response/student_response"
+	"bi-activity/utils/student_utils/student_captcha"
 	"bi-activity/utils/student_utils/student_encrypt"
 	"bi-activity/utils/student_utils/student_mask"
 	"bi-activity/utils/student_utils/student_sms"
@@ -21,6 +22,8 @@ type SecurityService interface {
     DeleteAccount(studentID uint, req *student_response.DeleteAccountRequest) error
     SendEmailCode(email string) error
     SendPhoneCode(studentID uint, phone string) error
+    GenerateCaptcha() (*student_response.CaptchaResponse, error)
+    VerifyCaptcha(captchaId, captchaCode string) error
 }
 
 type SecurityServiceImpl struct {
@@ -222,5 +225,26 @@ func (s *SecurityServiceImpl) SendPhoneCode(studentID uint, phone string) error 
         return err
     }
 
+    return nil
+}
+
+// 生成图形验证码
+func (s *SecurityServiceImpl) GenerateCaptcha() (*student_response.CaptchaResponse, error) {
+    id, b64s, err := student_captcha.GenerateCaptcha()
+    if err != nil {
+        return nil, student_error.ErrCaptchaGenerateFailedError
+    }
+
+    return &student_response.CaptchaResponse{
+        CaptchaId:    id,
+        CaptchaImage: b64s,
+    }, nil
+}
+
+// 验证图形验证码
+func (s *SecurityServiceImpl) VerifyCaptcha(captchaId, captchaCode string) error {
+    if !student_captcha.VerifyCaptcha(captchaId, captchaCode) {
+        return student_error.ErrInvalidCaptchaError
+    }
     return nil
 }

@@ -76,6 +76,10 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 			securitySettings.DELETE("/:id/phone", securityController.UnbindPhone)
 			securitySettings.POST("/:id/phone/code", securityController.SendPhoneCode)
 
+			// 验证码相关
+			securitySettings.GET("/captcha", securityController.GetCaptcha)        
+			securitySettings.POST("/captcha/verify", securityController.VerifyCaptcha)
+
 			// 邮箱相关
 			securitySettings.POST("/:id/email", securityController.BindEmail)
 			securitySettings.DELETE("/:id/email", securityController.UnbindEmail)

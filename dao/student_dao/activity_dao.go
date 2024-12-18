@@ -26,13 +26,13 @@ func NewActivityDao(data *dao.Data) ActivityDao {
 
 // Create 创建活动
 func (d *activityDao) Create(activity *models.Activity) error {
-    return d.data.Db.Create(activity).Error
+    return d.data.DB().Create(activity).Error
 }
 
 // GetByID 根据ID获取活动
 func (d *activityDao) GetByID(id uint) (*models.Activity, error) {
     var activity models.Activity
-    if err := d.data.Db.First(&activity, id).Error; err != nil {
+    if err := d.data.DB().First(&activity, id).Error; err != nil {
         return nil, err
     }
     return &activity, nil
@@ -40,22 +40,22 @@ func (d *activityDao) GetByID(id uint) (*models.Activity, error) {
 
 // Update 更新活动信息
 func (d *activityDao) Update(activity *models.Activity) error {
-    return d.data.Db.Save(activity).Error
+    return d.data.DB().Save(activity).Error
 }
 
 // Delete 删除活动（软删除）
 func (d *activityDao) Delete(id uint) error {
-    return d.data.Db.Delete(&models.Activity{}, id).Error
+    return d.data.DB().Delete(&models.Activity{}, id).Error
 }
 
 // GetByPublisherID 获取发布者的所有活动
 func (d *activityDao) GetByPublisherID(publisherID uint) ([]*models.Activity, error) {
     var activities []*models.Activity
-    err := d.data.Db.Where("activity_publisher_id = ?", publisherID).Find(&activities).Error
+    err := d.data.DB().Where("activity_publisher_id = ?", publisherID).Find(&activities).Error
     return activities, err
 }
 
 // UpdateStatus 更新活动状态
 func (d *activityDao) UpdateStatus(id uint, status int) error {
-    return d.data.Db.Model(&models.Activity{}).Where("id = ?", id).Update("activity_status", status).Error
+    return d.data.DB().Model(&models.Activity{}).Where("id = ?", id).Update("activity_status", status).Error
 }
