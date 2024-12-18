@@ -1,7 +1,8 @@
-package dao
+package home
 
 import (
 	"bi-activity/configs"
+	"bi-activity/dao"
 	"context"
 	"github.com/sirupsen/logrus"
 	"testing"
@@ -9,7 +10,7 @@ import (
 
 func TestActivityTypeDataCase_GetActivityAllTypes(t *testing.T) {
 	conf := configs.InitConfig("./../configs/")
-	data, fn := NewDateDao(conf.Database, logrus.New())
+	data, fn := dao.NewDateDao(conf.Database, logrus.New())
 	defer fn()
 
 	activityTypeDataCase := NewActivityTypeDataCase(data, logrus.New())

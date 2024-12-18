@@ -33,8 +33,25 @@ var (
 
 	// activity
 
-	GetActivityError        = NewSelfError("获取活动类型失败")
-	GetPopularActivityError = NewSelfError("获取热门活动失败")
+	GetActivityError          = NewSelfError("获取活动类型失败")
+	GetPopularActivityError   = NewSelfError("获取热门活动失败")
+	GetActivityTotalError     = NewSelfError("获取活动总数失败")
+	GetActivityInfoErrorType1 = NewSelfError("获取活动信息失败-发布人信息")
+	GetActivityInfoErrorType2 = NewSelfError("获取活动信息失败-活动详情信息")
+	GetActivityInfoErrorType3 = NewSelfError("获取活动信息失败-活动报名信息")
+
+	// student
+
+	GetStudentTotalError        = NewSelfError("获取学生总数失败")
+	GetCollegeStudentCountError = NewSelfError("获取学院学生总数失败")
+
+	// college
+
+	GetCollegeTotalError = NewSelfError("获取学院总数失败")
+
+	// problem
+
+	GetHelpError = NewSelfError("获取问题失败")
 )
 
 var (

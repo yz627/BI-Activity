@@ -57,12 +57,12 @@ func (d *Data) DB() *gorm.DB {
 // func() 函数返回值，返回一个函数，用于释放资源
 func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:         c.Addr,                                     // redis地址
-		ReadTimeout:  time.Duration(c.ReadTimeout),               // 读取超时时间
-		WriteTimeout: time.Duration(c.WriteTimeout),              // 写入超时时间
-		DialTimeout:  time.Second * time.Duration(c.DialTimeout), // 连接超时时间
-		PoolSize:     c.PoolSize,                                 // 连接池大小
-		Password:     c.Password,                                 // 密码
+		Addr:         c.Addr,                                      // redis地址
+		ReadTimeout:  time.Second * time.Duration(c.ReadTimeout),  // 读取超时时间
+		WriteTimeout: time.Second * time.Duration(c.WriteTimeout), // 写入超时时间
+		DialTimeout:  time.Second * time.Duration(c.DialTimeout),  // 连接超时时间
+		PoolSize:     c.PoolSize,                                  // 连接池大小
+		Password:     c.Password,                                  // 密码
 	})
 	// 测试连接
 	timeout, cancelFunc := context.WithTimeout(context.Background(), time.Second*2)

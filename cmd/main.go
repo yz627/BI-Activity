@@ -2,9 +2,10 @@ package main
 
 import (
 	"bi-activity/configs"
-	Home2 "bi-activity/controller/Home"
+	Home2 "bi-activity/controller/home"
 	"bi-activity/dao"
-	"bi-activity/service/Home"
+	"bi-activity/dao/home"
+	Home1 "bi-activity/service/home"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -12,18 +13,33 @@ import (
 func main() {
 	conf := configs.InitConfig("./configs/")
 	data, fn := dao.NewDateDao(conf.Database, logrus.New())
+	redis, fn2 := dao.NewRedisDao(conf.Redis, logrus.New())
 	defer fn()
+	defer fn2()
 
-	imgData := dao.NewImageDataCase(data, logrus.New())
-	imgService := Home.NewImageService(imgData, logrus.New())
+	imageData := home.NewImageDataCase(data, logrus.New())
+	imgService := Home1.NewImageService(imageData, logrus.New())
 	imgHandler := Home2.NewImageHandler(imgService, logrus.New())
 
-	//activityData := dao.NewActivityDataCase(data, logrus.New())
-	//activityService := Home.NewActivityService(activityData, logrus.New())
-	//activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
+	typeData := home.NewActivityTypeDataCase(data, logrus.New())
+	redisData := dao.NewRedisDataCase(redis, "", logrus.New())
+
+	activityData := home.NewActivityDataCase(data, logrus.New())
+	activityService := Home1.NewActivityService(activityData, imageData, typeData, redisData, logrus.New())
+	activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
+
+	studentData := home.NewStudentDataCase(data, logrus.New())
+	collegeDate := home.NewCollegeDataCase(data, logrus.New())
+
+	biData := Home1.NewBiDataService(activityData, studentData, collegeDate, logrus.New())
+	biHandler := Home2.NewBiDataHandler(biData, logrus.New())
 
 	r := gin.Default()
 	r.GET("/home/loop-images", imgHandler.LoopImage)
-	//r.GET("/home/type-list", activityHandler.ActivityType)
+	r.GET("/home/type-list", activityHandler.ActivityType)
+	r.GET("home/popular-activity", activityHandler.PopularActivityList)
+	r.GET("home/get-activity-detail", activityHandler.GetActivityDetail)
+	r.GET("home/bi-data", biHandler.BiData)
+	r.GET("home/Leaderboard", biHandler.BiDataLeaderboard)
 	r.Run(":8080")
 }

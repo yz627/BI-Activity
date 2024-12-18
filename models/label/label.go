@@ -1,8 +1,23 @@
 package label
 
-// 审核状态
+// 审核状态 Participate 表
+// 1 - 待审核 (学生刚报名)
+// 2 - 已录取 (活动发布者通过)
+// 3 - 未录取 (活动发布者拒绝)
+// 4 - 已取消报名 (学生主动取消)
 const (
-	AuditStatusPending  = iota + 1 // 待审核
+	ParticipateStatusPending  = iota + 1 // 待审核
+	ParticipateStatusPassed              // 已通过
+	ParticipateStatusRejected            // 已拒绝
+	ParticipateStatusCanceled            // 已取消报名
+)
+
+// 其余审核表
+// 1 - 审核中
+// 2 - 审核通过
+// 3 - 审核不通过
+const (
+	AuditStatusPending  = iota + 1 // 审核中
 	AuditStatusPassed              // 已通过
 	AuditStatusRejected            // 已拒绝
 )
@@ -40,17 +55,31 @@ const (
 	ActivityNatureCollege            // 学院活动
 )
 
-// 活动状态
+// 活动状态流转:Activity表
+// 1-审核中(刚发布的活动)
+// 2-招募中(审核通过,开始招募)
+// 3-活动开始
+// 4-活动结束
+// 5-审核失败
 const (
-	ActivityStatusNotStart   = iota + 1 // 活动状态 未开始
-	ActivityStatusProceeding            // 活动状态 进行中
-	ActivityStatusEnded                 // 活动状态 已结束
+	ActivityStatusPending     = iota + 1 // 待审核
+	ActivityStatusRecruiting             // 招募中
+	ActivityStatusProceeding             // 活动进行中
+	ActivityStatusEnded                  // 活动已结束
+	ActivityStatusAuditFailed            // 审核失败
 )
 
 // 招募限制
 const (
 	RecruitmentRestrictionUnlimited = iota + 1 // 招募人员无限制
 	RecruitmentRestrictionCollege              // 学院内招募
+)
+
+var (
+	RecruitmentRestriction = map[int]string{
+		RecruitmentRestrictionUnlimited: "招募人员无限制",
+		RecruitmentRestrictionCollege:   "学院内招募",
+	}
 )
 
 // 管理员权限

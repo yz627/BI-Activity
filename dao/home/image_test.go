@@ -1,7 +1,8 @@
-package dao
+package home
 
 import (
 	"bi-activity/configs"
+	"bi-activity/dao"
 	"bi-activity/response"
 	"bi-activity/response/errors"
 	"github.com/sirupsen/logrus"
@@ -10,7 +11,7 @@ import (
 
 func TestImageDataCase_GetImageByType(t *testing.T) {
 	conf := configs.InitConfig("./../configs/")
-	data, fn := NewDateDao(conf.Database, logrus.New())
+	data, fn := dao.NewDateDao(conf.Database, logrus.New())
 	defer fn()
 
 	imageDataCase := NewImageDataCase(data, logrus.New())

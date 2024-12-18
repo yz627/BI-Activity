@@ -1,14 +1,15 @@
-package dao
+package home
 
 import (
 	"bi-activity/configs"
+	"bi-activity/dao"
 	"github.com/sirupsen/logrus"
 	"testing"
 )
 
 func TestActivityDataCase_GetActivityListByID(t *testing.T) {
 	conf := configs.InitConfig("./../configs/")
-	data, fn := NewDateDao(conf.Database, logrus.New())
+	data, fn := dao.NewDateDao(conf.Database, logrus.New())
 	defer fn()
 
 	activityDataCase := NewActivityDataCase(data, logrus.New())
