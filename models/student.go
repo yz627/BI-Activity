@@ -19,4 +19,7 @@ type Student struct {
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`
+	// 多表信息
+	College       College `gorm:"foreignKey:CollegeID" json:"college"`
+	StudentAvatar Image   `gorm:"foreignKey:StudentAvatarID" json:"student_avatar"`
 }

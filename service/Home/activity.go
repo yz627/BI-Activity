@@ -34,21 +34,11 @@ func (as *ActivityService) ActivityAllTypes(ctx context.Context) (list []*Activi
 		return nil, errors.GetActivityTypeError
 	}
 
-	// 获取图片url
-	listID := make([]uint, 0, len(resp))
 	for _, item := range resp {
-		listID = append(listID, item.ImageID)
-	}
-	listUrl, err := as.ir.GetImageUrlsByID(ctx, listID)
-	if err != nil {
-		return nil, errors.GetImageError
-	}
-
-	for i, item := range resp {
 		list = append(list, &ActivityType{
 			ID:       item.ID,
 			TypeName: item.TypeName,
-			Url:      listUrl[i],
+			Url:      item.Image.URL,
 		})
 	}
 	return list, nil
@@ -57,8 +47,7 @@ func (as *ActivityService) ActivityAllTypes(ctx context.Context) (list []*Activi
 // PopularActivity 获取热门活动
 // 只需要返回部分信息
 // 因为热门活动只展示卡片信息，卡片信息只需要展示活动名称和图片即可
-// TODO: 优化返回信息
-func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activity, err error) {
+func (as *ActivityService) PopularActivity(ctx context.Context) (list []*ActivityCard, err error) {
 	result, err := as.rr.GetPopularActivities(ctx)
 	if err != nil {
 		return nil, errors.GetPopularActivityError
@@ -72,21 +61,12 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	}
 
 	// 获取活动信息
-	activityList, err := as.ar.GetActivityListByID(ctx, activityID)
+	// TODO: 活动发布者在两个表中，必须一个一个获取，无法一次全部查询
+	_, err = as.ar.GetActivityListByID(ctx, activityID)
 	if err != nil {
 		return nil, errors.GetActivityError
 	}
 
-	// 获取图片url
-	imageID := make([]uint, 0, len(activityList))
-	for _, item := range activityList {
-		imageID = append(imageID, item.ActivityImageID)
-	}
-	_, err = as.ir.GetImageUrlsByID(ctx, imageID)
-	if err != nil {
-		return nil, errors.GetImageError
-	}
-
-	// 获取活动
-	return nil, nil
+	// 获取活动发布人信息
+	panic("implement me")
 }

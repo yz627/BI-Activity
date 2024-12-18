@@ -18,12 +18,12 @@ func main() {
 	imgService := Home.NewImageService(imgData, logrus.New())
 	imgHandler := Home2.NewImageHandler(imgService, logrus.New())
 
-	activityData := dao.NewActivityDataCase(data, logrus.New())
-	activityService := Home.NewActivityService(activityData, logrus.New())
-	activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
+	//activityData := dao.NewActivityDataCase(data, logrus.New())
+	//activityService := Home.NewActivityService(activityData, logrus.New())
+	//activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
 
 	r := gin.Default()
 	r.GET("/home/loop-images", imgHandler.LoopImage)
-	r.GET("/home/type-list", activityHandler.ActivityType)
+	//r.GET("/home/type-list", activityHandler.ActivityType)
 	r.Run(":8080")
 }
