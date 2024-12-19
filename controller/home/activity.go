@@ -65,6 +65,11 @@ func (h *ActivityHandler) SearchActivity(c *gin.Context) {
 	panic("implement me")
 }
 
+func (h *ActivityHandler) MyActivity(c *gin.Context) {
+	// TODO: 我的活动
+	panic("implement me")
+}
+
 func (h *ActivityHandler) ParticipateActivity(c *gin.Context) {
 	// TODO: 参与活动
 	panic("implement me")

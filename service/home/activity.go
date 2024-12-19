@@ -148,7 +148,39 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, activityID str
 	}, nil
 }
 
-func (as *ActivityService) SearchActivity(ctx context.Context, keyword string) (list []*ActivityCard, err error) {
+func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActivityParams) (list []*ActivityCard, err error) {
 	// TODO: 搜索活动
+	panic("implement me")
+}
+
+// isValidActivityStatus 判断活动状态是否合法
+func (as *ActivityService) isValidActivityStatus(status int) bool {
+	switch status {
+	case 0:
+		return true
+	case label.ActivityStatusProceeding, label.ActivityStatusRecruiting, label.ActivityStatusEnded:
+		return true
+	default:
+		return false
+	}
+}
+
+// isValidActivityNature 判断活动性质是否合法
+func (as *ActivityService) isValidActivityNature(nature int) bool {
+	switch nature {
+	case 0:
+		return true
+	case label.ActivityNatureStudent, label.ActivityNatureCollege:
+		return true
+	default:
+		return false
+	}
+}
+
+// isValidActivityDate 判断活动日期是否合法
+func (as *ActivityService) isValidActivityDate(date string) bool {
+	// 1. 是合法的日期格式
+	// 2. 活动开始时间在结束时间之前
+	// TODO： 待实现
 	panic("implement me")
 }
