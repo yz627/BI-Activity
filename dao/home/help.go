@@ -24,7 +24,9 @@ func NewHelpDataCase(db *dao.Data, logger *logrus.Logger) HelpRepo {
 }
 
 func (h *helpDataCase) GetHelpList(ctx context.Context) (list []*models.Problem, err error) {
-	err = h.db.DB().WithContext(ctx).Select("name", "answer").Find(&list).Error
+	err = h.db.DB().WithContext(ctx).
+		Select("name", "answer").
+		Find(&list).Error
 	if err != nil {
 		return nil, err
 	}

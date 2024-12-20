@@ -51,8 +51,13 @@ const (
 
 // 活动性质
 const (
-	ActivityNatureStudent = iota + 1 // 学生活动 || 我的发布
-	ActivityNatureCollege            // 学院活动 || 我的参与
+	ActivityNatureStudent = iota + 1 // 学生活动
+	ActivityNatureCollege            // 学院活动
+)
+
+const (
+	ActivityMyPublish     = iota + 1 // 我的发布
+	ActivityMyParticipate            // 我的参与
 )
 
 // 活动状态流转:Activity表

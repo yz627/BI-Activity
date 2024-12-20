@@ -51,6 +51,9 @@ type Activity struct {
 	PublisherName    string // 活动发布者名称
 	CreatedAt        string // 活动发布时间
 	ActivityStatus   int    // 活动状态：
+
+	// 报名状态
+	ParticipateStatus int
 }
 
 // ActivityType service层返回的ActivityType结构体

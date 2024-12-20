@@ -53,9 +53,12 @@ func (h *ActivityHandler) GetActivityDetail(c *gin.Context) {
 		return
 	}
 
-	id, _ := strconv.Atoi(activityID)
+	stuID := c.Query("id")
 
-	activity, err := h.srv.GetActivityDetail(c.Request.Context(), uint(id))
+	aID, _ := strconv.Atoi(activityID)
+	sID, _ := strconv.Atoi(stuID)
+
+	activity, err := h.srv.GetActivityDetail(c.Request.Context(), uint(aID), uint(sID))
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
 		return
@@ -92,17 +95,19 @@ func (h *ActivityHandler) paramsParse(c *gin.Context) home.SearchActivityParams 
 	typeID := c.Query("type_id")
 	start := c.Query("start")
 	end := c.Query("end")
-	publisherID := c.GetUint("user_id")
+	// TODO: 更改获取参数的方式
+	publisherID := c.Query("id")
 
 	natureNum, _ := strconv.Atoi(nature)
 	statusNum, _ := strconv.Atoi(status)
 	typeIDNum, _ := strconv.Atoi(typeID)
 	pageNum, _ := strconv.Atoi(page)
+	id, _ := strconv.Atoi(publisherID)
 
 	return home.SearchActivityParams{
-		ActivityPublisherID: publisherID,
-		ActivityDateEnd:     start,
-		ActivityDateStart:   end,
+		ActivityPublisherID: uint(id),
+		ActivityDateEnd:     end,
+		ActivityDateStart:   start,
 		ActivityNature:      natureNum,
 		ActivityStatus:      statusNum,
 		ActivityTypeID:      uint(typeIDNum),
@@ -112,6 +117,18 @@ func (h *ActivityHandler) paramsParse(c *gin.Context) home.SearchActivityParams 
 }
 
 func (h *ActivityHandler) ParticipateActivity(c *gin.Context) {
-	// TODO: 参与活动
-	panic("implement me")
+	// TODO: 更改获取参数的方式
+	stuID := c.Query("id")
+	activityID := c.Query("activity_id")
+
+	sID, _ := strconv.Atoi(stuID)
+	aID, _ := strconv.Atoi(activityID)
+
+	err := h.srv.ParticipateActivity(c.Request.Context(), uint(sID), uint(aID))
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
+	}
+
+	c.JSON(response.Success())
 }

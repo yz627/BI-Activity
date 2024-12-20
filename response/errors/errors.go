@@ -58,6 +58,13 @@ var (
 	// problem
 
 	GetHelpError = NewSelfError("获取问题失败")
+
+	// participant
+
+	GetParticipateStatusError     = NewSelfError("获取报名状态失败")
+	ParticipateActivityErrorType1 = NewSelfError("报名失败-已经报名该活动")
+	ParticipateActivityErrorType2 = NewSelfError("报名失败-报名审核中")
+	ParticipateActivityErrorType3 = NewSelfError("报名失败-服务器错误")
 )
 
 var (

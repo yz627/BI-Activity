@@ -26,9 +26,11 @@ func NewActivityTypeDataCase(db *dao.Data, logger *logrus.Logger) ActivityTypeRe
 }
 
 func (a *activityTypeDataCase) GetActivityAllTypes(ctx context.Context) (list []*models.ActivityType, err error) {
-	err = a.db.DB().WithContext(ctx).Preload("Image", func(db *gorm.DB) *gorm.DB {
-		return db.Select("id", "url")
-	}).Select("id", "type_name", "image_id").Find(&list).Error
+	err = a.db.DB().WithContext(ctx).
+		Preload("Image", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "url")
+		}).Select("id", "type_name", "image_id").
+		Find(&list).Error
 	if err != nil {
 		return nil, err
 	}

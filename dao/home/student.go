@@ -28,7 +28,9 @@ func NewStudentDataCase(db *dao.Data, logger *logrus.Logger) StudentRepo {
 
 func (s *studentDataCase) GetStudentTotal(ctx context.Context) (int, error) {
 	var total int64
-	err := s.db.DB().WithContext(ctx).Model(&models.Student{}).Count(&total).Error
+	err := s.db.DB().WithContext(ctx).
+		Model(&models.Student{}).
+		Count(&total).Error
 	if err != nil {
 		return -1, err
 	}

@@ -28,7 +28,8 @@ func NewCollegeDataCase(db *dao.Data, logger *logrus.Logger) CollegeRepo {
 
 func (c *collegeDataCase) GetCollegeTotal(ctx context.Context) (int, error) {
 	var total int64
-	err := c.db.DB().WithContext(ctx).Model(&models.College{}).Count(&total).Error
+	err := c.db.DB().WithContext(ctx).
+		Model(&models.College{}).Count(&total).Error
 	if err != nil {
 		return -1, err
 	}
@@ -38,7 +39,9 @@ func (c *collegeDataCase) GetCollegeTotal(ctx context.Context) (int, error) {
 
 func (c *collegeDataCase) GetCollegeNameByID(ctx context.Context, id uint) (string, error) {
 	var college models.College
-	err := c.db.DB().WithContext(ctx).Select("college_name").Where("id = ?", id).Find(&college).Error
+	err := c.db.DB().WithContext(ctx).
+		Select("college_name").
+		Where("id = ?", id).Find(&college).Error
 	if err != nil {
 		return "", err
 	}

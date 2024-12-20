@@ -98,15 +98,17 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	return list, nil
 }
 
-func (as *ActivityService) GetActivityDetail(ctx context.Context, id uint) (*Activity, error) {
-	if id <= 0 {
+func (as *ActivityService) GetActivityDetail(ctx context.Context, aID, sID uint) (*Activity, error) {
+	// TODO：添加活动参加显示，如果已经成功参加活动，需要在活动详情中显示
+
+	if aID <= 0 {
 		return nil, errors.ParameterNotValid
 	}
 	// 更新浏览量
-	_ = as.rr.UpdateActivityViewCount(ctx, id)
+	_ = as.rr.UpdateActivityViewCount(ctx, aID)
 
 	// 获取活动信息
-	info, err := as.ar.GetActivityInfoByID(ctx, id)
+	info, err := as.ar.GetActivityInfoByID(ctx, aID)
 	if err != nil {
 		return nil, errors.GetActivityInfoErrorType2
 	}
@@ -121,6 +123,12 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, id uint) (*Act
 	enrollNumber, err := as.ar.GetActivityEnrollNumberByID(ctx, info.ID)
 	if err != nil {
 		return nil, errors.GetActivityInfoErrorType3
+	}
+
+	// 获取报名状态
+	status := 0
+	if sID > 0 {
+		status, _ = as.ar.GetParticipateStatus(ctx, sID, aID)
 	}
 
 	return &Activity{
@@ -145,6 +153,7 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, id uint) (*Act
 		PublisherName:            publisherName,
 		CreatedAt:                info.CreatedAt.Format(time.DateTime),
 		ActivityStatus:           info.ActivityStatus,
+		ParticipateStatus:        status,
 	}, nil
 }
 
@@ -152,6 +161,8 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 	if err := as.isValidSearchParams(params); err != nil {
 		return nil, err
 	}
+
+	as.log.Debugf("SearchActivity params: %+v", params)
 
 	daoParams := home.SearchParams{
 		ActivityPublisherID: params.ActivityPublisherID,
@@ -221,7 +232,12 @@ func (as *ActivityService) isValidSearchParams(params SearchActivityParams) erro
 	}
 
 	// 活动标签ID合法
-	if params.ActivityTypeID <= 0 {
+	if params.ActivityTypeID < 0 {
+		return errors.ParameterNotValid
+	}
+
+	// 页数判断
+	if params.Page < 1 {
 		return errors.ParameterNotValid
 	}
 
@@ -255,16 +271,59 @@ func (as *ActivityService) isValidActivityNature(nature int) bool {
 // isValidActivityDate 判断活动日期是否合法
 // 前端限制返回日期不为空，默认为当前时间
 func (as *ActivityService) isValidActivityDate(start, end string) bool {
-	// 1. 是合法的日期格式
-	parse1, err := time.Parse(time.DateOnly, start)
-	if err != nil {
-		return false
+	if start != "" && end != "" {
+		// 1. 是合法的日期格式
+		parse1, err := time.Parse(time.DateOnly, start)
+		if err != nil {
+			return false
+		}
+
+		parse2, err := time.Parse(time.DateOnly, end)
+		if err != nil {
+			return false
+		}
+		// 2. 活动开始时间在结束时间之前
+		return parse1.Equal(parse2) || parse1.Before(parse2)
 	}
 
-	parse2, err := time.Parse(time.DateOnly, end)
-	if err != nil {
-		return false
+	if start == "" && end != "" {
+		_, err := time.Parse(time.DateOnly, end)
+		if err != nil {
+			return false
+		}
 	}
-	// 2. 活动开始时间在结束时间之前
-	return parse1.Equal(parse2) || parse1.Before(parse2)
+
+	if end == "" && start != "" {
+		_, err := time.Parse(time.DateOnly, start)
+		if err != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func (as *ActivityService) ParticipateActivity(ctx context.Context, stuID, activityID uint) error {
+	if stuID <= 0 || activityID <= 0 {
+		return errors.ParameterNotValid
+	}
+
+	// 判断是否已经报名
+	status, err := as.ar.GetParticipateStatus(ctx, stuID, activityID)
+	if err != nil {
+		return errors.GetParticipateStatusError
+	}
+
+	switch status {
+	case label.ParticipateStatusPassed:
+		return errors.ParticipateActivityErrorType1
+	case label.ParticipateStatusPending:
+		return errors.ParticipateActivityErrorType2
+	}
+
+	// 进行报名
+	err = as.ar.AddParticipate(ctx, stuID, activityID)
+	if err != nil {
+		return errors.ParticipateActivityErrorType3
+	}
+	return nil
 }
