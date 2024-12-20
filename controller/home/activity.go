@@ -6,6 +6,7 @@ import (
 	"bi-activity/service/home"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"strconv"
 )
 
 type ActivityHandler struct {
@@ -51,7 +52,10 @@ func (h *ActivityHandler) GetActivityDetail(c *gin.Context) {
 		c.JSON(response.Fail(errors.ParameterNotValid))
 		return
 	}
-	activity, err := h.srv.GetActivityDetail(c.Request.Context(), activityID)
+
+	id, _ := strconv.Atoi(activityID)
+
+	activity, err := h.srv.GetActivityDetail(c.Request.Context(), uint(id))
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
 		return
@@ -61,13 +65,50 @@ func (h *ActivityHandler) GetActivityDetail(c *gin.Context) {
 }
 
 func (h *ActivityHandler) SearchActivity(c *gin.Context) {
-	// TODO: 搜索活动
-	panic("implement me")
+	list, err := h.srv.SearchActivity(c.Request.Context(), h.paramsParse(c))
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
+	}
+
+	c.JSON(response.Success(list))
 }
 
 func (h *ActivityHandler) MyActivity(c *gin.Context) {
-	// TODO: 我的活动
-	panic("implement me")
+	list, err := h.srv.SearchActivity(c.Request.Context(), h.paramsParse(c))
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
+	}
+
+	c.JSON(response.Success(list))
+}
+
+func (h *ActivityHandler) paramsParse(c *gin.Context) home.SearchActivityParams {
+	nature := c.Query("nature")
+	status := c.Query("status")
+	keyword := c.Query("keyword")
+	page := c.Query("page")
+	typeID := c.Query("type_id")
+	start := c.Query("start")
+	end := c.Query("end")
+	publisherID := c.GetUint("user_id")
+
+	natureNum, _ := strconv.Atoi(nature)
+	statusNum, _ := strconv.Atoi(status)
+	typeIDNum, _ := strconv.Atoi(typeID)
+	pageNum, _ := strconv.Atoi(page)
+
+	return home.SearchActivityParams{
+		ActivityPublisherID: publisherID,
+		ActivityDateEnd:     start,
+		ActivityDateStart:   end,
+		ActivityNature:      natureNum,
+		ActivityStatus:      statusNum,
+		ActivityTypeID:      uint(typeIDNum),
+		Keyword:             keyword,
+		Page:                pageNum,
+	}
 }
 
 func (h *ActivityHandler) ParticipateActivity(c *gin.Context) {

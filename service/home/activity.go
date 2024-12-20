@@ -3,12 +3,14 @@ package home
 import (
 	"bi-activity/dao"
 	"bi-activity/dao/home"
+	"bi-activity/models"
 	"bi-activity/models/label"
 	"bi-activity/response/errors"
 	"bi-activity/utils"
 	"context"
 	"github.com/sirupsen/logrus"
 	"strconv"
+	"time"
 )
 
 type ActivityService struct {
@@ -96,17 +98,15 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	return list, nil
 }
 
-func (as *ActivityService) GetActivityDetail(ctx context.Context, activityID string) (*Activity, error) {
-	if activityID == "" {
+func (as *ActivityService) GetActivityDetail(ctx context.Context, id uint) (*Activity, error) {
+	if id <= 0 {
 		return nil, errors.ParameterNotValid
 	}
-	id, _ := strconv.Atoi(activityID)
-
 	// 更新浏览量
-	_ = as.rr.UpdateActivityViewCount(ctx, uint(id))
+	_ = as.rr.UpdateActivityViewCount(ctx, id)
 
 	// 获取活动信息
-	info, err := as.ar.GetActivityInfoByID(ctx, uint(id))
+	info, err := as.ar.GetActivityInfoByID(ctx, id)
 	if err != nil {
 		return nil, errors.GetActivityInfoErrorType2
 	}
@@ -143,14 +143,89 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, activityID str
 		ActivityName:             info.ActivityName,
 		ActivityImageUrl:         info.ActivityImage.URL,
 		PublisherName:            publisherName,
-		CreatedAt:                info.CreatedAt.Format("2006-01-02 15:04:05"),
+		CreatedAt:                info.CreatedAt.Format(time.DateTime),
 		ActivityStatus:           info.ActivityStatus,
 	}, nil
 }
 
 func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActivityParams) (list []*ActivityCard, err error) {
-	// TODO: 搜索活动
-	panic("implement me")
+	if err := as.isValidSearchParams(params); err != nil {
+		return nil, err
+	}
+
+	daoParams := home.SearchParams{
+		ActivityPublisherID: params.ActivityPublisherID,
+		ActivityDateEnd:     params.ActivityDateEnd,
+		ActivityDateStart:   params.ActivityDateStart,
+		ActivityNature:      params.ActivityNature,
+		ActivityStatus:      params.ActivityStatus,
+		ActivityTypeID:      params.ActivityTypeID,
+		Keyword:             params.Keyword,
+		Page:                params.Page,
+	}
+
+	var activities []*models.Activity
+	switch params.ActivityPublisherID {
+	case 0: // 全部活动
+		activities, err = as.ar.SearchActivity(ctx, daoParams)
+	default: // 我的活动
+		activities, err = as.ar.SearchMyActivity(ctx, daoParams)
+	}
+
+	if err != nil {
+		return nil, errors.SearchActivityError
+	}
+
+	for _, item := range activities {
+		publisherName, err := as.ar.GetPublisherNameByID(ctx, item.ID)
+		if err != nil {
+			return nil, errors.GetActivityInfoErrorType1
+		}
+
+		remainingNumber, err := as.ar.GetActivityRemainingNumberByID(ctx, item.ID)
+		if err != nil {
+			return nil, errors.GetActivityInfoErrorType4
+		}
+
+		list = append(list, &ActivityCard{
+			ID:                    item.ID,
+			ActivityName:          item.ActivityName,
+			ActivityDate:          utils.TransTimeToDate(item.ActivityDate),
+			StartTime:             utils.TransTimeToHour(item.StartTime),
+			EndTime:               utils.TransTimeToHour(item.EndTime),
+			ActivityTypeName:      item.ActivityType.TypeName,
+			ActivityTypeImageUrl:  item.ActivityType.Image.URL,
+			ActivityPublisherName: publisherName,
+			RemainingNumber:       remainingNumber,
+		})
+	}
+
+	return list, nil
+}
+
+// 判断是合法的查询条件
+func (as *ActivityService) isValidSearchParams(params SearchActivityParams) error {
+	// 活动状态判断
+	if !as.isValidActivityStatus(params.ActivityStatus) {
+		return errors.SearchActivityParamsErrorType1
+	}
+
+	// 活动性质判断
+	if !as.isValidActivityNature(params.ActivityNature) {
+		return errors.SearchActivityParamsErrorType2
+	}
+
+	// 判断时间是否合法
+	if !as.isValidActivityDate(params.ActivityDateStart, params.ActivityDateEnd) {
+		return errors.SearchActivityParamsErrorType3
+	}
+
+	// 活动标签ID合法
+	if params.ActivityTypeID <= 0 {
+		return errors.ParameterNotValid
+	}
+
+	return nil
 }
 
 // isValidActivityStatus 判断活动状态是否合法
@@ -178,9 +253,18 @@ func (as *ActivityService) isValidActivityNature(nature int) bool {
 }
 
 // isValidActivityDate 判断活动日期是否合法
-func (as *ActivityService) isValidActivityDate(date string) bool {
+// 前端限制返回日期不为空，默认为当前时间
+func (as *ActivityService) isValidActivityDate(start, end string) bool {
 	// 1. 是合法的日期格式
+	parse1, err := time.Parse(time.DateOnly, start)
+	if err != nil {
+		return false
+	}
+
+	parse2, err := time.Parse(time.DateOnly, end)
+	if err != nil {
+		return false
+	}
 	// 2. 活动开始时间在结束时间之前
-	// TODO： 待实现
-	panic("implement me")
+	return parse1.Equal(parse2) || parse1.Before(parse2)
 }

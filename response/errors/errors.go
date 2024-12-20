@@ -39,6 +39,12 @@ var (
 	GetActivityInfoErrorType1 = NewSelfError("获取活动信息失败-发布人信息")
 	GetActivityInfoErrorType2 = NewSelfError("获取活动信息失败-活动详情信息")
 	GetActivityInfoErrorType3 = NewSelfError("获取活动信息失败-活动报名信息")
+	GetActivityInfoErrorType4 = NewSelfError("获取活动信息失败-活动报名信息")
+
+	SearchActivityError            = NewSelfError("查询活动失败")
+	SearchActivityParamsErrorType1 = NewSelfError("查询条件错误: 活动状态错误")
+	SearchActivityParamsErrorType2 = NewSelfError("查询条件错误: 活动性质错误")
+	SearchActivityParamsErrorType3 = NewSelfError("查询条件错误: 活动日期非法")
 
 	// student
 
