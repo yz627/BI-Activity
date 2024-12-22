@@ -159,8 +159,12 @@ func (a *activityDataCase) GetActivityRemainingNumberByID(ctx context.Context, i
 
 func (a *activityDataCase) GetActivityTotal(ctx context.Context) (int, error) {
 	var total int64
+	// 1. 活动经过审核并且审核成功
+	// 2. 活动未被删除 gorm自动过滤
 	err := a.db.DB().WithContext(ctx).
-		Model(&models.Activity{}).Count(&total).Error
+		Model(&models.Activity{}).
+		Where("activity_status in ?", []int{label.ActivityStatusRecruiting, label.ActivityStatusProceeding, label.ActivityStatusEnded}).
+		Count(&total).Error
 	if err != nil {
 		return -1, nil
 	}
@@ -189,7 +193,7 @@ func (a *activityDataCase) SearchMyActivity(ctx context.Context, params SearchPa
 	// 如果活动性质为2： 需要从活动参与表中查找活动id，再从活动表中查询活动
 	// 如果为0： 需要都查找活动
 
-	// TODO: 提取到业务层处理
+	// TODO: 数据的处理，这段提取到业务层，更改dao层接口函数
 	var listID []uint
 	switch params.ActivityNature {
 	case label.ActivityMyPublish:
@@ -215,8 +219,8 @@ func (a *activityDataCase) SearchMyActivity(ctx context.Context, params SearchPa
 			return nil, err
 		}
 
-		listID = append(list1, list2...)
 		// TODO: 去除重复的ID
+		listID = append(list1, list2...)
 	}
 
 	query := a.db.DB().WithContext(ctx).

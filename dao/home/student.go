@@ -28,6 +28,7 @@ func NewStudentDataCase(db *dao.Data, logger *logrus.Logger) StudentRepo {
 
 func (s *studentDataCase) GetStudentTotal(ctx context.Context) (int, error) {
 	var total int64
+	// 1. 学生状态有效（未被删除） gorm自动过滤
 	err := s.db.DB().WithContext(ctx).
 		Model(&models.Student{}).
 		Count(&total).Error

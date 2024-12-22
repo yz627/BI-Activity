@@ -28,8 +28,10 @@ func NewCollegeDataCase(db *dao.Data, logger *logrus.Logger) CollegeRepo {
 
 func (c *collegeDataCase) GetCollegeTotal(ctx context.Context) (int, error) {
 	var total int64
+	// 1. 学院状态有效（未被删除） gorm自动过滤
 	err := c.db.DB().WithContext(ctx).
-		Model(&models.College{}).Count(&total).Error
+		Model(&models.College{}).
+		Count(&total).Error
 	if err != nil {
 		return -1, err
 	}
@@ -41,7 +43,8 @@ func (c *collegeDataCase) GetCollegeNameByID(ctx context.Context, id uint) (stri
 	var college models.College
 	err := c.db.DB().WithContext(ctx).
 		Select("college_name").
-		Where("id = ?", id).Find(&college).Error
+		Where("id = ?", id).
+		Find(&college).Error
 	if err != nil {
 		return "", err
 	}

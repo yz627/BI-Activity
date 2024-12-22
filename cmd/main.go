@@ -6,6 +6,7 @@ import (
 	"bi-activity/dao"
 	"bi-activity/dao/home"
 	Home1 "bi-activity/service/home"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -34,15 +35,32 @@ func main() {
 	biData := Home1.NewBiDataService(activityData, studentData, collegeDate, logrus.New())
 	biHandler := Home2.NewBiDataHandler(biData, logrus.New())
 
+	helpData := home.NewHelpDataCase(data, logrus.New())
+	helpService := Home1.NewHelpService(helpData, logrus.New())
+	helpHandler := Home2.NewHelpHandler(helpService, logrus.New())
+
 	r := gin.Default()
-	r.GET("/home/loop-images", imgHandler.LoopImage)
-	r.GET("/home/type-list", activityHandler.ActivityType)
-	r.GET("home/popular-activity", activityHandler.PopularActivityList)
-	r.GET("home/get-activity-detail", activityHandler.GetActivityDetail)
-	r.GET("home/my-activity", activityHandler.MyActivity)
-	r.GET("home/participate-activity", activityHandler.ParticipateActivity)
-	r.GET("home/search", activityHandler.SearchActivity)
-	r.GET("home/bi-data", biHandler.BiData)
-	r.GET("home/Leaderboard", biHandler.BiDataLeaderboard)
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowCredentials: true,
+
+		AllowHeaders: []string{"Content-Type", "Authorization", "X-Requested-With", "X-HTTP-Method-Override", "User-Agent", "Content-Length"},
+	}))
+
+	r.GET("api/home/loop-images", imgHandler.LoopImage)
+	r.GET("api/home/type-list", activityHandler.ActivityType)
+	r.GET("api/home/popular-list", activityHandler.PopularActivityList)
+	r.GET("api/home/bi-data", biHandler.BiData)
+	r.GET("api/home/leaderboard", biHandler.BiDataLeaderboard)
+
+	r.GET("api/search/params", activityHandler.SearchActivity)
+	r.GET("api/search/get-activity-detail", activityHandler.GetActivityDetail)
+
+	r.GET("api/my-activity/params", activityHandler.MyActivity)
+
+	r.GET("api/activity/participate-activity", activityHandler.ParticipateActivity)
+
+	r.GET("api/help/list", helpHandler.HelpList)
 	r.Run(":8080")
 }
