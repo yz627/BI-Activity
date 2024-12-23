@@ -16,7 +16,7 @@ type activityHelperRepo interface {
 	activityFromKeyword(query *gorm.DB, keyword string) *gorm.DB
 	activityFromPageSize(query *gorm.DB, page, size int) *gorm.DB
 
-	searchActivity(query *gorm.DB, params SearchParams) (list []*models.Activity, err error)
+	searchActivity(query *gorm.DB, params SearchParams) (list []*models.Activity, count int64, err error)
 	myPublishActivityIDList(ctx context.Context, publisherID uint) (list []uint, err error)
 	myParticipateActivityIDList(ctx context.Context, studentID uint) (list []uint, err error)
 }
@@ -32,7 +32,7 @@ func (a *activityDataCase) activityFromActivityNature(query *gorm.DB, nature int
 
 func (a *activityDataCase) activityFromActivityType(query *gorm.DB, typeID uint) *gorm.DB {
 	if typeID > 0 {
-		return query.Where("activity_type = ?", typeID)
+		return query.Where("activity_type_id = ?", typeID)
 	}
 
 	return query
@@ -79,13 +79,19 @@ func (a *activityDataCase) activityFromPageSize(query *gorm.DB, page, size int) 
 	return query.Offset(offset).Limit(size)
 }
 
-func (a *activityDataCase) searchActivity(query *gorm.DB, params SearchParams) (list []*models.Activity, err error) {
+func (a *activityDataCase) searchActivity(query *gorm.DB, params SearchParams) (list []*models.Activity, count int64, err error) {
 	query = a.activityFromActivityNature(query, params.ActivityNature)
 	query = a.activityFromActivityType(query, params.ActivityTypeID)
 	query = a.activityFromActivityStatus(query, params.ActivityStatus)
 	query = a.activityFromTime(query, params.ActivityDateStart, params.ActivityDateEnd)
 	query = a.activityFromKeyword(query, params.Keyword)
 	query = a.activityFromPageSize(query, params.Page, PageSize)
+
+	// 统计总数
+	err = query.Count(&count).Error
+	if err != nil {
+		return nil, -1, err
+	}
 
 	err = query.Preload("ActivityType", func(db *gorm.DB) *gorm.DB {
 		return db.Select("id", "type_name", "image_id").
@@ -96,10 +102,10 @@ func (a *activityDataCase) searchActivity(query *gorm.DB, params SearchParams) (
 		return db.Select("id", "url")
 	}).Find(&list).Error
 	if err != nil {
-		return nil, err
+		return nil, -1, err
 	}
 
-	return list, nil
+	return list, count, nil
 }
 
 func (a *activityDataCase) myPublishActivityIDList(ctx context.Context, publisherID uint) (list []uint, err error) {

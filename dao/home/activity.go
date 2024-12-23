@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var PageSize = 12
+var PageSize = 9
 
 type ActivityRepo interface {
 	// GetActivityInfoByID 根据活动id获取活动信息
@@ -25,9 +25,9 @@ type ActivityRepo interface {
 	// GetActivityTotal 获取活动总数
 	GetActivityTotal(ctx context.Context) (int, error)
 	// SearchActivity 搜索活动
-	SearchActivity(ctx context.Context, params SearchParams) ([]*models.Activity, error)
+	SearchActivity(ctx context.Context, params SearchParams) ([]*models.Activity, int64, error)
 	// SearchMyActivity 搜索我的活动
-	SearchMyActivity(ctx context.Context, params SearchParams) ([]*models.Activity, error)
+	SearchMyActivity(ctx context.Context, params SearchParams) ([]*models.Activity, int64, error)
 
 	// GetParticipateStatus 获取参与状态
 	GetParticipateStatus(ctx context.Context, stuID, activityID uint) (int, error)
@@ -182,13 +182,13 @@ func (a *activityDataCase) GetActivityTotal(ctx context.Context) (int, error) {
 //	Page              int    // 页码
 //}
 
-func (a *activityDataCase) SearchActivity(ctx context.Context, params SearchParams) ([]*models.Activity, error) {
+func (a *activityDataCase) SearchActivity(ctx context.Context, params SearchParams) ([]*models.Activity, int64, error) {
 	query := a.db.DB().WithContext(ctx).Model(&models.Activity{})
 	// 搜索条件
 	return a.searchActivity(query, params)
 }
 
-func (a *activityDataCase) SearchMyActivity(ctx context.Context, params SearchParams) ([]*models.Activity, error) {
+func (a *activityDataCase) SearchMyActivity(ctx context.Context, params SearchParams) ([]*models.Activity, int64, error) {
 	// 如果活动性质为1： 需要从活动表中查询活动性质为学生活动 且活动发布者id为当前用户id
 	// 如果活动性质为2： 需要从活动参与表中查找活动id，再从活动表中查询活动
 	// 如果为0： 需要都查找活动
@@ -199,24 +199,24 @@ func (a *activityDataCase) SearchMyActivity(ctx context.Context, params SearchPa
 	case label.ActivityMyPublish:
 		list, err := a.myPublishActivityIDList(ctx, params.ActivityPublisherID)
 		if err != nil {
-			return nil, err
+			return nil, -1, err
 		}
 
 		listID = list
 	case label.ActivityMyParticipate:
 		list, err := a.myParticipateActivityIDList(ctx, params.ActivityPublisherID)
 		if err != nil {
-			return nil, err
+			return nil, -1, err
 		}
 		listID = list
 	default:
 		list1, err := a.myPublishActivityIDList(ctx, params.ActivityPublisherID)
 		if err != nil {
-			return nil, err
+			return nil, -1, err
 		}
 		list2, err := a.myParticipateActivityIDList(ctx, params.ActivityPublisherID)
 		if err != nil {
-			return nil, err
+			return nil, -1, err
 		}
 
 		// TODO: 去除重复的ID

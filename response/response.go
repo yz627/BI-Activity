@@ -58,3 +58,11 @@ func Success(data ...interface{}) (int, *Response) {
 	}
 	return http.StatusOK, res
 }
+
+func SuccessWithMulDate(data ...interface{}) (int, *Response) {
+	res := &Response{
+		Status: http.StatusOK,
+	}
+	res.Data = data
+	return http.StatusOK, res
+}

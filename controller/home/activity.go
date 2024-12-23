@@ -68,52 +68,59 @@ func (h *ActivityHandler) GetActivityDetail(c *gin.Context) {
 }
 
 func (h *ActivityHandler) SearchActivity(c *gin.Context) {
-	list, err := h.srv.SearchActivity(c.Request.Context(), h.paramsParse(c))
+	params, err := h.paramsParse(c)
+	if err != nil {
+		h.log.Error(err)
+		c.JSON(response.Fail(errors.ParameterNotValid))
+	}
+	list, count, err := h.srv.SearchActivity(c.Request.Context(), home.SearchActivityParams{
+		ActivityDateEnd:   params.ActivityDateEnd,
+		ActivityDateStart: params.ActivityDateStart,
+		ActivityNature:    params.ActivityNature,
+		ActivityStatus:    params.ActivityStatus,
+		ActivityTypeID:    params.ActivityTypeID,
+		Keyword:           params.Keyword,
+		Page:              params.Page,
+	})
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
 		return
 	}
 
-	c.JSON(response.Success(list))
+	c.JSON(response.SuccessWithMulDate(list, count))
 }
 
 func (h *ActivityHandler) MyActivity(c *gin.Context) {
-	list, err := h.srv.SearchActivity(c.Request.Context(), h.paramsParse(c))
+	params, err := h.paramsParse(c)
+	if err != nil {
+		c.JSON(response.Fail(errors.ParameterNotValid))
+	}
+	sid := c.Query("id")
+	id, _ := strconv.Atoi(sid)
+	list, count, err := h.srv.SearchActivity(c.Request.Context(), home.SearchActivityParams{
+		ActivityDateEnd:     params.ActivityDateEnd,
+		ActivityDateStart:   params.ActivityDateStart,
+		ActivityNature:      params.ActivityNature,
+		ActivityStatus:      params.ActivityStatus,
+		ActivityTypeID:      params.ActivityTypeID,
+		Keyword:             params.Keyword,
+		Page:                params.Page,
+		ActivityPublisherID: uint(id),
+	})
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
 		return
 	}
 
-	c.JSON(response.Success(list))
+	c.JSON(response.SuccessWithMulDate(list, count))
 }
 
-func (h *ActivityHandler) paramsParse(c *gin.Context) home.SearchActivityParams {
-	nature := c.Query("nature")
-	status := c.Query("status")
-	keyword := c.Query("keyword")
-	page := c.Query("page")
-	typeID := c.Query("type_id")
-	start := c.Query("start")
-	end := c.Query("end")
-	// TODO: 更改获取参数的方式
-	publisherID := c.Query("id")
-
-	natureNum, _ := strconv.Atoi(nature)
-	statusNum, _ := strconv.Atoi(status)
-	typeIDNum, _ := strconv.Atoi(typeID)
-	pageNum, _ := strconv.Atoi(page)
-	id, _ := strconv.Atoi(publisherID)
-
-	return home.SearchActivityParams{
-		ActivityPublisherID: uint(id),
-		ActivityDateEnd:     end,
-		ActivityDateStart:   start,
-		ActivityNature:      natureNum,
-		ActivityStatus:      statusNum,
-		ActivityTypeID:      uint(typeIDNum),
-		Keyword:             keyword,
-		Page:                pageNum,
+func (h *ActivityHandler) paramsParse(c *gin.Context) (*SearchActivityParams, error) {
+	var params SearchActivityParams
+	if err := c.ShouldBindQuery(&params); err != nil {
+		return nil, err
 	}
+	return &params, nil
 }
 
 func (h *ActivityHandler) ParticipateActivity(c *gin.Context) {

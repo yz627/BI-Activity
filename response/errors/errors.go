@@ -36,6 +36,7 @@ var (
 	GetActivityError          = NewSelfError("获取活动类型失败")
 	GetPopularActivityError   = NewSelfError("获取热门活动失败")
 	GetActivityTotalError     = NewSelfError("获取活动总数失败")
+	GetActivityInfoError      = NewSelfError("获取活动信息失败")
 	GetActivityInfoErrorType1 = NewSelfError("获取活动信息失败-发布人信息")
 	GetActivityInfoErrorType2 = NewSelfError("获取活动信息失败-活动详情信息")
 	GetActivityInfoErrorType3 = NewSelfError("获取活动信息失败-活动报名信息")

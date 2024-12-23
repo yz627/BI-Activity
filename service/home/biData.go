@@ -48,16 +48,16 @@ func (bs *BiDataService) BiData(ctx context.Context) (*BiData, error) {
 
 func (bs *BiDataService) BiDataLeaderboard(ctx context.Context) ([]*BiDataLeaderboard, error) {
 	// 获取学院-人数的映射关系
-	mp, err := bs.sr.GetCollegeStudentCount(ctx)
+	res, err := bs.sr.GetCollegeStudentCount(ctx)
 	if err != nil {
 		return nil, errors.GetCollegeStudentCountError
 	}
 
 	var list []*BiDataLeaderboard
-	for collegeName, studentTotal := range mp {
+	for _, item := range res {
 		list = append(list, &BiDataLeaderboard{
-			CollegeName:  collegeName,
-			StudentTotal: studentTotal,
+			CollegeName:  item.CollegeName,
+			StudentTotal: item.Count,
 		})
 	}
 

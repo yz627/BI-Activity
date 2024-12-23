@@ -52,6 +52,7 @@ func (as *ActivityService) ActivityAllTypes(ctx context.Context) (list []*Activi
 // PopularActivity 获取热门活动
 // 只需要返回部分信息
 // 因为热门活动只展示卡片信息，卡片信息只需要展示活动名称、发布人名称、活动时间、活动类型名称、活动类型图片
+// TODO: 耗时较长，需要优化
 func (as *ActivityService) PopularActivity(ctx context.Context) (list []*ActivityCard, err error) {
 	result, err := as.rr.GetPopularActivities(ctx)
 	if err != nil {
@@ -66,7 +67,6 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	}
 
 	// 获取活动信息
-	// TODO: 活动发布者在两个表中，必须一个一个获取，无法一次全部查询
 	activityList, err := as.ar.GetActivityListByID(ctx, activityID)
 	if err != nil {
 		return nil, errors.GetActivityError
@@ -95,6 +95,17 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 		list[i].ActivityPublisherName = name
 	}
 
+	// 按照activityID的顺序重新排序
+	activityMap := make(map[uint]*ActivityCard, len(activityID))
+	for _, item := range list {
+		activityMap[item.ID] = item
+	}
+
+	list = make([]*ActivityCard, len(activityID))
+	for i, id := range activityID {
+		list[i] = activityMap[id]
+	}
+
 	return list, nil
 }
 
@@ -104,14 +115,19 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, aID, sID uint)
 	if aID <= 0 {
 		return nil, errors.ParameterNotValid
 	}
-	// 更新浏览量
-	_ = as.rr.UpdateActivityViewCount(ctx, aID)
 
 	// 获取活动信息
 	info, err := as.ar.GetActivityInfoByID(ctx, aID)
 	if err != nil {
 		return nil, errors.GetActivityInfoErrorType2
 	}
+	// 如果活动不存在，返回错误
+	if info.ID == 0 {
+		return nil, errors.GetActivityInfoError
+	}
+
+	// 更新浏览量
+	_ = as.rr.UpdateActivityViewCount(ctx, aID)
 
 	// 获取活动发布人信息
 	publisherName, err := as.ar.GetPublisherNameByID(ctx, info.ID)
@@ -157,9 +173,9 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, aID, sID uint)
 	}, nil
 }
 
-func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActivityParams) (list []*ActivityCard, err error) {
+func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActivityParams) (list []*ActivityCard, count int64, err error) {
 	if err := as.isValidSearchParams(params); err != nil {
-		return nil, err
+		return nil, -1, err
 	}
 
 	as.log.Debugf("SearchActivity params: %+v", params)
@@ -178,24 +194,23 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 	var activities []*models.Activity
 	switch params.ActivityPublisherID {
 	case 0: // 全部活动
-		activities, err = as.ar.SearchActivity(ctx, daoParams)
+		activities, count, err = as.ar.SearchActivity(ctx, daoParams)
 	default: // 我的活动
-		activities, err = as.ar.SearchMyActivity(ctx, daoParams)
+		activities, count, err = as.ar.SearchMyActivity(ctx, daoParams)
 	}
-
 	if err != nil {
-		return nil, errors.SearchActivityError
+		return nil, -1, errors.SearchActivityError
 	}
 
 	for _, item := range activities {
 		publisherName, err := as.ar.GetPublisherNameByID(ctx, item.ID)
 		if err != nil {
-			return nil, errors.GetActivityInfoErrorType1
+			return nil, -1, errors.GetActivityInfoErrorType1
 		}
 
 		remainingNumber, err := as.ar.GetActivityRemainingNumberByID(ctx, item.ID)
 		if err != nil {
-			return nil, errors.GetActivityInfoErrorType4
+			return nil, -1, errors.GetActivityInfoErrorType4
 		}
 
 		list = append(list, &ActivityCard{
@@ -211,7 +226,7 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 		})
 	}
 
-	return list, nil
+	return list, count, nil
 }
 
 // 判断是合法的查询条件

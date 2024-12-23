@@ -10,3 +10,8 @@ type SearchParams struct {
 	Keyword             string // 搜索关键字，活动名称相关
 	Page                int    // 页码
 }
+
+type CollegeStudentCount struct {
+	CollegeName string `json:"college_name"`
+	Count       int    `json:"count"`
+}
