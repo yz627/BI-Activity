@@ -1,12 +1,12 @@
 Server:
-  name: "bi-server"
+  name: localhost
   port: 8080
 
 Database:
   network: tcp
   addr: 127.0.0.1:3306
   user: root
-  password: mysql0924a..
+  password: cy133485
   db: bi_activity
 
 Redis:

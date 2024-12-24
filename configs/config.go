@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	configPath = "."
+	configPath = "./configs"
 )
 
 // Config 全局配置信息
@@ -70,6 +70,10 @@ type Redis struct {
 type Server struct {
 	Name string `yaml:"name"`
 	Port string `yaml:"port"`
+}
+
+func (s *Server) ServerAddress() string {
+	return fmt.Sprintf("%s:%s", s.Name, s.Port)
 }
 
 // UserStatus 登录状态映射
