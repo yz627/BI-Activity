@@ -5,6 +5,7 @@ const (
 	AuditStatusPending  = iota + 1 // 待审核
 	AuditStatusPassed              // 已通过
 	AuditStatusRejected            // 已拒绝
+	AuditStatusRemoved             // 已移出
 )
 
 // 性别
@@ -42,9 +43,11 @@ const (
 
 // 活动状态
 const (
-	ActivityStatusNotStart   = iota + 1 // 活动状态 未开始
+	ActivityStatusPending    = iota + 1 // 活动状态 审核中
+	ActivityRecruiting                  // 活动状态 招募中
 	ActivityStatusProceeding            // 活动状态 进行中
 	ActivityStatusEnded                 // 活动状态 已结束
+	ActivityStatusRejected              // 活动状态 未通过
 )
 
 // 招募限制

@@ -2,28 +2,17 @@ package main
 
 import (
 	"bi-activity/configs"
-	Home2 "bi-activity/controller/Home"
-	"bi-activity/dao"
-	"bi-activity/service/Home"
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	"bi-activity/routes"
 )
 
 func main() {
-	conf := configs.InitConfig("./configs/")
-	data, fn := dao.NewDateDao(conf.Database, logrus.New())
-	defer fn()
+	//println("hello world")
+	// 加载配置
+	var config = configs.InitConfig("./configs")
 
-	imgData := dao.NewImageDataCase(data, logrus.New())
-	imgService := Home.NewImageService(imgData, logrus.New())
-	imgHandler := Home2.NewImageHandler(imgService, logrus.New())
+	// 创建路由
+	router := routes.InitRouter()
 
-	activityData := dao.NewActivityDataCase(data, logrus.New())
-	activityService := Home.NewActivityService(activityData, logrus.New())
-	activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
-
-	r := gin.Default()
-	r.GET("/home/loop-images", imgHandler.LoopImage)
-	r.GET("/home/type-list", activityHandler.ActivityType)
-	r.Run(":8080")
+	// 监听
+	router.Run("127.0.0.1:" + config.Server.Port)
 }
