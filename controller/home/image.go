@@ -1,19 +1,19 @@
-package Home
+package home
 
 import (
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service/Home"
+	"bi-activity/service/home"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type ImageHandler struct {
 	log *logrus.Logger
-	srv *Home.ImageService
+	srv *home.ImageService
 }
 
-func NewImageHandler(srv *Home.ImageService, log *logrus.Logger) *ImageHandler {
+func NewImageHandler(srv *home.ImageService, log *logrus.Logger) *ImageHandler {
 	return &ImageHandler{
 		srv: srv,
 		log: log,
@@ -27,8 +27,8 @@ func (h *ImageHandler) LoopImage(c *gin.Context) {
 	images, err := h.srv.LoopImages(c.Request.Context())
 
 	if err != nil {
-		status, resp := response.Fail(err.(errors.SelfError))
-		c.JSON(status, resp)
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
 	}
 
 	c.JSON(response.Success(images))

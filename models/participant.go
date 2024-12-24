@@ -13,6 +13,9 @@ type Participant struct {
 	CreatedAt  time.Time      `gorm:"type:datetime;null" json:"created_at"` // 创建时间（报名时间）
 	UpdatedAt  time.Time      `gorm:"type:datetime;null" json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+	// 多表信息
+	Activity Activity `gorm:"foreignKey:ActivityID"`
+	Student  Student  `gorm:"foreignKey:StudentID"`
 }
 
 // 报名/录取状态：Participant 表

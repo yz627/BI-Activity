@@ -1,6 +1,7 @@
-package dao
+package home
 
 import (
+	"bi-activity/dao"
 	"bi-activity/models"
 	"bi-activity/models/label"
 	"context"
@@ -24,11 +25,11 @@ type ImageRepo interface {
 var _ ImageRepo = (*imageDataCase)(nil)
 
 type imageDataCase struct {
-	db  *Data
+	db  *dao.Data
 	log *logrus.Logger
 }
 
-func NewImageDataCase(db *Data, logger *logrus.Logger) ImageRepo {
+func NewImageDataCase(db *dao.Data, logger *logrus.Logger) ImageRepo {
 	return &imageDataCase{
 		db:  db,
 		log: logger,
@@ -38,7 +39,9 @@ func NewImageDataCase(db *Data, logger *logrus.Logger) ImageRepo {
 func (i *imageDataCase) GetImageByID(ctx context.Context, id uint) (*models.Image, error) {
 	img := &models.Image{}
 	// 从数据库中查询
-	err := i.db.db.WithContext(ctx).Where("id = ?", id).First(img).Error
+	err := i.db.DB().WithContext(ctx).
+		Where("id = ?", id).
+		First(img).Error
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +53,10 @@ func (i *imageDataCase) GetImageByID(ctx context.Context, id uint) (*models.Imag
 func (i *imageDataCase) GetImageUrlByID(ctx context.Context, id uint) (string, error) {
 	img := &models.Image{}
 	// 从数据库中查询
-	err := i.db.db.WithContext(ctx).Select("url").Where("id = ?", id).First(img).Error
+	err := i.db.DB().WithContext(ctx).
+		Select("url").
+		Where("id = ?", id).
+		First(img).Error
 	if err != nil {
 		return "", err
 	}
@@ -60,7 +66,10 @@ func (i *imageDataCase) GetImageUrlByID(ctx context.Context, id uint) (string, e
 
 func (i *imageDataCase) GetImageUrlsByID(ctx context.Context, ids []uint) ([]string, error) {
 	images := make([]*models.Image, 0)
-	err := i.db.db.WithContext(ctx).Select("url").Where("id in ?", ids).Find(&images).Error
+	err := i.db.DB().WithContext(ctx).
+		Select("url").
+		Where("id in ?", ids).
+		Find(&images).Error
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +84,9 @@ func (i *imageDataCase) GetImageUrlsByID(ctx context.Context, ids []uint) ([]str
 func (i *imageDataCase) GetImageByType(ctx context.Context, imageType int) (list []*models.Image, err error) {
 	img := make([]*models.Image, 0)
 	// 从数据库中查询
-	err = i.db.db.WithContext(ctx).Where("type = ?", imageType).Find(&img).Error
+	err = i.db.DB().WithContext(ctx).
+		Where("type = ?", imageType).
+		Find(&img).Error
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +96,10 @@ func (i *imageDataCase) GetImageByType(ctx context.Context, imageType int) (list
 
 // GetAllBannerImage 获取轮播图
 func (i *imageDataCase) GetAllBannerImage(ctx context.Context) (list []*models.Image, err error) {
-	err = i.db.db.WithContext(ctx).Where("type = ?", label.ImageTypeBanner).Find(&list).Error
+	err = i.db.DB().WithContext(ctx).
+		Select("file_name", "url", "id").
+		Where("type = ?", label.ImageTypeBanner).
+		Find(&list).Error
 	if err != nil {
 		i.log.Errorln("GetAllBannerImage:", err)
 		return nil, err

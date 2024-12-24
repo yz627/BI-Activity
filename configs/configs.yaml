@@ -10,8 +10,8 @@ Database:
   db: bi_activity
 
 Redis:
-  network: 127.0.0.1
-  addr: 6379
+  network: tcp
+  addr: 127.0.0.1:6379
   password:
   read_timeout: 5
   write_timeout: 5

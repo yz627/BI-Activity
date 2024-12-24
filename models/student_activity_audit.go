@@ -13,4 +13,7 @@ type StudentActivityAudit struct {
 	CreatedAt  time.Time      `json:"created_at"`
 	UpdatedAt  time.Time      `json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+	// 多表信息
+	Activity Activity `gorm:"foreignKey:ActivityID" json:"activity"`
+	College  College  `gorm:"foreignKey:CollegeID" json:"college"`
 }

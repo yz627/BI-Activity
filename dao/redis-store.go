@@ -2,8 +2,6 @@ package dao
 
 import (
 	"context"
-	"errors"
-	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"strconv"
 )
@@ -13,7 +11,7 @@ import (
 var PopularActivityKey = "popular_activity" // 热门活动的zset的key
 
 type RedisRepo interface {
-	UpdateActivityViewCount(ctx context.Context, key string, id uint) error
+	UpdateActivityViewCount(ctx context.Context, id uint) error
 	// GetPopularActivities 获取热门活动, 获取前20个
 	GetPopularActivities(ctx context.Context) ([]string, error)
 }
@@ -38,21 +36,11 @@ func NewRedisDataCase(rdb *Redis, key string, logger *logrus.Logger) RedisRepo {
 // 存储为redis的有序集合： zset
 // 当zset中存在该key时，更新该key的value，否则添加该key-value
 // zset 中只保存前20 个元素
-func (r *redisDataCase) UpdateActivityViewCount(ctx context.Context, key string, id uint) error {
+func (r *redisDataCase) UpdateActivityViewCount(ctx context.Context, id uint) error {
 	_, err := r.rdb.rdb.ZIncrBy(ctx, PopularActivityKey, 1, strconv.Itoa(int(id))).Result()
-	// 如果err == redis.Nil 代表该key中的value不存在，则添加该key-value
-	if errors.Is(err, redis.Nil) {
-		_, err = r.rdb.rdb.ZAdd(ctx, PopularActivityKey, redis.Z{
-			Score:  1,
-			Member: id,
-		}).Result()
-		if err != nil {
-			r.log.Error("redis add activity data error:", err)
-		}
-		return nil
-	}
 
-	_, err = r.rdb.rdb.ZRemRangeByRank(ctx, PopularActivityKey, 2, -1).Result()
+	// 只保留前20个元素
+	_, err = r.rdb.rdb.ZRemRangeByRank(ctx, PopularActivityKey, 20, -1).Result()
 	if err != nil {
 		r.log.Error("redis remove activity data error:", err)
 	}
@@ -61,7 +49,7 @@ func (r *redisDataCase) UpdateActivityViewCount(ctx context.Context, key string,
 }
 
 func (r *redisDataCase) GetPopularActivities(ctx context.Context) ([]string, error) {
-	result, err := r.rdb.rdb.ZRange(ctx, PopularActivityKey, 0, -1).Result()
+	result, err := r.rdb.rdb.ZRevRange(ctx, PopularActivityKey, 0, -1).Result()
 	if err != nil {
 		r.log.Error("redis get popular activities error:", err)
 		return nil, err

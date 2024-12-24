@@ -12,4 +12,6 @@ type ActivityType struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	// 多表查询信息存储
+	Image Image `gorm:"foreignKey:ImageID" json:"image"`
 }
