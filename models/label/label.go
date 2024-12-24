@@ -20,6 +20,7 @@ const (
 	AuditStatusPending  = iota + 1 // 审核中
 	AuditStatusPassed              // 已通过
 	AuditStatusRejected            // 已拒绝
+	AuditStatusRemoved             // 已移出
 )
 
 // 性别

@@ -13,6 +13,13 @@ func main() {
 	data, fn := dao.NewDateDao(conf.Database, logrus.New())
 	defer fn()
 
+	//err := data.DB().AutoMigrate(
+	//	&models.ActivityType{},
+	//)
+	//if err != nil {
+	//	panic(err)
+	//}
+
 	err := data.DB().AutoMigrate(
 		&models.Student{},
 		&models.Image{},
