@@ -68,5 +68,4 @@ func main() {
 	r.GET("api/help/search", helpHandler.SearchHelp)
 
 	r.GET("api/student/info", studentHandler.StudentInfo)
-	r.Run(":8080")
 }
