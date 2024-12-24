@@ -9,4 +9,5 @@ func TestInitConfig(t *testing.T) {
 	t.Log(conf.Redis.Password)
 	t.Log(conf.Server)
 	t.Log(conf.UserStatus)
+	t.Log(conf.Server.ServerAddress())
 }

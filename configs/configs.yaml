@@ -1,22 +1,18 @@
 Server:
-  name: "bi-server"
+  name: localhost
   port: 8080
 
 Database:
   network: tcp
   addr: 127.0.0.1:3306
   user: root
-  password: mysql0924a..
+  password: cy133485
   db: bi_activity
 
 Redis:
   network: 127.0.0.1
-  addr: 6379
-  password:
-  read_timeout: 5
-  write_timeout: 5
-  dial_timeout: 2
-  pool_size: 10
+  addr: 127.0.0.1:6379
+  password: 123456
 
 UserStatus:
   expiration_time: 86400
