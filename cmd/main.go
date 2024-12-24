@@ -2,10 +2,16 @@ package main
 
 import (
 	"bi-activity/configs"
-	Home2 "bi-activity/controller/home"
+	"bi-activity/controller/forgetPasswordController"
+	"bi-activity/controller/loginController"
+	"bi-activity/controller/registerController"
 	"bi-activity/dao"
-	"bi-activity/dao/home"
-	Home1 "bi-activity/service/home"
+	"bi-activity/dao/loginRegisterDao"
+	"bi-activity/service/forgetPasswordService"
+	"bi-activity/service/loginService"
+	"bi-activity/service/registerService"
+	"bi-activity/utils/captcha"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -13,33 +19,54 @@ import (
 func main() {
 	conf := configs.InitConfig("./configs/")
 	data, fn := dao.NewDateDao(conf.Database, logrus.New())
-	redis, fn2 := dao.NewRedisDao(conf.Redis, logrus.New())
+	//redis, fn2 := dao.NewRedisDao(conf.Redis, logrus.New())
 	defer fn()
-	defer fn2()
+	//defer fn2()
 
-	imageData := home.NewImageDataCase(data, logrus.New())
-	imgService := Home1.NewImageService(imageData, logrus.New())
-	imgHandler := Home2.NewImageHandler(imgService, logrus.New())
+	sdc := loginRegisterDao.NewStudentDataCase(data, logrus.New())
+	cdc := loginRegisterDao.NewCollegeDataCase(data, logrus.New())
 
-	typeData := home.NewActivityTypeDataCase(data, logrus.New())
-	redisData := dao.NewRedisDataCase(redis, "", logrus.New())
+	// 登录相关
+	ls := loginService.NewLoginService(sdc, cdc, logrus.New())
+	lh := loginController.NewLoginHandler(ls, logrus.New())
 
-	activityData := home.NewActivityDataCase(data, logrus.New())
-	activityService := Home1.NewActivityService(activityData, imageData, typeData, redisData, logrus.New())
-	activityHandler := Home2.NewActivityHandler(activityService, logrus.New())
+	// 学生注册相关
+	srs := registerService.NewStudentRegisterService(sdc, logrus.New())
+	srh := registerController.NewStudentRegisterHandler(srs, logrus.New())
 
-	studentData := home.NewStudentDataCase(data, logrus.New())
-	collegeDate := home.NewCollegeDataCase(data, logrus.New())
+	// 学院注册相关
+	cadc := loginRegisterDao.NewCollegeNameToAccountDataCase(data, logrus.New())
+	idc := loginRegisterDao.NewImageDataCase(data, logrus.New())
+	icdc := loginRegisterDao.NewInviteCodeDataCase(data, logrus.New())
+	crs := registerService.NewCollegeRegisterService(cdc, cadc, idc, icdc, logrus.New())
+	crh := registerController.NewCollegeRegisterHandler(crs, logrus.New())
 
-	biData := Home1.NewBiDataService(activityData, studentData, collegeDate, logrus.New())
-	biHandler := Home2.NewBiDataHandler(biData, logrus.New())
+	// 忘记密码相关
+	fps := forgetPasswordService.NewForgetPasswordService(sdc, logrus.New())
+	fph := forgetPasswordController.NewForgetPasswordHandler(fps, logrus.New())
 
 	r := gin.Default()
-	r.GET("/home/loop-images", imgHandler.LoopImage)
-	r.GET("/home/type-list", activityHandler.ActivityType)
-	r.GET("home/popular-activity", activityHandler.PopularActivityList)
-	r.GET("home/get-activity-detail", activityHandler.GetActivityDetail)
-	r.GET("home/bi-data", biHandler.BiData)
-	r.GET("home/Leaderboard", biHandler.BiDataLeaderboard)
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},                   // 允许的前端源
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},            // 允许的HTTP方法
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // 允许的请求头
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+	// 验证码生成服务
+	r.GET("/captcha/email/:email", captcha.SendEmailCaptchaHandler)
+	r.GET("/captcha/phone/:phone", captcha.SendPhoneCaptchaHandler)
+	r.GET("/captcha/image", captcha.GenerateImageCaptchaHandler)
+	r.POST("/captcha/image", captcha.VerifyImageCaptcha)
+	// 登录相关
+	r.POST("/login", lh.Login)
+	// 学生注册相关
+	r.POST("/register/student", srh.Register)
+	// 学院注册相关
+	r.GET("register/college/name_to_account", crh.GetCollegeNameAndAccount)
+	r.POST("register/college", crh.Register)
+	// 忘记密码相关
+	r.POST("/forget/student", fph.FindPassword)
+
 	r.Run(":8080")
 }

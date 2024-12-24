@@ -31,13 +31,14 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 
 		// 解析和验证 JWT Token
 		token, err := auth.ParseJWT(tokenString)
-		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+		if err != nil {
+			// 如果 token 无效或过期
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
 
-		// 将解析后的 claims 保存到请求上下文中（用户id和用户类型）
+		// 获取 Claims
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
@@ -45,12 +46,17 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// 获取用户名和角色
-		id := uint(claims["id"].(float64))
-		role := claims["role"].(string)
+		// 获取 id 和 role
+		id, idOk := claims["id"].(float64)
+		role, roleOk := claims["role"].(string)
+		if !idOk || !roleOk {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+			c.Abort()
+			return
+		}
 
-		// 将用户名和角色添加到请求上下文，后续可以通过 c.Get("id") 获取
-		c.Set("id", id)
+		// 将用户信息添加到上下文，供后续使用
+		c.Set("id", uint(id))
 		c.Set("role", role)
 
 		// 继续处理请求

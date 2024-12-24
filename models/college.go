@@ -12,7 +12,7 @@ type College struct {
 	Password            string         `gorm:"type:varchar(255);null" json:"password"`              // 密码
 	AdminName           string         `gorm:"type:varchar(255);" json:"admin_name"`                // 管理员名称
 	AdminIDNumber       string         `gorm:"type:varchar(20);" json:"admin_id_number"`            // 管理员身份证号
-	AdminImageID        uint64         `gorm:"type:bigint" json:"admin_image_id"`                   // 管理员头像 ID
+	AdminImageID        uint           `gorm:"type:bigint" json:"admin_image_id"`                   // 管理员头像 ID
 	AdminPhone          string         `gorm:"type:varchar(64);unique;" json:"admin_phone"`         // 管理员电话，唯一
 	AdminEmail          string         `gorm:"type:varchar(255);unique;" json:"admin_email"`        // 管理员邮箱，唯一
 	Campus              int            `gorm:"type:int;null" json:"campus"`                         // 校园 ID

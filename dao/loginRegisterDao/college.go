@@ -36,6 +36,9 @@ func (c *collegeDataCase) GetCollegeByUsername(ctx context.Context, username str
 }
 
 func (c *collegeDataCase) InsertCollege(ctx context.Context, college *models.College) error {
-	//TODO implement me
-	panic("implement me")
+	result := c.db.DB().WithContext(ctx).Create(college)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
