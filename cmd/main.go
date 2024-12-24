@@ -39,6 +39,9 @@ func main() {
 	helpService := Home1.NewHelpService(helpData, logrus.New())
 	helpHandler := Home2.NewHelpHandler(helpService, logrus.New())
 
+	studentService := Home1.NewStudentService(studentData, logrus.New())
+	studentHandler := Home2.NewStudentHandler(studentService, logrus.New())
+
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
@@ -62,5 +65,8 @@ func main() {
 	r.GET("api/activity/participate-activity", activityHandler.ParticipateActivity)
 
 	r.GET("api/help/list", helpHandler.HelpList)
+	r.GET("api/help/search", helpHandler.SearchHelp)
+
+	r.GET("api/student/info", studentHandler.StudentInfo)
 	r.Run(":8080")
 }

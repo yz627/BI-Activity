@@ -91,6 +91,14 @@ type SearchActivityParams struct {
 	Page                int    `json:"page"`                // 页码
 }
 
+type StuInfo struct {
+	Name        string `json:"name"`        // 学生姓名
+	ID          string `json:"id"`          // 学号
+	Phone       string `json:"phone"`       // 电话号码
+	Email       string `json:"email"`       // 邮箱
+	CollegeName string `json:"collegeName"` // 学院名称
+}
+
 // 活动状态流转：Activity 表
 // 1 - 审核中 (刚发布的活动)
 // 2 - 招募中 (审核通过，开始招募)

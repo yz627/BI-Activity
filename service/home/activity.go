@@ -322,6 +322,12 @@ func (as *ActivityService) ParticipateActivity(ctx context.Context, stuID, activ
 		return errors.ParameterNotValid
 	}
 
+	// 判断是否复合报名条件
+	// 1. 活动处于招募状态
+	// 2. 活动的招募条件为全体学生
+	// 3. 活动的招募条件为学院学生，且学生所在学院为报名活动的学院
+	// TODO
+
 	// 判断是否已经报名
 	status, err := as.ar.GetParticipateStatus(ctx, stuID, activityID)
 	if err != nil {

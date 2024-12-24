@@ -34,3 +34,23 @@ func (hs *HelpService) HelpList(ctx context.Context) (list []*Help, err error) {
 
 	return list, nil
 }
+
+func (hs *HelpService) SearchHelp(ctx context.Context, params string) (list []*Help, err error) {
+	if params == "" {
+		return hs.HelpList(ctx)
+	}
+
+	resp, err := hs.hr.SearchHelp(ctx, params)
+	if err != nil {
+		return nil, errors.GetHelpError
+	}
+
+	for _, v := range resp {
+		list = append(list, &Help{
+			Problem: v.Name,
+			Answer:  v.Answer,
+		})
+	}
+
+	return list, nil
+}

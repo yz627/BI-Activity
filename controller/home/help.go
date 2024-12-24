@@ -28,3 +28,12 @@ func (h *HelpHandler) HelpList(c *gin.Context) {
 	}
 	c.JSON(response.Success(list))
 }
+
+func (h *HelpHandler) SearchHelp(c *gin.Context) {
+	params := c.Query("keyword")
+	list, err := h.srv.SearchHelp(c.Request.Context(), params)
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+	}
+	c.JSON(response.Success(list))
+}

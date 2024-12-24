@@ -50,6 +50,7 @@ var (
 	// student
 
 	GetStudentTotalError        = NewSelfError("获取学生总数失败")
+	GetStudentInfoByIDError     = NewSelfError("获取学生信息失败")
 	GetCollegeStudentCountError = NewSelfError("获取学院学生总数失败")
 
 	// college
