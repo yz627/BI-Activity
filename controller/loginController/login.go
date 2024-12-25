@@ -35,7 +35,6 @@ func (lh *LoginHandler) Login(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-
 	var token string
 	var err error
 	switch request.Role {
@@ -52,7 +51,6 @@ func (lh *LoginHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	res := LoginResponse{
 		Token: token,
 	}

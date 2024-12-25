@@ -19,9 +19,7 @@ import (
 func main() {
 	conf := configs.InitConfig("./configs/")
 	data, fn := dao.NewDateDao(conf.Database, logrus.New())
-	//redis, fn2 := dao.NewRedisDao(conf.Redis, logrus.New())
 	defer fn()
-	//defer fn2()
 
 	sdc := loginRegisterDao.NewStudentDataCase(data, logrus.New())
 	cdc := loginRegisterDao.NewCollegeDataCase(data, logrus.New())
@@ -36,15 +34,15 @@ func main() {
 
 	// 学院注册相关
 	cadc := loginRegisterDao.NewCollegeNameToAccountDataCase(data, logrus.New())
-	idc := loginRegisterDao.NewImageDataCase(data, logrus.New())
 	icdc := loginRegisterDao.NewInviteCodeDataCase(data, logrus.New())
-	crs := registerService.NewCollegeRegisterService(cdc, cadc, idc, icdc, logrus.New())
+	crs := registerService.NewCollegeRegisterService(cdc, cadc, icdc, logrus.New())
 	crh := registerController.NewCollegeRegisterHandler(crs, logrus.New())
 
 	// 忘记密码相关
 	fps := forgetPasswordService.NewForgetPasswordService(sdc, logrus.New())
 	fph := forgetPasswordController.NewForgetPasswordHandler(fps, logrus.New())
 
+	// 注册路由
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},                   // 允许的前端源

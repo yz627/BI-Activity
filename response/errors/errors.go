@@ -1,5 +1,7 @@
 package errors
 
+import "net/http"
+
 type SelfError struct {
 	Err string
 }
@@ -13,6 +15,8 @@ func (s SelfError) Error() string {
 }
 
 var (
+	JsonRequestParseError       = NewSelfError("无法按照json格式解析请求")
+	RoleIsNotExistError         = NewSelfError("无该类型用户")
 	LoginAccountOrPasswordError = NewSelfError("账号或密码错误")
 
 	ServerError = NewSelfError("服务器错误")
@@ -57,21 +61,28 @@ var (
 
 	// problem
 
-	GetHelpError = NewSelfError("获取问题失败")
+	GetHelpError       = NewSelfError("获取问题失败")
+	JWTGenarationError = NewSelfError("生成JWT失败")
 )
 
 var (
 	ErrStatus = map[SelfError]int{
 		LoginAccountOrPasswordError: 400,
-
-		ServerError: 500,
+		ServerError:                 500,
+		JsonRequestParseError:       http.StatusBadRequest,
+		RoleIsNotExistError:         http.StatusInternalServerError,
+		LoginAccountOrPasswordError: http.StatusUnauthorized,
+		JWTGenarationError:          http.StatusInternalServerError,
 	}
 )
 
 var (
 	SelfErrStatus = map[SelfError]int{
 		LoginAccountOrPasswordError: 400100,
-
-		ServerError: 500100,
+		ServerError:                 500100,
+		JsonRequestParseError:       400100,
+		RoleIsNotExistError:         400101,
+		LoginAccountOrPasswordError: 400102,
+		JWTGenarationError:          400103,
 	}
 )

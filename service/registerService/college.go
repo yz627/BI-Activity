@@ -18,16 +18,14 @@ import (
 type CollegeRegisterService struct {
 	cr  loginRegisterDao.CollegeRepo
 	car loginRegisterDao.CollegeNameToAccountRepo
-	ir  loginRegisterDao.ImageRepo
 	icr loginRegisterDao.InviteCodeRepo
 	log *logrus.Logger
 }
 
-func NewCollegeRegisterService(cr loginRegisterDao.CollegeRepo, car loginRegisterDao.CollegeNameToAccountRepo, ir loginRegisterDao.ImageRepo, icr loginRegisterDao.InviteCodeRepo, log *logrus.Logger) *CollegeRegisterService {
+func NewCollegeRegisterService(cr loginRegisterDao.CollegeRepo, car loginRegisterDao.CollegeNameToAccountRepo, icr loginRegisterDao.InviteCodeRepo, log *logrus.Logger) *CollegeRegisterService {
 	return &CollegeRegisterService{
 		cr:  cr,
 		car: car,
-		ir:  ir,
 		icr: icr,
 		log: log,
 	}
