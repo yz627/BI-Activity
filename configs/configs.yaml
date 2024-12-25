@@ -6,13 +6,13 @@ Database:
   network: tcp
   addr: 127.0.0.1:3306
   user: root
-  password: 666666
-  db: bi_activity
+  password: mysql0924a..
+  db: bi-activity
 
 Redis:
   network: tcp
   addr: 127.0.0.1:6379
-  password:
+  password: ""
   read_timeout: 5
   write_timeout: 5
   dial_timeout: 2
@@ -23,3 +23,21 @@ UserStatus:
   login_flag: "login_status"
 
 Jwt:
+  secret_key: your-secret-key
+  expiration_time: 86400  # 24小时
+
+OSS:
+  Endpoint: "oss-cn-shenzhen.aliyuncs.com"
+  BucketName: "bi-activity"
+  BasePath: "uploads"
+
+Email:
+  Host: "smtp.qq.com"  
+  Port: 587
+  Username: "1184615922@qq.com"
+  From: "1184615922@qq.com"
+
+SMS:
+  SignName: "Bi活动"
+  TemplateCode: "SMS_476280302"
+  RegionId: "cn-hangzhou"

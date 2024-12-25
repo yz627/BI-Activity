@@ -2,13 +2,15 @@ package dao
 
 import (
 	"bi-activity/configs"
+	"bi-activity/models"
 	"context"
+	"time"
+
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"time"
 )
 
 type Data struct {
@@ -17,6 +19,7 @@ type Data struct {
 
 type Redis struct {
 	rdb redis.Cmdable
+	RDB *redis.Client
 }
 
 // NewDateDao MySQL数据库连接实例
@@ -68,6 +71,7 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 	timeout, cancelFunc := context.WithTimeout(context.Background(), time.Second*2)
 	defer cancelFunc()
 	err := rdb.Ping(timeout).Err()
+
 	// redis 连接失败，退出程序
 	if err != nil {
 		logger.Fatalf("redis connect error: %v", err)
@@ -82,3 +86,10 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 			}
 		}
 }
+
+func (d *Data) DB() *gorm.DB {
+	return d.db
+}
+
+
+

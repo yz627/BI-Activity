@@ -20,7 +20,9 @@ type Image struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
+
 // 1 - 头像
 // 2 - 活动图
 // 3 - 轮播图
 // 4 - 学校图标
+

@@ -22,6 +22,7 @@ type College struct {
 	CreatedAt           time.Time      `json:"created_at"`
 	UpdatedAt           time.Time      `json:"updated_at"`
 	DeletedAt           gorm.DeletedAt `gorm:"index" json:"-"`
+
 	// 多表信息存储
 	AdminImage    Image `gorm:"foreignKey:AdminImageID" json:"admin_image"`
 	CollegeAvatar Image `gorm:"foreignKey:CollegeAvatarID" json:"college_avatar"`
