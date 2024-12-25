@@ -1,4 +1,4 @@
-package router
+package new
 
 import (
 	"bi-activity/configs"
@@ -77,7 +77,7 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 			securitySettings.POST("/:id/phone/code", securityController.SendPhoneCode)
 
 			// 验证码相关
-			securitySettings.GET("/captcha", securityController.GetCaptcha)        
+			securitySettings.GET("/captcha", securityController.GetCaptcha)
 			securitySettings.POST("/captcha/verify", securityController.VerifyCaptcha)
 
 			// 邮箱相关
@@ -107,7 +107,7 @@ func InitRouter(data *dao.Data, rdb *dao.Redis) *gin.Engine {
 		// 图片相关路由
 		image := studentPersonalCenter.Group("/image")
 		{
-			image.POST("/upload", imageController.UploadImage)  // 上传图片
+			image.POST("/upload", imageController.UploadImage) // 上传图片
 			image.GET("/:id", imageController.GetImage)        // 获取图片信息
 			image.DELETE("/:id", imageController.DeleteImage)  // 删除图片
 		}
