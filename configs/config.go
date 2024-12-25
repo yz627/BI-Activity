@@ -106,6 +106,10 @@ type Server struct {
 	Port string `yaml:"port"`
 }
 
+func (s *Server) ServerAddress() string {
+	return fmt.Sprintf("%s:%s", s.Name, s.Port)
+}
+
 // UserStatus 登录状态映射
 type UserStatus struct {
 	ExpirationTime int64  `yaml:"expiration_time" mapstructure:"expiration_time"` // 登录过期时间

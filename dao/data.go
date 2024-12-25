@@ -65,7 +65,6 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 		WriteTimeout: time.Second * time.Duration(c.WriteTimeout), // 写入超时时间
 		DialTimeout:  time.Second * time.Duration(c.DialTimeout),  // 连接超时时间
 		PoolSize:     c.PoolSize,                                  // 连接池大小
-		Password:     c.Password,                                  // 密码
 	})
 	// 测试连接
 	timeout, cancelFunc := context.WithTimeout(context.Background(), time.Second*2)
