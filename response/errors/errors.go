@@ -18,6 +18,7 @@ var (
 	JsonRequestParseError       = NewSelfError("无法按照json格式解析请求")
 	RoleIsNotExistError         = NewSelfError("无该类型用户")
 	LoginAccountOrPasswordError = NewSelfError("账号或密码错误")
+	LoginStatusError            = NewSelfError("登录状态错误")
 
 	ServerError = NewSelfError("服务器错误")
 
@@ -106,6 +107,7 @@ var (
 		ParticipateActivityErrorType1:  http.StatusBadRequest,
 		ParticipateActivityErrorType2:  http.StatusBadRequest,
 		ParticipateActivityErrorType3:  http.StatusInternalServerError,
+		LoginStatusError:               http.StatusUnauthorized,
 	}
 )
 
@@ -142,5 +144,6 @@ var (
 		ParticipateActivityErrorType2:  400401,
 		ParticipateActivityErrorType3:  500306,
 		GetParticipateStatusError:      500307,
+		LoginStatusError:               401100,
 	}
 )

@@ -1,19 +1,19 @@
-package home
+package homeCtl
 
 import (
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service/home"
+	"bi-activity/service/homeSvc"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type BiDataHandler struct {
-	srv *home.BiDataService
+	srv *homeSvc.BiDataService
 	log *logrus.Logger
 }
 
-func NewBiDataHandler(srv *home.BiDataService, log *logrus.Logger) *BiDataHandler {
+func NewBiDataHandler(srv *homeSvc.BiDataService, log *logrus.Logger) *BiDataHandler {
 	return &BiDataHandler{
 		srv: srv,
 		log: log,

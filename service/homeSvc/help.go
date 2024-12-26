@@ -1,18 +1,18 @@
-package home
+package homeSvc
 
 import (
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/response/errors"
 	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type HelpService struct {
-	hr  home.HelpRepo
+	hr  homeDao.HelpRepo
 	log *logrus.Logger
 }
 
-func NewHelpService(hr home.HelpRepo, log *logrus.Logger) *HelpService {
+func NewHelpService(hr homeDao.HelpRepo, log *logrus.Logger) *HelpService {
 	return &HelpService{
 		hr:  hr,
 		log: log,

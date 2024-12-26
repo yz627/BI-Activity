@@ -1,4 +1,4 @@
-package home
+package homeDao
 
 import (
 	"bi-activity/dao"

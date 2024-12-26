@@ -1,7 +1,7 @@
-package home
+package homeSvc
 
 import (
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/models/label"
 	"bi-activity/response/errors"
 	"bi-activity/utils/copyStruct"
@@ -10,11 +10,11 @@ import (
 )
 
 type ImageService struct {
-	ir  home.ImageRepo // 图片操作接口
+	ir  homeDao.ImageRepo // 图片操作接口
 	log *logrus.Logger
 }
 
-func NewImageService(ir home.ImageRepo, log *logrus.Logger) *ImageService {
+func NewImageService(ir homeDao.ImageRepo, log *logrus.Logger) *ImageService {
 	return &ImageService{
 		ir:  ir,
 		log: log,

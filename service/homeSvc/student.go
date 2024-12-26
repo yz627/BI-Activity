@@ -1,18 +1,18 @@
-package home
+package homeSvc
 
 import (
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/response/errors"
 	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type StudentService struct {
-	sr  home.StudentRepo
+	sr  homeDao.StudentRepo
 	log *logrus.Logger
 }
 
-func NewStudentService(sr home.StudentRepo, logger *logrus.Logger) *StudentService {
+func NewStudentService(sr homeDao.StudentRepo, logger *logrus.Logger) *StudentService {
 	return &StudentService{
 		sr:  sr,
 		log: logger,

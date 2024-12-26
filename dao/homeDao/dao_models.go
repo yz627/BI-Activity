@@ -1,4 +1,4 @@
-package home
+package homeDao
 
 type SearchParams struct {
 	ActivityPublisherID uint   // 发布者ID

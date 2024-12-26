@@ -1,8 +1,8 @@
-package home
+package homeSvc
 
 import (
 	"bi-activity/dao"
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/models"
 	"bi-activity/models/label"
 	"bi-activity/response/errors"
@@ -14,14 +14,14 @@ import (
 )
 
 type ActivityService struct {
-	ar  home.ActivityRepo
-	ir  home.ImageRepo
-	tr  home.ActivityTypeRepo
+	ar  homeDao.ActivityRepo
+	ir  homeDao.ImageRepo
+	tr  homeDao.ActivityTypeRepo
 	rr  dao.RedisRepo
 	log *logrus.Logger
 }
 
-func NewActivityService(ar home.ActivityRepo, ir home.ImageRepo, tr home.ActivityTypeRepo, rr dao.RedisRepo, log *logrus.Logger) *ActivityService {
+func NewActivityService(ar homeDao.ActivityRepo, ir homeDao.ImageRepo, tr homeDao.ActivityTypeRepo, rr dao.RedisRepo, log *logrus.Logger) *ActivityService {
 	return &ActivityService{
 		ir:  ir,
 		tr:  tr,
@@ -180,7 +180,7 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 
 	as.log.Debugf("SearchActivity params: %+v", params)
 
-	daoParams := home.SearchParams{
+	daoParams := homeDao.SearchParams{
 		ActivityPublisherID: params.ActivityPublisherID,
 		ActivityDateEnd:     params.ActivityDateEnd,
 		ActivityDateStart:   params.ActivityDateStart,

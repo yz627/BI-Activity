@@ -1,20 +1,20 @@
-package home
+package homeSvc
 
 import (
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/response/errors"
 	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type BiDataService struct {
-	ar  home.ActivityRepo
-	sr  home.StudentRepo
-	cr  home.CollegeRepo
+	ar  homeDao.ActivityRepo
+	sr  homeDao.StudentRepo
+	cr  homeDao.CollegeRepo
 	log *logrus.Logger
 }
 
-func NewBiDataService(ar home.ActivityRepo, sr home.StudentRepo, cr home.CollegeRepo, log *logrus.Logger) *BiDataService {
+func NewBiDataService(ar homeDao.ActivityRepo, sr homeDao.StudentRepo, cr homeDao.CollegeRepo, log *logrus.Logger) *BiDataService {
 	return &BiDataService{
 		ar:  ar,
 		sr:  sr,

@@ -1,4 +1,4 @@
-package home
+package homeCtl
 
 type SearchActivityParams struct {
 	ActivityDateEnd   string `form:"end"`
