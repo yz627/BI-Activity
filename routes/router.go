@@ -10,6 +10,8 @@ func InitRouter() *gin.Engine {
 	router.Use(middleware.CORSMiddleware())
 	// TODO: 注册路由
 
+	// 登录注册相关路由
+	loginRegisterRouter(router)
 	// 学院相关的路由
 	College(router)
 
