@@ -12,7 +12,7 @@ import (
 // 生成阿里云短信服务的实例
 func sendSMS(phone, code string) error {
 	// 创建阿里云短信客户端
-
+	// TODO: key值创建客户端
 	if err != nil {
 		return err
 	}

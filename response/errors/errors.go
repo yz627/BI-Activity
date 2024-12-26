@@ -21,8 +21,6 @@ var (
 
 	ServerError = NewSelfError("服务器错误")
 
-	NotFoundError = NewSelfError("未找到该资源")
-
 	ParameterNotValid = NewSelfError("参数错误")
 
 	// image
@@ -32,12 +30,11 @@ var (
 
 	// activity-type
 
-	ErrActivityType      = NewSelfError("活动类型错误")
 	GetActivityTypeError = NewSelfError("获取活动类型失败")
 
 	// activity
 
-	GetActivityError          = NewSelfError("获取活动类型失败")
+	GetActivityError          = NewSelfError("获取活动失败")
 	GetPopularActivityError   = NewSelfError("获取热门活动失败")
 	GetActivityTotalError     = NewSelfError("获取活动总数失败")
 	GetActivityInfoError      = NewSelfError("获取活动信息失败")
@@ -71,7 +68,9 @@ var (
 	ParticipateActivityErrorType1 = NewSelfError("报名失败-已经报名该活动")
 	ParticipateActivityErrorType2 = NewSelfError("报名失败-报名审核中")
 	ParticipateActivityErrorType3 = NewSelfError("报名失败-服务器错误")
-	GetHelpError       = NewSelfError("获取问题失败")
+
+	// jwt
+
 	JWTGenarationError = NewSelfError("生成JWT失败")
 )
 
@@ -83,6 +82,30 @@ var (
 		RoleIsNotExistError:         http.StatusInternalServerError,
 		LoginAccountOrPasswordError: http.StatusUnauthorized,
 		JWTGenarationError:          http.StatusInternalServerError,
+
+		ParameterNotValid:              http.StatusBadRequest,
+		GetActivityTypeError:           http.StatusInternalServerError,
+		GetActivityError:               http.StatusInternalServerError,
+		GetPopularActivityError:        http.StatusInternalServerError,
+		GetActivityTotalError:          http.StatusInternalServerError,
+		GetActivityInfoError:           http.StatusInternalServerError,
+		GetActivityInfoErrorType1:      http.StatusInternalServerError,
+		GetActivityInfoErrorType2:      http.StatusInternalServerError,
+		GetActivityInfoErrorType3:      http.StatusInternalServerError,
+		GetActivityInfoErrorType4:      http.StatusInternalServerError,
+		SearchActivityError:            http.StatusInternalServerError,
+		SearchActivityParamsErrorType1: http.StatusBadRequest,
+		SearchActivityParamsErrorType2: http.StatusBadRequest,
+		SearchActivityParamsErrorType3: http.StatusBadRequest,
+		GetStudentTotalError:           http.StatusInternalServerError,
+		GetCollegeTotalError:           http.StatusInternalServerError,
+		GetStudentInfoByIDError:        http.StatusInternalServerError,
+		GetCollegeStudentCountError:    http.StatusInternalServerError,
+		GetHelpError:                   http.StatusInternalServerError,
+		GetParticipateStatusError:      http.StatusInternalServerError,
+		ParticipateActivityErrorType1:  http.StatusBadRequest,
+		ParticipateActivityErrorType2:  http.StatusBadRequest,
+		ParticipateActivityErrorType3:  http.StatusInternalServerError,
 	}
 )
 
@@ -94,5 +117,30 @@ var (
 		RoleIsNotExistError:         400101,
 		LoginAccountOrPasswordError: 400102,
 		JWTGenarationError:          400103,
+
+		ParameterNotValid:              400200,
+		GetActivityTypeError:           500200,
+		GetActivityError:               500201,
+		GetPopularActivityError:        500202,
+		GetActivityTotalError:          500203,
+		GetActivityInfoError:           500204,
+		GetActivityInfoErrorType1:      500205,
+		GetActivityInfoErrorType2:      500206,
+		GetActivityInfoErrorType3:      500207,
+		GetActivityInfoErrorType4:      500208,
+		SearchActivityError:            500209,
+		SearchActivityParamsErrorType1: 400300,
+		SearchActivityParamsErrorType2: 400301,
+		SearchActivityParamsErrorType3: 400302,
+		GetStudentTotalError:           500300,
+		GetCollegeTotalError:           500301,
+		GetStudentInfoByIDError:        500302,
+		GetCollegeStudentCountError:    500303,
+		GetHelpError:                   500304,
+		GetParticipateStatusError:      500305,
+		ParticipateActivityErrorType1:  400400,
+		ParticipateActivityErrorType2:  400401,
+		ParticipateActivityErrorType3:  500306,
+		GetParticipateStatusError:      500307,
 	}
 )

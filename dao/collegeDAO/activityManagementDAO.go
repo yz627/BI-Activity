@@ -79,9 +79,9 @@ func (a *ActivityManagementDAO) UpdateAuditRecord(id uint, status int) {
 	db.Where("id = ?", studentActivityAudit.ActivityID).First(&activity)
 	var activityStatus = 0
 	if status == label.AuditStatusRejected { // 活动审核未通过
-		activityStatus = label.ActivityStatusRejected
+		activityStatus = label.ActivityStatusPending
 	} else if status == label.AuditStatusPassed && now < activity.StartTime { // 活动审核通过，但还未开始：招募中
-		activityStatus = label.ActivityRecruiting
+		activityStatus = label.ActivityStatusRecruiting
 	} else if status == label.AuditStatusPassed && now < activity.EndTime { // 活动审核通过，但还未结束：进行中
 		activityStatus = label.ActivityStatusProceeding
 	} else if status == label.AuditStatusPassed && now >= activity.EndTime { // 活动审核通过，但已结束：已结束

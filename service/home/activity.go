@@ -6,7 +6,7 @@ import (
 	"bi-activity/models"
 	"bi-activity/models/label"
 	"bi-activity/response/errors"
-	"bi-activity/utils"
+	"bi-activity/utils/parse"
 	"context"
 	"github.com/sirupsen/logrus"
 	"strconv"
@@ -76,9 +76,9 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 		list = append(list, &ActivityCard{
 			ID:                   item.ID,
 			ActivityName:         item.ActivityName,
-			ActivityDate:         utils.TransTimeToDate(item.ActivityDate),
-			StartTime:            utils.TransTimeToHour(item.StartTime),
-			EndTime:              utils.TransTimeToHour(item.EndTime),
+			ActivityDate:         parse.TransTimeToDate(item.ActivityDate),
+			StartTime:            parse.TransTimeToHour(item.StartTime),
+			EndTime:              parse.TransTimeToHour(item.EndTime),
 			ActivityTypeName:     item.ActivityType.TypeName,
 			ActivityTypeImageUrl: item.ActivityType.Image.URL,
 			//ActivityPublisherName 发布者名称
@@ -154,14 +154,14 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, aID, sID uint)
 		ContactDetails:           info.ContactDetails,
 		ActivityTypeName:         info.ActivityType.TypeName,
 		ActivityTypeImageUrl:     info.ActivityType.Image.URL,
-		ActivityDate:             utils.TransTimeToDate(info.ActivityDate),
-		StartTime:                utils.TransTimeToHour(info.StartTime),
-		EndTime:                  utils.TransTimeToHour(info.EndTime),
+		ActivityDate:             parse.TransTimeToDate(info.ActivityDate),
+		StartTime:                parse.TransTimeToHour(info.StartTime),
+		EndTime:                  parse.TransTimeToHour(info.EndTime),
 		RecruitmentNumber:        info.RecruitmentNumber,
 		RecruitedNumber:          enrollNumber,
 		RegistrationRestrictions: label.RecruitmentRestriction[info.RegistrationRestrictions],
 		RegistrationRequirement:  info.RegistrationRequirement,
-		RegistrationDeadline:     utils.TransTimeToTime(info.RegistrationDeadline),
+		RegistrationDeadline:     parse.TransTimeToTime(info.RegistrationDeadline),
 		ActivityIntroduction:     info.ActivityIntroduction,
 		ActivityContent:          info.ActivityContent,
 		ActivityName:             info.ActivityName,
@@ -216,9 +216,9 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 		list = append(list, &ActivityCard{
 			ID:                    item.ID,
 			ActivityName:          item.ActivityName,
-			ActivityDate:          utils.TransTimeToDate(item.ActivityDate),
-			StartTime:             utils.TransTimeToHour(item.StartTime),
-			EndTime:               utils.TransTimeToHour(item.EndTime),
+			ActivityDate:          parse.TransTimeToDate(item.ActivityDate),
+			StartTime:             parse.TransTimeToHour(item.StartTime),
+			EndTime:               parse.TransTimeToHour(item.EndTime),
 			ActivityTypeName:      item.ActivityType.TypeName,
 			ActivityTypeImageUrl:  item.ActivityType.Image.URL,
 			ActivityPublisherName: publisherName,

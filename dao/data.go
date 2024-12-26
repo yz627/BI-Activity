@@ -2,7 +2,7 @@ package dao
 
 import (
 	"bi-activity/configs"
-	"bi-activity/models"
+	_ "bi-activity/models"
 	"context"
 	"time"
 
@@ -85,10 +85,3 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 			}
 		}
 }
-
-func (d *Data) DB() *gorm.DB {
-	return d.db
-}
-
-
-

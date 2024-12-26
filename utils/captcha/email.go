@@ -37,6 +37,7 @@ func SendEmailCaptchaHandler(c *gin.Context) {
 	mailer.SetBody("text/plain", fmt.Sprintf("您的验证码是：%s", code))
 
 	// 使用 QQ 邮箱的 SMTP 服务
+	// TODO: 添加key值
 	if err := dialer.DialAndSend(mailer); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email"})
 		return

@@ -18,3 +18,7 @@
   - 数据库配置见 `configs/configs.yaml`
   - 运行`init.sql`创建数据库
   - 运行`cmd/flag/main.go`迁移数据表
+
+## 问题检索
+1. `utils/captcha/email.go` 出错
+2. `utils/captcha/phone.go` 出错
