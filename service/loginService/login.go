@@ -51,7 +51,7 @@ func (ls *LoginService) CollegeLogin(ctx context.Context, username, password str
 
 	// 验证密码
 	if equal := auth.ComparePassword(college.Password, password); !equal {
-		return "", err
+		return "", errors.New("密码错误")
 	}
 
 	// 验证通过，生成token
