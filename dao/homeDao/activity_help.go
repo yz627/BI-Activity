@@ -24,6 +24,7 @@ type activityHelperRepo interface {
 var _ activityHelperRepo = (*activityDataCase)(nil)
 
 func (a *activityDataCase) activityFromActivityNature(query *gorm.DB, nature int) *gorm.DB {
+	// TODO: 判断逻辑适合在业务层
 	if nature > 0 {
 		return query.Where("activity_nature = ?", nature)
 	}
@@ -31,18 +32,18 @@ func (a *activityDataCase) activityFromActivityNature(query *gorm.DB, nature int
 }
 
 func (a *activityDataCase) activityFromActivityType(query *gorm.DB, typeID uint) *gorm.DB {
+	// TODO: 判断逻辑适合在业务层
 	if typeID > 0 {
 		return query.Where("activity_type_id = ?", typeID)
 	}
-
 	return query
 }
 
 func (a *activityDataCase) activityFromActivityStatus(query *gorm.DB, status int) *gorm.DB {
+	// TODO: 判断逻辑适合在业务层
 	if status > 0 {
 		return query.Where("activity_status = ?", status)
 	}
-
 	return query.Where("activity_status in ?", []uint{
 		label.ActivityStatusRecruiting,
 		label.ActivityStatusProceeding,
@@ -51,6 +52,7 @@ func (a *activityDataCase) activityFromActivityStatus(query *gorm.DB, status int
 }
 
 func (a *activityDataCase) activityFromTime(query *gorm.DB, start, end string) *gorm.DB {
+	// TODO: 判断逻辑适合在业务层，并且这里太过繁琐
 	if start == "" && end == "" {
 		return query
 	}
@@ -64,10 +66,10 @@ func (a *activityDataCase) activityFromTime(query *gorm.DB, start, end string) *
 	}
 
 	return query.Where("activity_date >= ? AND activity_date <= ?", start, end)
-
 }
 
 func (a *activityDataCase) activityFromKeyword(query *gorm.DB, keyword string) *gorm.DB {
+	// TODO: 判断逻辑适合在业务层
 	if keyword == "" {
 		return query
 	}
@@ -80,12 +82,11 @@ func (a *activityDataCase) activityFromPageSize(query *gorm.DB, page, size int) 
 }
 
 func (a *activityDataCase) searchActivity(query *gorm.DB, params SearchParams) (list []*models.Activity, count int64, err error) {
-	query = a.activityFromActivityNature(query, params.ActivityNature)
-	query = a.activityFromActivityType(query, params.ActivityTypeID)
-	query = a.activityFromActivityStatus(query, params.ActivityStatus)
-	query = a.activityFromTime(query, params.ActivityDateStart, params.ActivityDateEnd)
-	query = a.activityFromKeyword(query, params.Keyword)
-	query = a.activityFromPageSize(query, params.Page, PageSize)
+	query = a.activityFromActivityType(query, params.ActivityTypeID)                    // 筛选活动类型
+	query = a.activityFromActivityNature(query, params.ActivityNature)                  // 筛选活动性质
+	query = a.activityFromActivityStatus(query, params.ActivityStatus)                  // 筛选活动状态
+	query = a.activityFromKeyword(query, params.Keyword)                                // 筛选关键词
+	query = a.activityFromTime(query, params.ActivityDateStart, params.ActivityDateEnd) // 筛选时间
 
 	// 统计总数
 	err = query.Count(&count).Error
@@ -93,6 +94,7 @@ func (a *activityDataCase) searchActivity(query *gorm.DB, params SearchParams) (
 		return nil, -1, err
 	}
 
+	query = a.activityFromPageSize(query, params.Page, PageSize) // 分页
 	err = query.Preload("ActivityType", func(db *gorm.DB) *gorm.DB {
 		return db.Select("id", "type_name", "image_id").
 			Preload("Image", func(db *gorm.DB) *gorm.DB {

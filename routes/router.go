@@ -14,6 +14,8 @@ func InitRouter() *gin.Engine {
 	loginRegisterRouter(router)
 	// 学院相关的路由
 	College(router)
+	// home相关路由
+	InitHomeRouter(router)
 
 	return router
 }

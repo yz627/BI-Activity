@@ -25,7 +25,6 @@ func NewImageHandler(srv *homeSvc.ImageService, log *logrus.Logger) *ImageHandle
 func (h *ImageHandler) LoopImage(c *gin.Context) {
 	// 获取轮播图
 	images, err := h.srv.LoopImages(c.Request.Context())
-
 	if err != nil {
 		c.JSON(response.Failf(err.(errors.SelfError), "轮播图获取发生错误"))
 		return

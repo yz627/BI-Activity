@@ -22,7 +22,7 @@ func NewHelpService(hr homeDao.HelpRepo, log *logrus.Logger) *HelpService {
 func (hs *HelpService) HelpList(ctx context.Context) (list []*Help, err error) {
 	resp, err := hs.hr.GetHelpList(ctx)
 	if err != nil {
-		return nil, errors.GetHelpError
+		return nil, errors.HelpInfoError
 	}
 
 	for _, v := range resp {
@@ -42,7 +42,7 @@ func (hs *HelpService) SearchHelp(ctx context.Context, params string) (list []*H
 
 	resp, err := hs.hr.SearchHelp(ctx, params)
 	if err != nil {
-		return nil, errors.GetHelpError
+		return nil, errors.HelpInfoError
 	}
 
 	for _, v := range resp {

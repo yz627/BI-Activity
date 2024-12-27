@@ -13,19 +13,16 @@ import (
 
 func InitHomeRouter(r *gin.Engine) {
 	conf := configs.InitConfig("./configs/")
-	db, fn := dao.NewDateDao(conf.Database, logrus.New())
-	redis, fn2 := dao.NewRedisDao(conf.Redis, logrus.New())
-	defer fn()
-	defer fn2()
+	redis, _ := dao.NewRedisDao(conf.Redis, logrus.New())
 	logger := logrus.New()
 
 	// 数据层
-	imgDao := homeDao.NewImageDataCase(db, logger)
-	typeDao := homeDao.NewActivityTypeDataCase(db, logger)
-	actDao := homeDao.NewActivityDataCase(db, logger)
-	helpDao := homeDao.NewHelpDataCase(db, logger)
-	stuDao := homeDao.NewStudentDataCase(db, logger)
-	colDao := homeDao.NewCollegeDataCase(db, logger)
+	imgDao := homeDao.NewImageDataCase(data, logger)
+	typeDao := homeDao.NewActivityTypeDataCase(data, logger)
+	actDao := homeDao.NewActivityDataCase(data, logger)
+	helpDao := homeDao.NewHelpDataCase(data, logger)
+	stuDao := homeDao.NewStudentDataCase(data, logger)
+	colDao := homeDao.NewCollegeDataCase(data, logger)
 	rDao := dao.NewRedisDataCase(redis, "", logger)
 
 	// 业务层
@@ -60,18 +57,17 @@ func InitHomeRouter(r *gin.Engine) {
 	v3 := r.Group("/api/search")
 	{
 		v3.GET("/params", actCtl.SearchActivity)
-		v3.GET("/get-activity-detail", actCtl.GetActivityDetail)
+		v3.GET("/get-activity-detail", middleware.ParseTokenMiddleware(), actCtl.GetActivityDetail)
 	}
 
 	v4 := r.Group("/api/student")
 	v4.Use(middleware.JWTAuthMiddleware())
 	{
-		v4.GET("/info", stuCtl.StudentInfo)
+		v4.GET("/info", middleware.JWTAuthMiddleware(), stuCtl.StudentInfo)
 	}
 
 	v5 := r.Group("/api/activity")
 	{
-		v5.GET("/detail", actCtl.GetActivityDetail)
 		v5.GET("/participate-activity", middleware.JWTAuthMiddleware(), actCtl.ParticipateActivity)
 	}
 

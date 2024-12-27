@@ -26,12 +26,12 @@ func (h *StudentHandler) StudentInfo(c *gin.Context) {
 		c.JSON(response.Failf(errors.LoginStatusError, "登录态id获取错误"))
 		return
 	}
-
 	id, ok := sid.(uint)
 	if !ok {
 		c.JSON(response.Failf(errors.LoginStatusError, "id类型断言错误"))
 		return
 	}
+	h.log.Infof("id: %d", id)
 
 	info, err := h.srv.StudentInfo(c.Request.Context(), id)
 	if err != nil {

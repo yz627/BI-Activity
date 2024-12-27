@@ -21,12 +21,12 @@ func NewStudentService(sr homeDao.StudentRepo, logger *logrus.Logger) *StudentSe
 
 func (ss *StudentService) StudentInfo(ctx context.Context, id uint) (*StuInfo, error) {
 	if id <= 0 {
-		return nil, errors.ParameterNotValid
+		return nil, errors.StudentIdNotValid
 	}
 
 	resp, err := ss.sr.GetStudentInfoByID(ctx, id)
 	if err != nil {
-		return nil, errors.GetStudentInfoByIDError
+		return nil, errors.StudentInfoError
 	}
 
 	return &StuInfo{

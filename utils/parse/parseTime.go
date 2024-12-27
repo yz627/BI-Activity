@@ -9,7 +9,7 @@ func TransTimeToDate(timeStr string) string {
 		println(err)
 		return ""
 	}
-	return t.Format("2006-01-02")
+	return t.Format(time.DateOnly)
 }
 
 // TransTimeToHour 将时间字符串转换为 HH:MM 格式
@@ -18,7 +18,7 @@ func TransTimeToHour(timeStr string) string {
 	if err != nil {
 		return ""
 	}
-	return t.Format("15:04")
+	return t.Format(time.TimeOnly)
 }
 
 func TransTimeToTime(timeStr string) string {
@@ -26,5 +26,5 @@ func TransTimeToTime(timeStr string) string {
 	if err != nil {
 		return ""
 	}
-	return t.Format("2006-01-02 15:04:05")
+	return t.Format(time.DateTime)
 }
