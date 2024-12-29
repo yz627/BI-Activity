@@ -1,4 +1,4 @@
-package home
+package homeDao
 
 import (
 	"bi-activity/dao"
@@ -19,20 +19,24 @@ type ActivityRepo interface {
 	// GetPublisherNameByID 根据活动id获取发布者名称
 	GetPublisherNameByID(ctx context.Context, id uint) (string, error)
 	// GetActivityEnrollNumberByID 获取活动录取人数根据活动id
-	GetActivityEnrollNumberByID(ctx context.Context, id uint) (int, error)
+	GetActivityEnrollNumberByID(ctx context.Context, id uint) (int64, error)
 	// GetActivityRemainingNumberByID 获取活动剩余名额
 	GetActivityRemainingNumberByID(ctx context.Context, id uint) (int, error)
 	// GetActivityTotal 获取活动总数
-	GetActivityTotal(ctx context.Context) (int, error)
+	GetActivityTotal(ctx context.Context) (int64, error)
 	// SearchActivity 搜索活动
 	SearchActivity(ctx context.Context, params SearchParams) ([]*models.Activity, int64, error)
 	// SearchMyActivity 搜索我的活动
 	SearchMyActivity(ctx context.Context, params SearchParams) ([]*models.Activity, int64, error)
 
 	// GetParticipateStatus 获取参与状态
+	// TODO: 该接口更适合放在student dao层实现
 	GetParticipateStatus(ctx context.Context, stuID, activityID uint) (int, error)
 	// AddParticipate 添加活动报名审核
 	AddParticipate(ctx context.Context, stuID, activityID uint) error
+	// GetStudentCollegeID 获取学生所在学院ID
+	// TODO: 该接口更适合放在student dao层实现
+	GetStudentCollegeID(ctx context.Context, id uint) (uint, error)
 }
 
 var _ ActivityRepo = (*activityDataCase)(nil)
@@ -95,7 +99,9 @@ func (a *activityDataCase) GetPublisherNameByID(ctx context.Context, id uint) (s
 	if err != nil {
 		return "", err
 	}
-	// 获取发布者名称
+
+	// 获取发布者名称：学生姓名、学院名称
+	// TODO：更适合在业务层进行处理，暂时先放在这里
 	var name string
 	switch list.ActivityNature {
 	case label.ActivityNatureStudent:
@@ -122,8 +128,10 @@ func (a *activityDataCase) GetPublisherNameByID(ctx context.Context, id uint) (s
 	return name, nil
 }
 
-func (a *activityDataCase) GetActivityEnrollNumberByID(ctx context.Context, id uint) (int, error) {
+func (a *activityDataCase) GetActivityEnrollNumberByID(ctx context.Context, id uint) (int64, error) {
 	// 统计报名表中的记录个数
+	// 1. 参与表的记录中录取状态为通过
+	// 2. 参与表记录的活动ID和当前活动ID一致
 	var count int64
 	err := a.db.DB().WithContext(ctx).
 		Model(&models.Participant{}).
@@ -133,7 +141,7 @@ func (a *activityDataCase) GetActivityEnrollNumberByID(ctx context.Context, id u
 		return -1, err
 	}
 
-	return int(count), nil
+	return count, nil
 }
 
 func (a *activityDataCase) GetActivityRemainingNumberByID(ctx context.Context, id uint) (int, error) {
@@ -157,10 +165,10 @@ func (a *activityDataCase) GetActivityRemainingNumberByID(ctx context.Context, i
 	return activity.RecruitmentNumber - int(count), nil
 }
 
-func (a *activityDataCase) GetActivityTotal(ctx context.Context) (int, error) {
+func (a *activityDataCase) GetActivityTotal(ctx context.Context) (int64, error) {
 	var total int64
 	// 1. 活动经过审核并且审核成功
-	// 2. 活动未被删除 gorm自动过滤
+	// 2. 活动被删除 gorm自动过滤
 	err := a.db.DB().WithContext(ctx).
 		Model(&models.Activity{}).
 		Where("activity_status in ?", []int{label.ActivityStatusRecruiting, label.ActivityStatusProceeding, label.ActivityStatusEnded}).
@@ -169,7 +177,7 @@ func (a *activityDataCase) GetActivityTotal(ctx context.Context) (int, error) {
 		return -1, nil
 	}
 
-	return int(total), nil
+	return total, nil
 }
 
 //type SearchActivityParams struct {
@@ -234,15 +242,26 @@ func (a *activityDataCase) SearchMyActivity(ctx context.Context, params SearchPa
 
 func (a *activityDataCase) GetParticipateStatus(ctx context.Context, stuID, activityID uint) (int, error) {
 	var participant models.Participant
-	err := a.db.DB().WithContext(ctx).
-		Select("status").
-		Where("student_id = ? and activity_id = ? and status != ?", stuID, activityID, label.ParticipateStatusRejected).
-		Find(&participant).Error
-	if err != nil {
-		return -1, err
+	// 1. 审核中
+	a.db.DB().WithContext(ctx).
+		Select("status", "id").
+		Where("student_id = ? and activity_id = ? and status = ?",
+			stuID, activityID, label.ParticipateStatusPending).
+		Find(&participant)
+	if participant.ID != 0 {
+		return label.ParticipateStatusPending, nil
 	}
 
-	return participant.Status, nil
+	// 2. 已通过
+	a.db.DB().WithContext(ctx).
+		Select("status", "id").
+		Where("student_id = ? and activity_id = ? and status = ?", stuID, activityID, label.ParticipateStatusPassed).
+		Find(&participant)
+	if participant.ID != 0 {
+		return label.ParticipateStatusPassed, nil
+	}
+
+	return 0, nil
 }
 
 func (a *activityDataCase) AddParticipate(ctx context.Context, stuID, activityID uint) error {
@@ -252,4 +271,17 @@ func (a *activityDataCase) AddParticipate(ctx context.Context, stuID, activityID
 			ActivityID: activityID,
 			Status:     label.ParticipateStatusPending,
 		}).Error
+}
+
+func (a *activityDataCase) GetStudentCollegeID(ctx context.Context, stuID uint) (uint, error) {
+	var student models.Student
+	err := a.db.DB().WithContext(ctx).
+		Select("college_id").
+		Where("id = ?", stuID).
+		Find(&student).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return student.CollegeID, nil
 }

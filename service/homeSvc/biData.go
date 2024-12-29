@@ -1,20 +1,20 @@
-package home
+package homeSvc
 
 import (
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/response/errors"
 	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type BiDataService struct {
-	ar  home.ActivityRepo
-	sr  home.StudentRepo
-	cr  home.CollegeRepo
+	ar  homeDao.ActivityRepo
+	sr  homeDao.StudentRepo
+	cr  homeDao.CollegeRepo
 	log *logrus.Logger
 }
 
-func NewBiDataService(ar home.ActivityRepo, sr home.StudentRepo, cr home.CollegeRepo, log *logrus.Logger) *BiDataService {
+func NewBiDataService(ar homeDao.ActivityRepo, sr homeDao.StudentRepo, cr homeDao.CollegeRepo, log *logrus.Logger) *BiDataService {
 	return &BiDataService{
 		ar:  ar,
 		sr:  sr,
@@ -24,19 +24,22 @@ func NewBiDataService(ar home.ActivityRepo, sr home.StudentRepo, cr home.College
 }
 
 func (bs *BiDataService) BiData(ctx context.Context) (*BiData, error) {
+	// 获取活动总数
 	activityTotal, err := bs.ar.GetActivityTotal(ctx)
 	if err != nil {
-		return nil, errors.GetActivityTotalError
+		return nil, errors.ActivityTotalNumberError
 	}
 
+	// 获取学院总数
 	collegeTotal, err := bs.cr.GetCollegeTotal(ctx)
 	if err != nil {
-		return nil, errors.GetCollegeTotalError
+		return nil, errors.CollegeTotalNumberError
 	}
 
+	// 获取学生总数
 	studentTotal, err := bs.sr.GetStudentTotal(ctx)
 	if err != nil {
-		return nil, errors.GetStudentTotalError
+		return nil, errors.StudentTotalNumberError
 	}
 
 	return &BiData{
@@ -50,7 +53,7 @@ func (bs *BiDataService) BiDataLeaderboard(ctx context.Context) ([]*BiDataLeader
 	// 获取学院-人数的映射关系
 	res, err := bs.sr.GetCollegeStudentCount(ctx)
 	if err != nil {
-		return nil, errors.GetCollegeStudentCountError
+		return nil, errors.CollegeTotalStudentNumberError
 	}
 
 	var list []*BiDataLeaderboard

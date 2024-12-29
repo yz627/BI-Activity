@@ -1,9 +1,9 @@
-package home
+package homeCtl
 
 import (
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service/home"
+	"bi-activity/service/homeSvc"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"strconv"
@@ -11,10 +11,10 @@ import (
 
 type ActivityHandler struct {
 	log *logrus.Logger
-	srv *home.ActivityService
+	srv *homeSvc.ActivityService
 }
 
-func NewActivityHandler(srv *home.ActivityService, log *logrus.Logger) *ActivityHandler {
+func NewActivityHandler(srv *homeSvc.ActivityService, log *logrus.Logger) *ActivityHandler {
 	return &ActivityHandler{
 		srv: srv,
 		log: log,
@@ -35,6 +35,7 @@ func (h *ActivityHandler) ActivityType(c *gin.Context) {
 
 // PopularActivityList 获取热门活动列表
 // 热门活动的依据：按照活动详情的查看次数
+// 返回：按照热门度从大到小排序，返回前20个
 func (h *ActivityHandler) PopularActivityList(c *gin.Context) {
 	list, err := h.srv.PopularActivity(c.Request.Context())
 	if err != nil {
@@ -47,18 +48,24 @@ func (h *ActivityHandler) PopularActivityList(c *gin.Context) {
 
 // GetActivityDetail 获取活动详情
 func (h *ActivityHandler) GetActivityDetail(c *gin.Context) {
-	activityID := c.Query("activity_id")
-	if activityID == "" {
-		c.JSON(response.Fail(errors.ParameterNotValid))
+	// 获取活动id
+	activityID, ok := c.GetQuery("activity_id")
+	if !ok {
+		c.JSON(response.Failf(errors.ActivityIdParserError, "解析活动ID错误[ctl]"))
 		return
 	}
 
-	stuID := c.Query("id")
+	// 获取学生登录态id
+	// 1. 如果获取失败说明不是登录状态，返回的活动界面为报名、活动结束
+	// 2. 如果获取成功，则根据学生id获取报名状态
+	var sID uint
+	stuID, ok := c.Get("id")
+	if ok {
+		sID = stuID.(uint)
+	}
 
 	aID, _ := strconv.Atoi(activityID)
-	sID, _ := strconv.Atoi(stuID)
-
-	activity, err := h.srv.GetActivityDetail(c.Request.Context(), uint(aID), uint(sID))
+	activity, err := h.srv.GetActivityDetail(c.Request.Context(), uint(aID), sID)
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
 		return
@@ -68,12 +75,14 @@ func (h *ActivityHandler) GetActivityDetail(c *gin.Context) {
 }
 
 func (h *ActivityHandler) SearchActivity(c *gin.Context) {
+	// 解析查询参数
 	params, err := h.paramsParse(c)
 	if err != nil {
-		h.log.Error(err)
-		c.JSON(response.Fail(errors.ParameterNotValid))
+		c.JSON(response.Failf(errors.SearchParamsParseError, err.Error()))
+		return
 	}
-	list, count, err := h.srv.SearchActivity(c.Request.Context(), home.SearchActivityParams{
+
+	list, count, err := h.srv.SearchActivity(c.Request.Context(), homeSvc.SearchActivityParams{
 		ActivityDateEnd:   params.ActivityDateEnd,
 		ActivityDateStart: params.ActivityDateStart,
 		ActivityNature:    params.ActivityNature,
@@ -93,11 +102,23 @@ func (h *ActivityHandler) SearchActivity(c *gin.Context) {
 func (h *ActivityHandler) MyActivity(c *gin.Context) {
 	params, err := h.paramsParse(c)
 	if err != nil {
-		c.JSON(response.Fail(errors.ParameterNotValid))
+		c.JSON(response.Failf(errors.SearchParamsParseError, err.Error()))
+		return
 	}
-	sid := c.Query("id")
-	id, _ := strconv.Atoi(sid)
-	list, count, err := h.srv.SearchActivity(c.Request.Context(), home.SearchActivityParams{
+
+	// 获取学生登录态id
+	stuID, ok := c.Get("id")
+	if !ok {
+		c.JSON(response.Failf(errors.LoginStatusError, "获取登陆状态ID错误"))
+		return
+	}
+	id, ok := stuID.(uint)
+	if !ok {
+		c.JSON(response.Failf(errors.LoginStatusError, "获取登陆状态ID错误"))
+		return
+	}
+
+	list, count, err := h.srv.SearchActivity(c.Request.Context(), homeSvc.SearchActivityParams{
 		ActivityDateEnd:     params.ActivityDateEnd,
 		ActivityDateStart:   params.ActivityDateStart,
 		ActivityNature:      params.ActivityNature,
@@ -105,7 +126,7 @@ func (h *ActivityHandler) MyActivity(c *gin.Context) {
 		ActivityTypeID:      params.ActivityTypeID,
 		Keyword:             params.Keyword,
 		Page:                params.Page,
-		ActivityPublisherID: uint(id),
+		ActivityPublisherID: id,
 	})
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
@@ -124,14 +145,26 @@ func (h *ActivityHandler) paramsParse(c *gin.Context) (*SearchActivityParams, er
 }
 
 func (h *ActivityHandler) ParticipateActivity(c *gin.Context) {
-	// TODO: 更改获取参数的方式
-	stuID := c.Query("id")
-	activityID := c.Query("activity_id")
+	activityID, ok := c.GetQuery("activity_id")
+	if !ok {
+		c.JSON(response.Failf(errors.ActivityIdParserError, "解析活动ID错误[ctl]"))
+		return
+	}
 
-	sID, _ := strconv.Atoi(stuID)
+	// 获取学生登录态id
+	stuID, ok := c.Get("id")
+	if !ok {
+		c.JSON(response.Failf(errors.LoginStatusError, "获取登陆状态ID错误"))
+		return
+	}
+	sID, ok := stuID.(uint)
+	if !ok {
+		c.JSON(response.Failf(errors.LoginStatusError, "获取登陆状态ID错误"))
+		return
+	}
+
 	aID, _ := strconv.Atoi(activityID)
-
-	err := h.srv.ParticipateActivity(c.Request.Context(), uint(sID), uint(aID))
+	err := h.srv.ParticipateActivity(c.Request.Context(), sID, uint(aID))
 	if err != nil {
 		c.JSON(response.Fail(err.(errors.SelfError)))
 		return

@@ -1,19 +1,19 @@
-package home
+package homeCtl
 
 import (
 	"bi-activity/response"
 	"bi-activity/response/errors"
-	"bi-activity/service/home"
+	"bi-activity/service/homeSvc"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type HelpHandler struct {
 	log *logrus.Logger
-	srv *home.HelpService
+	srv *homeSvc.HelpService
 }
 
-func NewHelpHandler(srv *home.HelpService, log *logrus.Logger) *HelpHandler {
+func NewHelpHandler(srv *homeSvc.HelpService, log *logrus.Logger) *HelpHandler {
 	return &HelpHandler{
 		srv: srv,
 		log: log,

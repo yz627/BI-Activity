@@ -1,8 +1,8 @@
-package home
+package homeSvc
 
 import (
 	"bi-activity/dao"
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/models"
 	"bi-activity/models/label"
 	"bi-activity/response/errors"
@@ -14,14 +14,15 @@ import (
 )
 
 type ActivityService struct {
-	ar  home.ActivityRepo
-	ir  home.ImageRepo
-	tr  home.ActivityTypeRepo
+	// TODO：ir未使用
+	ar  homeDao.ActivityRepo
+	ir  homeDao.ImageRepo
+	tr  homeDao.ActivityTypeRepo
 	rr  dao.RedisRepo
 	log *logrus.Logger
 }
 
-func NewActivityService(ar home.ActivityRepo, ir home.ImageRepo, tr home.ActivityTypeRepo, rr dao.RedisRepo, log *logrus.Logger) *ActivityService {
+func NewActivityService(ar homeDao.ActivityRepo, ir homeDao.ImageRepo, tr homeDao.ActivityTypeRepo, rr dao.RedisRepo, log *logrus.Logger) *ActivityService {
 	return &ActivityService{
 		ir:  ir,
 		tr:  tr,
@@ -36,7 +37,7 @@ func (as *ActivityService) ActivityAllTypes(ctx context.Context) (list []*Activi
 	// 获取所有活动类型
 	resp, err := as.tr.GetActivityAllTypes(ctx)
 	if err != nil {
-		return nil, errors.GetActivityTypeError
+		return nil, errors.TypeGetAllActivityTypeError
 	}
 
 	for _, item := range resp {
@@ -54,9 +55,10 @@ func (as *ActivityService) ActivityAllTypes(ctx context.Context) (list []*Activi
 // 因为热门活动只展示卡片信息，卡片信息只需要展示活动名称、发布人名称、活动时间、活动类型名称、活动类型图片
 // TODO: 耗时较长，需要优化
 func (as *ActivityService) PopularActivity(ctx context.Context) (list []*ActivityCard, err error) {
+	// 从redis中获取热门活动id
 	result, err := as.rr.GetPopularActivities(ctx)
 	if err != nil {
-		return nil, errors.GetPopularActivityError
+		return nil, errors.ActivityPopularActivityError
 	}
 
 	// 将result转换为uint列表
@@ -67,11 +69,14 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	}
 
 	// 获取活动信息
+	// 这里dao接口同时查询了三个表：图片表、活动类型表、活动表
 	activityList, err := as.ar.GetActivityListByID(ctx, activityID)
 	if err != nil {
-		return nil, errors.GetActivityError
+		return nil, errors.ActivityPopularActivityError
 	}
 
+	// 数据模型的转换DO -> DTO
+	// TODO: 更合适在控制层完成
 	for _, item := range activityList {
 		list = append(list, &ActivityCard{
 			ID:                   item.ID,
@@ -81,8 +86,6 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 			EndTime:              parse.TransTimeToHour(item.EndTime),
 			ActivityTypeName:     item.ActivityType.TypeName,
 			ActivityTypeImageUrl: item.ActivityType.Image.URL,
-			//ActivityPublisherName 发布者名称
-			//RemainingNumber       int    // 活动招募剩余人数
 		})
 	}
 
@@ -90,12 +93,12 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	for i, item := range list {
 		name, err := as.ar.GetPublisherNameByID(ctx, item.ID)
 		if err != nil {
-			return nil, errors.GetActivityInfoErrorType1
+			return nil, errors.ActivityPublisherInfoError
 		}
 		list[i].ActivityPublisherName = name
 	}
 
-	// 按照activityID的顺序重新排序
+	// 为了满足页面展示，需要按照activityID的顺序重新排序
 	activityMap := make(map[uint]*ActivityCard, len(activityID))
 	for _, item := range list {
 		activityMap[item.ID] = item
@@ -109,42 +112,73 @@ func (as *ActivityService) PopularActivity(ctx context.Context) (list []*Activit
 	return list, nil
 }
 
+// GetActivityDetail 获取活动详情
+// TODO: 石山代码，需要大量重构
 func (as *ActivityService) GetActivityDetail(ctx context.Context, aID, sID uint) (*Activity, error) {
-	// TODO：添加活动参加显示，如果已经成功参加活动，需要在活动详情中显示
-
+	// 活动ID需要合法
 	if aID <= 0 {
-		return nil, errors.ParameterNotValid
+		return nil, errors.ActivityIdNotValid
 	}
 
 	// 获取活动信息
 	info, err := as.ar.GetActivityInfoByID(ctx, aID)
 	if err != nil {
-		return nil, errors.GetActivityInfoErrorType2
+		return nil, errors.ActivityDetailsInfoError
 	}
 	// 如果活动不存在，返回错误
 	if info.ID == 0 {
-		return nil, errors.GetActivityInfoError
+		return nil, errors.ActivityNotFoundError
 	}
 
 	// 更新浏览量
-	_ = as.rr.UpdateActivityViewCount(ctx, aID)
+	err = as.rr.UpdateActivityViewCount(ctx, aID)
+	if err != nil {
+		as.log.Errorf("update activity page view err: %v", err)
+	}
 
 	// 获取活动发布人信息
 	publisherName, err := as.ar.GetPublisherNameByID(ctx, info.ID)
 	if err != nil {
-		return nil, errors.GetActivityInfoErrorType1
+		return nil, errors.ActivityPublisherInfoError
 	}
 
 	// 获取活动报名人数
 	enrollNumber, err := as.ar.GetActivityEnrollNumberByID(ctx, info.ID)
 	if err != nil {
-		return nil, errors.GetActivityInfoErrorType3
+		return nil, errors.ActivityDetailsInfoError
 	}
 
-	// 获取报名状态
+	// 如果当前为学生登陆状态，获取该学生的报名状态
 	status := 0
 	if sID > 0 {
 		status, _ = as.ar.GetParticipateStatus(ctx, sID, aID)
+	}
+
+	// 判断当前学生是否为活动发布者
+	isPublisher := 0
+	if info.ActivityPublisherID == sID {
+		isPublisher = 1
+	}
+
+	// 判断是否满足活动限制
+	isFull := 1
+	if sID > 0 && info.RegistrationRestrictions == label.RecruitmentRestrictionCollege {
+		// 获取学生的院系ID
+		collegeID, _ := as.ar.GetStudentCollegeID(ctx, sID)
+		// 1. 发布者学院，比较发布者ID和当前登录用户的院系ID是否一致
+		if info.ActivityNature == label.ActivityNatureCollege {
+			if collegeID != info.ActivityPublisherID {
+				isFull = 0
+			}
+		}
+		// 2. 发布者学生, 比较当前登录用户的院系ID和活动发布者的院系ID是否一致
+		if info.ActivityNature == label.ActivityNatureStudent {
+			// 获取学生的院系ID
+			publisherCollegeID, _ := as.ar.GetStudentCollegeID(ctx, info.ActivityPublisherID)
+			if publisherCollegeID != collegeID {
+				isFull = 0
+			}
+		}
 	}
 
 	return &Activity{
@@ -167,20 +201,23 @@ func (as *ActivityService) GetActivityDetail(ctx context.Context, aID, sID uint)
 		ActivityName:             info.ActivityName,
 		ActivityImageUrl:         info.ActivityImage.URL,
 		PublisherName:            publisherName,
+		IsPublisher:              isPublisher,
 		CreatedAt:                info.CreatedAt.Format(time.DateTime),
 		ActivityStatus:           info.ActivityStatus,
 		ParticipateStatus:        status,
+		IsCompliance:             isFull,
 	}, nil
 }
 
 func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActivityParams) (list []*ActivityCard, count int64, err error) {
+	// 参数校验
 	if err := as.isValidSearchParams(params); err != nil {
 		return nil, -1, err
 	}
 
-	as.log.Debugf("SearchActivity params: %+v", params)
-
-	daoParams := home.SearchParams{
+	// 转换为dao层需要的参数结构
+	daoParams := homeDao.SearchParams{
+		// ActivityPublisherID为0表示不在登录状态，查询全部活动，否则需要查询我的活动
 		ActivityPublisherID: params.ActivityPublisherID,
 		ActivityDateEnd:     params.ActivityDateEnd,
 		ActivityDateStart:   params.ActivityDateStart,
@@ -191,6 +228,7 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 		Page:                params.Page,
 	}
 
+	// 获取活动列表
 	var activities []*models.Activity
 	switch params.ActivityPublisherID {
 	case 0: // 全部活动
@@ -205,12 +243,12 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 	for _, item := range activities {
 		publisherName, err := as.ar.GetPublisherNameByID(ctx, item.ID)
 		if err != nil {
-			return nil, -1, errors.GetActivityInfoErrorType1
+			return nil, -1, errors.ActivityDetailsInfoError
 		}
 
 		remainingNumber, err := as.ar.GetActivityRemainingNumberByID(ctx, item.ID)
 		if err != nil {
-			return nil, -1, errors.GetActivityInfoErrorType4
+			return nil, -1, errors.ActivityDetailsInfoError
 		}
 
 		list = append(list, &ActivityCard{
@@ -233,27 +271,27 @@ func (as *ActivityService) SearchActivity(ctx context.Context, params SearchActi
 func (as *ActivityService) isValidSearchParams(params SearchActivityParams) error {
 	// 活动状态判断
 	if !as.isValidActivityStatus(params.ActivityStatus) {
-		return errors.SearchActivityParamsErrorType1
+		return errors.SearchParamsNotValid
 	}
 
 	// 活动性质判断
 	if !as.isValidActivityNature(params.ActivityNature) {
-		return errors.SearchActivityParamsErrorType2
+		return errors.SearchParamsNotValid
 	}
 
 	// 判断时间是否合法
 	if !as.isValidActivityDate(params.ActivityDateStart, params.ActivityDateEnd) {
-		return errors.SearchActivityParamsErrorType3
+		return errors.SearchParamsNotValid
 	}
 
 	// 活动标签ID合法
 	if params.ActivityTypeID < 0 {
-		return errors.ParameterNotValid
+		return errors.SearchParamsNotValid
 	}
 
 	// 页数判断
 	if params.Page < 1 {
-		return errors.ParameterNotValid
+		return errors.SearchParamsNotValid
 	}
 
 	return nil
@@ -284,8 +322,10 @@ func (as *ActivityService) isValidActivityNature(nature int) bool {
 }
 
 // isValidActivityDate 判断活动日期是否合法
-// 前端限制返回日期不为空，默认为当前时间
 func (as *ActivityService) isValidActivityDate(start, end string) bool {
+	// 都不为空
+	// 1. 是合法的日期格式--time.DateOnly格式
+	// 2. 活动开始时间在结束时间之前
 	if start != "" && end != "" {
 		// 1. 是合法的日期格式
 		parse1, err := time.Parse(time.DateOnly, start)
@@ -297,10 +337,12 @@ func (as *ActivityService) isValidActivityDate(start, end string) bool {
 		if err != nil {
 			return false
 		}
-		// 2. 活动开始时间在结束时间之前
+
 		return parse1.Equal(parse2) || parse1.Before(parse2)
 	}
 
+	// 开始时间为空
+	// 1. 是合法的日期格式
 	if start == "" && end != "" {
 		_, err := time.Parse(time.DateOnly, end)
 		if err != nil {
@@ -308,30 +350,34 @@ func (as *ActivityService) isValidActivityDate(start, end string) bool {
 		}
 	}
 
+	// 结束时间为空
+	// 1. 是合法的日期格式
 	if end == "" && start != "" {
 		_, err := time.Parse(time.DateOnly, start)
 		if err != nil {
 			return false
 		}
 	}
+
+	// 都为空--合法
 	return true
 }
 
 func (as *ActivityService) ParticipateActivity(ctx context.Context, stuID, activityID uint) error {
 	if stuID <= 0 || activityID <= 0 {
-		return errors.ParameterNotValid
+		return errors.ParticipateParamsNotValid
 	}
 
 	// 判断是否复合报名条件
 	// 1. 活动处于招募状态
 	// 2. 活动的招募条件为全体学生
 	// 3. 活动的招募条件为学院学生，且学生所在学院为报名活动的学院
-	// TODO
+	// 4. 报名者是活动发布者, 无需报名
 
 	// 判断是否已经报名
 	status, err := as.ar.GetParticipateStatus(ctx, stuID, activityID)
 	if err != nil {
-		return errors.GetParticipateStatusError
+		return errors.ParticipateStatusError
 	}
 
 	switch status {

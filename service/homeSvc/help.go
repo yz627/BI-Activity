@@ -1,18 +1,18 @@
-package home
+package homeSvc
 
 import (
-	"bi-activity/dao/home"
+	"bi-activity/dao/homeDao"
 	"bi-activity/response/errors"
 	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type HelpService struct {
-	hr  home.HelpRepo
+	hr  homeDao.HelpRepo
 	log *logrus.Logger
 }
 
-func NewHelpService(hr home.HelpRepo, log *logrus.Logger) *HelpService {
+func NewHelpService(hr homeDao.HelpRepo, log *logrus.Logger) *HelpService {
 	return &HelpService{
 		hr:  hr,
 		log: log,
@@ -22,7 +22,7 @@ func NewHelpService(hr home.HelpRepo, log *logrus.Logger) *HelpService {
 func (hs *HelpService) HelpList(ctx context.Context) (list []*Help, err error) {
 	resp, err := hs.hr.GetHelpList(ctx)
 	if err != nil {
-		return nil, errors.GetHelpError
+		return nil, errors.HelpInfoError
 	}
 
 	for _, v := range resp {
@@ -42,7 +42,7 @@ func (hs *HelpService) SearchHelp(ctx context.Context, params string) (list []*H
 
 	resp, err := hs.hr.SearchHelp(ctx, params)
 	if err != nil {
-		return nil, errors.GetHelpError
+		return nil, errors.HelpInfoError
 	}
 
 	for _, v := range resp {

@@ -1,4 +1,4 @@
-package home
+package homeDao
 
 import (
 	"bi-activity/dao"
@@ -10,7 +10,7 @@ import (
 
 type StudentRepo interface {
 	// GetStudentTotal 获取学生总数
-	GetStudentTotal(ctx context.Context) (int, error)
+	GetStudentTotal(ctx context.Context) (int64, error)
 	// GetCollegeStudentCount 获取学院id-学生人数映射
 	GetCollegeStudentCount(ctx context.Context) ([]*CollegeStudentCount, error)
 	// GetStudentInfoByID 获取学生信息通过学生ID
@@ -29,7 +29,7 @@ func NewStudentDataCase(db *dao.Data, logger *logrus.Logger) StudentRepo {
 	}
 }
 
-func (s *studentDataCase) GetStudentTotal(ctx context.Context) (int, error) {
+func (s *studentDataCase) GetStudentTotal(ctx context.Context) (int64, error) {
 	var total int64
 	// 1. 学生状态有效（未被删除） gorm自动过滤
 	err := s.db.DB().WithContext(ctx).
@@ -39,7 +39,7 @@ func (s *studentDataCase) GetStudentTotal(ctx context.Context) (int, error) {
 		return -1, err
 	}
 
-	return int(total), nil
+	return total, nil
 }
 
 func (s *studentDataCase) GetCollegeStudentCount(ctx context.Context) ([]*CollegeStudentCount, error) {

@@ -18,53 +18,51 @@ var (
 	JsonRequestParseError       = NewSelfError("无法按照json格式解析请求")
 	RoleIsNotExistError         = NewSelfError("无该类型用户")
 	LoginAccountOrPasswordError = NewSelfError("账号或密码错误")
-
-	ServerError = NewSelfError("服务器错误")
-
-	ParameterNotValid = NewSelfError("参数错误")
+	LoginStatusError            = NewSelfError("登录状态错误")
 
 	// image
 
-	ErrImageType  = NewSelfError("图片类型错误")
-	GetImageError = NewSelfError("获取图片失败")
+	ImageLoopImagesError = NewSelfError("轮播图获取错误")
 
 	// activity-type
 
-	GetActivityTypeError = NewSelfError("获取活动类型失败")
+	TypeGetAllActivityTypeError = NewSelfError("获取所有活动类型失败")
 
 	// activity
 
-	GetActivityError          = NewSelfError("获取活动失败")
-	GetPopularActivityError   = NewSelfError("获取热门活动失败")
-	GetActivityTotalError     = NewSelfError("获取活动总数失败")
-	GetActivityInfoError      = NewSelfError("获取活动信息失败")
-	GetActivityInfoErrorType1 = NewSelfError("获取活动信息失败-发布人信息")
-	GetActivityInfoErrorType2 = NewSelfError("获取活动信息失败-活动详情信息")
-	GetActivityInfoErrorType3 = NewSelfError("获取活动信息失败-活动报名信息")
-	GetActivityInfoErrorType4 = NewSelfError("获取活动信息失败-活动报名信息")
+	ActivityPopularActivityError = NewSelfError("获取热门活动失败")
+	ActivityPublisherInfoError   = NewSelfError("获取活动发布人信息失败")
+	ActivityTotalNumberError     = NewSelfError("获取活动总数失败")
+	ActivityIdParserError        = NewSelfError("获取活动ID失败")
+	ActivityIdNotValid           = NewSelfError("活动ID不合法")
+	ActivityDetailsInfoError     = NewSelfError("获取活动详情信息失败")
+	ActivityNotFoundError        = NewSelfError("活动不存在")
 
-	SearchActivityError            = NewSelfError("查询活动失败")
-	SearchActivityParamsErrorType1 = NewSelfError("查询条件错误: 活动状态错误")
-	SearchActivityParamsErrorType2 = NewSelfError("查询条件错误: 活动性质错误")
-	SearchActivityParamsErrorType3 = NewSelfError("查询条件错误: 活动日期非法")
+	// search
+
+	SearchParamsParseError = NewSelfError("查询条件解析错误")
+	SearchParamsNotValid   = NewSelfError("查询条件不合法")
+	SearchActivityError    = NewSelfError("查询活动失败")
 
 	// student
 
-	GetStudentTotalError        = NewSelfError("获取学生总数失败")
-	GetStudentInfoByIDError     = NewSelfError("获取学生信息失败")
-	GetCollegeStudentCountError = NewSelfError("获取学院学生总数失败")
+	StudentTotalNumberError = NewSelfError("获取学生总数失败")
+	StudentInfoError        = NewSelfError("获取学生信息失败")
+	StudentIdNotValid       = NewSelfError("学生ID不合法")
 
 	// college
 
-	GetCollegeTotalError = NewSelfError("获取学院总数失败")
+	CollegeTotalNumberError        = NewSelfError("获取学院总数失败")
+	CollegeTotalStudentNumberError = NewSelfError("获取学院学生总数失败")
 
 	// problem
 
-	GetHelpError = NewSelfError("获取问题失败")
+	HelpInfoError = NewSelfError("获取问题失败")
 
 	// participant
 
-	GetParticipateStatusError     = NewSelfError("获取报名状态失败")
+	ParticipateParamsNotValid     = NewSelfError("参数不合法")
+	ParticipateStatusError        = NewSelfError("报名状态错误")
 	ParticipateActivityErrorType1 = NewSelfError("报名失败-已经报名该活动")
 	ParticipateActivityErrorType2 = NewSelfError("报名失败-报名审核中")
 	ParticipateActivityErrorType3 = NewSelfError("报名失败-服务器错误")
@@ -77,70 +75,75 @@ var (
 var (
 	ErrStatus = map[SelfError]int{
 		LoginAccountOrPasswordError: 400,
-		ServerError:                 500,
 		JsonRequestParseError:       http.StatusBadRequest,
 		RoleIsNotExistError:         http.StatusInternalServerError,
 		LoginAccountOrPasswordError: http.StatusUnauthorized,
 		JWTGenarationError:          http.StatusInternalServerError,
 
-		ParameterNotValid:              http.StatusBadRequest,
-		GetActivityTypeError:           http.StatusInternalServerError,
-		GetActivityError:               http.StatusInternalServerError,
-		GetPopularActivityError:        http.StatusInternalServerError,
-		GetActivityTotalError:          http.StatusInternalServerError,
-		GetActivityInfoError:           http.StatusInternalServerError,
-		GetActivityInfoErrorType1:      http.StatusInternalServerError,
-		GetActivityInfoErrorType2:      http.StatusInternalServerError,
-		GetActivityInfoErrorType3:      http.StatusInternalServerError,
-		GetActivityInfoErrorType4:      http.StatusInternalServerError,
+		ImageLoopImagesError:           http.StatusInternalServerError,
+		TypeGetAllActivityTypeError:    http.StatusInternalServerError,
+		ActivityPopularActivityError:   http.StatusInternalServerError,
+		ActivityPublisherInfoError:     http.StatusInternalServerError,
+		ActivityTotalNumberError:       http.StatusInternalServerError,
+		CollegeTotalNumberError:        http.StatusInternalServerError,
+		StudentTotalNumberError:        http.StatusInternalServerError,
+		CollegeTotalStudentNumberError: http.StatusInternalServerError,
+		ActivityIdParserError:          http.StatusBadRequest,
+		ActivityIdNotValid:             http.StatusBadRequest,
+		ActivityDetailsInfoError:       http.StatusInternalServerError,
+		ActivityNotFoundError:          http.StatusNotFound,
+		SearchParamsParseError:         http.StatusBadRequest,
+		SearchParamsNotValid:           http.StatusBadRequest,
 		SearchActivityError:            http.StatusInternalServerError,
-		SearchActivityParamsErrorType1: http.StatusBadRequest,
-		SearchActivityParamsErrorType2: http.StatusBadRequest,
-		SearchActivityParamsErrorType3: http.StatusBadRequest,
-		GetStudentTotalError:           http.StatusInternalServerError,
-		GetCollegeTotalError:           http.StatusInternalServerError,
-		GetStudentInfoByIDError:        http.StatusInternalServerError,
-		GetCollegeStudentCountError:    http.StatusInternalServerError,
-		GetHelpError:                   http.StatusInternalServerError,
-		GetParticipateStatusError:      http.StatusInternalServerError,
 		ParticipateActivityErrorType1:  http.StatusBadRequest,
 		ParticipateActivityErrorType2:  http.StatusBadRequest,
 		ParticipateActivityErrorType3:  http.StatusInternalServerError,
+		LoginStatusError:               http.StatusUnauthorized,
+		StudentInfoError:               http.StatusInternalServerError,
+		StudentIdNotValid:              http.StatusBadRequest,
+		HelpInfoError:                  http.StatusInternalServerError,
+		ParticipateParamsNotValid:      http.StatusBadRequest,
+		ParticipateStatusError:         http.StatusInternalServerError,
 	}
 )
 
 var (
 	SelfErrStatus = map[SelfError]int{
 		LoginAccountOrPasswordError: 400100,
-		ServerError:                 500100,
 		JsonRequestParseError:       400100,
 		RoleIsNotExistError:         400101,
 		LoginAccountOrPasswordError: 400102,
 		JWTGenarationError:          400103,
 
-		ParameterNotValid:              400200,
-		GetActivityTypeError:           500200,
-		GetActivityError:               500201,
-		GetPopularActivityError:        500202,
-		GetActivityTotalError:          500203,
-		GetActivityInfoError:           500204,
-		GetActivityInfoErrorType1:      500205,
-		GetActivityInfoErrorType2:      500206,
-		GetActivityInfoErrorType3:      500207,
-		GetActivityInfoErrorType4:      500208,
+		// home-500错误
+		ImageLoopImagesError:           500200,
+		TypeGetAllActivityTypeError:    500201,
+		ActivityPopularActivityError:   500202,
+		ActivityPublisherInfoError:     500203,
+		ActivityTotalNumberError:       500204,
+		CollegeTotalNumberError:        500205,
+		StudentTotalNumberError:        500206,
+		CollegeTotalStudentNumberError: 500207,
+		ActivityDetailsInfoError:       500208,
 		SearchActivityError:            500209,
-		SearchActivityParamsErrorType1: 400300,
-		SearchActivityParamsErrorType2: 400301,
-		SearchActivityParamsErrorType3: 400302,
-		GetStudentTotalError:           500300,
-		GetCollegeTotalError:           500301,
-		GetStudentInfoByIDError:        500302,
-		GetCollegeStudentCountError:    500303,
-		GetHelpError:                   500304,
-		GetParticipateStatusError:      500305,
-		ParticipateActivityErrorType1:  400400,
-		ParticipateActivityErrorType2:  400401,
-		ParticipateActivityErrorType3:  500306,
-		GetParticipateStatusError:      500307,
+		StudentInfoError:               500210,
+		HelpInfoError:                  500211,
+		ParticipateStatusError:         500212,
+		ParticipateActivityErrorType3:  500213,
+
+		// home-400错误
+		ActivityIdParserError:         400201,
+		ActivityIdNotValid:            400202,
+		SearchParamsParseError:        400203,
+		SearchParamsNotValid:          400204,
+		StudentIdNotValid:             400205,
+		ParticipateParamsNotValid:     400206,
+		ParticipateActivityErrorType1: 400207,
+		ParticipateActivityErrorType2: 400208,
+
+		// home-404错误
+		ActivityNotFoundError: 404200,
+
+		LoginStatusError: 401100,
 	}
 )
