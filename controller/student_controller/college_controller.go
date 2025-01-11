@@ -1,12 +1,11 @@
 package student_controller
 
 import (
-    "bi-activity/service/student_service"
-    "bi-activity/response/student_response"
-    "bi-activity/response/errors/student_error"
-    "strconv"
-    "github.com/gin-gonic/gin"
-    "net/http"
+	"bi-activity/response/errors/student_error"
+	"bi-activity/response/student_response"
+	"bi-activity/service/student_service"
+	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 // CollegeController 学院控制器
@@ -23,16 +22,16 @@ func NewCollegeController(collegeService student_service.CollegeService) *Colleg
 
 // GetStudentCollege 获取学生所属学院
 func (c *CollegeController) GetStudentCollege(ctx *gin.Context) {
-    // 解析学生ID
-    idStr := ctx.Param("id")
-    id, err := strconv.ParseUint(idStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    userId, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized,
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
+
+    id, _ := userId.(uint)  
 
     // 获取学院信息
     college, err := c.collegeService.GetStudentCollege(uint(id))
@@ -51,15 +50,16 @@ func (c *CollegeController) GetStudentCollege(ctx *gin.Context) {
 // UpdateStudentCollege 更新学生所属学院
 func (c *CollegeController) UpdateStudentCollege(ctx *gin.Context) {
     // 解析学生ID
-    idStr := ctx.Param("id")
-    studentID, err := strconv.ParseUint(idStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    userId, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized,
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
+
+    id, _ := userId.(uint)
 
     // 解析请求体
     var req struct {
@@ -74,7 +74,7 @@ func (c *CollegeController) UpdateStudentCollege(ctx *gin.Context) {
     }
 
     // 更新学院
-    if err := c.collegeService.UpdateStudentCollege(uint(studentID), req.CollegeID); err != nil {
+    if err := c.collegeService.UpdateStudentCollege(uint(id), req.CollegeID); err != nil {
         errCode := student_error.GetErrorCode(err)
         ctx.JSON(http.StatusInternalServerError, student_response.Error(
             errCode,
@@ -89,15 +89,16 @@ func (c *CollegeController) UpdateStudentCollege(ctx *gin.Context) {
 // RemoveStudentCollege 移除学生所属学院
 func (c *CollegeController) RemoveStudentCollege(ctx *gin.Context) {
     // 解析学生ID
-    idStr := ctx.Param("id")
-    id, err := strconv.ParseUint(idStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    userId, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized,
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
+
+    id, _ := userId.(uint)
 
     // 移除学院归属
     if err := c.collegeService.RemoveStudentCollege(uint(id)); err != nil {

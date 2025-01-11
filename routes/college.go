@@ -11,10 +11,10 @@ import (
 )
 
 // 配置实例
-var config = configs.InitConfig("./configs")
+var config = configs.InitConfig("../configs")
 
 // 数据库连接实例
-var data, _ = dao.NewDateDao(config.Database, logrus.New())
+var data, _ = dao.NewDataDao(config.Database, logrus.New())
 
 func College(r *gin.Engine) {
 	personalCenter(r)

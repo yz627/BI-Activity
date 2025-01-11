@@ -6,6 +6,7 @@ const (
 	// 基础错误码 (10001-10099)
 	ErrStudentNotFound  = 10001
 	ErrInvalidStudentID = 10002
+	ErrUnauthorized     = 10003
 
 	// 组织相关错误码 (10101-10199)
 	ErrCollegeNotFound     = 10101
@@ -55,6 +56,7 @@ var errMsgMap = map[int]string{
 	// 基础错误
 	ErrStudentNotFound:  "学生不存在",
 	ErrInvalidStudentID: "无效的学生ID",
+	ErrUnauthorized:     "未授权访问",
 
 	// 组织相关错误
 	ErrCollegeNotFound:     "学院不存在",

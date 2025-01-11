@@ -213,12 +213,13 @@ func (s *SecurityServiceImpl) SendPhoneCode(studentID uint, phone string) error 
 
     // 生成验证码
     code := student_verify.GenerateCode()
-
+    fmt.Println("code: ", code)
+    fmt.Println("发送功能暂时注释")
     // 发送验证码
-    if err := s.smsSender.SendCode(phone, code); err != nil {
-        fmt.Printf("SMS send error: %v\n", err)
-        return student_error.ErrPhoneSendFailedError
-    }
+    // if err := s.smsSender.SendCode(phone, code); err != nil {
+    //     fmt.Printf("SMS send error: %v\n", err)
+    //     return student_error.ErrPhoneSendFailedError
+    // }
 
     // 保存验证码到 Redis
     if err := s.codeVerifier.SaveCode("verify:phone:"+phone, code); err != nil {

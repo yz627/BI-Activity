@@ -25,7 +25,7 @@ type Redis struct {
 // NewDateDao MySQL数据库连接实例
 // *Data 数据库连接实例
 // func() 函数返回值，返回一个函数，用于释放资源
-func NewDateDao(c *configs.Database, logger *logrus.Logger) (*Data, func()) {
+func NewDataDao(c *configs.Database, logger *logrus.Logger) (*Data, func()) {
 	db, err := gorm.Open(mysql.Open(c.DSN()), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true, // 禁用外键约束
 		NamingStrategy: schema.NamingStrategy{
@@ -77,6 +77,7 @@ func NewRedisDao(c *configs.Redis, logger *logrus.Logger) (*Redis, func()) {
 	}
 	return &Redis{
 			rdb: rdb,
+			RDB: rdb,
 		}, func() {
 			logger.Info("closing the redis resources")
 

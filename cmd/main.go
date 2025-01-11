@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bi-activity/middleware"
 	"bi-activity/routes"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -23,9 +21,12 @@ func main() {
 	//// TODO 初始化路由
 	//
 	//r.Run(":8080")
+<<<<<<< HEAD
 
-	r := gin.Default()
-	r.Use(middleware.CORSMiddleware())
-	routes.InitHomeRouter(r)
+	r := routes.InitRouter()
+
+=======
+	r := routes.InitRouter()
+>>>>>>> 676784c24d7df0c2f7a1fdb63d25a348922dd0ce
 	r.Run(":8080")
 }

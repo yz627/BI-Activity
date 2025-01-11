@@ -5,8 +5,6 @@ import (
 	"bi-activity/response/student_response"
 	"bi-activity/service/student_service"
 	"net/http"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,17 +19,17 @@ func NewStudentController(studentService student_service.StudentService) *Studen
 }
 
 func (c *StudentController) GetStudent(ctx *gin.Context) {
-    // 解析ID
-    idStr := ctx.Param("id")
-    id, err := strconv.ParseUint(idStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    userId, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized, 
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
 
+    // 类型断言确保是 uint 类型
+    id, _ := userId.(uint)
     // 获取学生信息
     studentInfo, err := c.studentService.GetStudent(uint(id))
     if err != nil {
@@ -48,16 +46,17 @@ func (c *StudentController) GetStudent(ctx *gin.Context) {
 }
 
 func (c *StudentController) UpdateStudent(ctx *gin.Context) {
-    // 解析ID
-    idStr := ctx.Param("id")
-    id, err := strconv.ParseUint(idStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    userId, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized, 
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
+
+    // 类型断言确保是 uint 类型
+    id, _ := userId.(uint)
 
     // 绑定请求数据
     var req student_response.UpdateStudentRequest
@@ -85,16 +84,17 @@ func (c *StudentController) UpdateStudent(ctx *gin.Context) {
 
 // DeleteStudent 删除学生
 func (c *StudentController) DeleteStudent(ctx *gin.Context) {
-    // 解析ID
-    idStr := ctx.Param("id")
-    id, err := strconv.ParseUint(idStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    userId, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized, 
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
+
+    // 类型断言确保是 uint 类型
+    id, _ := userId.(uint)
 
     // 删除学生
     if err := c.studentService.DeleteStudent(uint(id)); err != nil {

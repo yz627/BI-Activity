@@ -7,6 +7,7 @@ var (
 	// 基础错误
 	ErrStudentNotFoundError  = errors.New("student not found")
 	ErrInvalidStudentIDError = errors.New("invalid student id")
+	ErrUnauthorizedError = errors.New("unauthorized")
 
 	// 组织相关错误
 	ErrCollegeNotFoundError     = errors.New("college not found")

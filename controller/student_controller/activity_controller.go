@@ -21,17 +21,17 @@ func NewActivityController(activityService student_service.ActivityService) *Act
 
 // CreateActivity 创建活动
 func (c *ActivityController) CreateActivity(ctx *gin.Context) {
-    // 获取发布者ID
-    publisherIDStr := ctx.Param("id")
-    publisherID64, err := strconv.ParseUint(publisherIDStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    // 从 context 获取用户 ID
+    userID, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized,
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
-	publisherID := uint(publisherID64)
+
+    publisherID, _ := userID.(uint)
 
     // 绑定请求数据
     var req student_response.CreateActivityRequest
@@ -58,17 +58,17 @@ func (c *ActivityController) CreateActivity(ctx *gin.Context) {
 
 // GetMyActivities 获取我的活动列表
 func (c *ActivityController) GetMyActivities(ctx *gin.Context) {
-    publisherIDStr := ctx.Param("id")
-    publisherID64, err := strconv.ParseUint(publisherIDStr, 10, 64)
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, student_response.Error(
-            student_error.ErrInvalidStudentID,
-            student_error.GetErrorMsg(student_error.ErrInvalidStudentID),
+    // 从 context 获取用户 ID
+    userID, exists := ctx.Get("id")
+    if !exists {
+        ctx.JSON(http.StatusUnauthorized, student_response.Error(
+            student_error.ErrUnauthorized,
+            student_error.GetErrorMsg(student_error.ErrUnauthorized),
         ))
         return
     }
 
-	publisherID := uint(publisherID64)
+    publisherID, _ := userID.(uint)
     activities, err := c.activityService.GetMyActivities(publisherID)
     if err != nil {
         errCode := student_error.GetErrorCode(err)

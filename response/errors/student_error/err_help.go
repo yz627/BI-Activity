@@ -18,6 +18,8 @@ func GetErrorCode(err error) int {
 		return ErrStudentNotFound
 	case errors.Is(err, ErrInvalidStudentIDError):
 		return ErrInvalidStudentID
+	case errors.Is(err, ErrUnauthorizedError):
+		return ErrUnauthorized
 
 	// 学院相关错误
 	case errors.Is(err, ErrCollegeNotFoundError):
