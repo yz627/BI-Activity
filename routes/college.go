@@ -6,8 +6,10 @@ import (
 	"bi-activity/dao"
 	"bi-activity/dao/collegeDAO"
 	"bi-activity/service/collegeService"
+	"bi-activity/utils/collegeUtils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"log"
 )
 
 // 配置实例
@@ -20,6 +22,7 @@ func College(r *gin.Engine) {
 	personalCenter(r)
 	memberManagement(r)
 	activityManagement(r)
+	uploadRouter(r)
 }
 
 func personalCenter(r *gin.Engine) {
@@ -62,4 +65,16 @@ func activityManagement(r *gin.Engine) {
 	amGroup.POST("/activity", amController.UpdateAuditRecord)
 	amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)
 	amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord)
+	amGroup.POST("/activityRelease", amController.AddActivity)
+}
+
+func uploadRouter(r *gin.Engine) {
+	// 文件上传工具
+	uploadUtils := collegeUtils.NewUploadUtils(config.AliOSS)
+	log.Println(config.AliOSS.Endpoint)
+	log.Println(config.AliOSS.AccessKeyId)
+	log.Println(config.AliOSS.AccessKeySecret)
+	log.Println(config.AliOSS.BucketName)
+	uploadController := collegeController.NewUploadController(uploadUtils)
+	r.POST("/college/upload", uploadController.Upload)
 }

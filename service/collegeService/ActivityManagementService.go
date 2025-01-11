@@ -13,6 +13,7 @@ type ActivityManagementDAO interface {
 	UpdateAuditRecord(id uint, status int)
 	GetAdmissionRecord(collegeId uint, status, page, size int) *cr.Result
 	UpdateAdmissionRecord(id uint, status int)
+	AddActivity(c *gin.Context)
 }
 
 type ActivityManagementService struct {
@@ -51,4 +52,8 @@ func (a *ActivityManagementService) UpdateAdmissionRecord(c *gin.Context) {
 	var participant = models.Participant{}
 	_ = c.ShouldBindJSON(&participant)
 	a.activityManagementDAO.UpdateAdmissionRecord(participant.ID, participant.Status)
+}
+
+func (a *ActivityManagementService) AddActivity(c *gin.Context) {
+	
 }
