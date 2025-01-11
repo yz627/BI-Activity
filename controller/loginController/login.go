@@ -42,6 +42,8 @@ func (lh *LoginHandler) Login(c *gin.Context) {
 		token, err = lh.ls.StudentLogin(c.Request.Context(), request.Username, request.Password)
 	case "college":
 		token, err = lh.ls.CollegeLogin(c.Request.Context(), request.Username, request.Password)
+	case "admin":
+		token, err = lh.ls.AdminLogin(c.Request.Context(), request.Username, request.Password)
 	default:
 		c.String(http.StatusBadRequest, "不合法角色")
 		return
