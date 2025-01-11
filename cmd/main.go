@@ -1,32 +1,26 @@
-package main
+package routes
 
 import (
-	"bi-activity/routes"
+	"bi-activity/middleware"
+	"github.com/gin-gonic/gin"
 )
 
-func main() {
-	//// 获取配置文件
-	//conf := configs.InitConfig()
-	//db, fn := dao.NewDateDao(conf.Database, logrus.New())
-	//rdb, rfn := dao.NewRedisDao(conf.Redis, logrus.New())
-	//defer fn()
-	//defer rfn()
-	//
-	//r := gin.Default()
-	//
-	//// 添加中间件
-	//// TODO
-	//r.Use(middleware.CORSMiddleware())
-	//
-	//// TODO 初始化路由
-	//
-	//r.Run(":8080")
-<<<<<<< HEAD
+func InitRouter() *gin.Engine {
+	router := gin.Default()
+	router.Use(middleware.CORSMiddleware())
 
-	r := routes.InitRouter()
+	// 首页路由
+	InitHomeRouter(router)
+	// 登录注册相关路由
+	loginRegisterRouter(router)
+	// 学院相关的路由
+	College(router)
+	// 学生个人中心路由
+	InitStudentRouter(router)
 
-=======
-	r := routes.InitRouter()
->>>>>>> 676784c24d7df0c2f7a1fdb63d25a348922dd0ce
-	r.Run(":8080")
+	// home相关路由
+	InitHomeRouter(router)
+
+
+	return router
 }

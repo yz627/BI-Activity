@@ -35,7 +35,7 @@ type Activity struct {
 	StartTime         string `json:"startTime"`         // 开始时间：HH:MM
 	EndTime           string `json:"endTime"`           // 结束时间：HH:MM
 	RecruitmentNumber int    `json:"recruitmentNumber"` // 招募人数
-	RecruitedNumber   int    `json:"recruitedNumber"`   // 已招募人数
+	RecruitedNumber   int64  `json:"recruitedNumber"`   // 已招募人数
 
 	// 活动限制
 	RegistrationRestrictions string `json:"registrationRestrictions"` // 报名限制：本学院成员、全校成员
@@ -49,11 +49,15 @@ type Activity struct {
 	ActivityName     string `json:"activityName"`     // 活动名称
 	ActivityImageUrl string `json:"activityImageUrl"` // 活动图片地址
 	PublisherName    string `json:"publisherName"`    // 活动发布者名称
-	CreatedAt        string `json:"createdAt"`        // 活动发布时间
-	ActivityStatus   int    `json:"activityStatus"`   // 活动状态：
+	IsPublisher      int    `json:"is_publisher"`
+	CreatedAt        string `json:"createdAt"`      // 活动发布时间
+	ActivityStatus   int    `json:"activityStatus"` // 活动状态：
 
 	// 报名状态
 	ParticipateStatus int `json:"participateStatus"`
+
+	// 是否复合报名限制
+	IsCompliance int `json:"isCompliance"`
 }
 
 // ActivityType service层返回的ActivityType结构体
@@ -64,9 +68,9 @@ type ActivityType struct {
 }
 
 type BiData struct {
-	ActivityTotal int `json:"activityTotal"`
-	StudentTotal  int `json:"studentTotal"`
-	CollegeTotal  int `json:"collegeTotal"`
+	ActivityTotal int64 `json:"activityTotal"`
+	StudentTotal  int64 `json:"studentTotal"`
+	CollegeTotal  int64 `json:"collegeTotal"`
 }
 
 type BiDataLeaderboard struct {

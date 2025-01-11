@@ -9,7 +9,7 @@ import (
 
 type CollegeRepo interface {
 	// GetCollegeTotal 获取学院总数
-	GetCollegeTotal(ctx context.Context) (int, error)
+	GetCollegeTotal(ctx context.Context) (int64, error)
 	// GetCollegeNameByID 根据学院ID获取学院名称
 	GetCollegeNameByID(ctx context.Context, id uint) (string, error)
 }
@@ -26,7 +26,7 @@ func NewCollegeDataCase(db *dao.Data, logger *logrus.Logger) CollegeRepo {
 	}
 }
 
-func (c *collegeDataCase) GetCollegeTotal(ctx context.Context) (int, error) {
+func (c *collegeDataCase) GetCollegeTotal(ctx context.Context) (int64, error) {
 	var total int64
 	// 1. 学院状态有效（未被删除） gorm自动过滤
 	err := c.db.DB().WithContext(ctx).
@@ -36,7 +36,7 @@ func (c *collegeDataCase) GetCollegeTotal(ctx context.Context) (int, error) {
 		return -1, err
 	}
 
-	return int(total), nil
+	return total, nil
 }
 
 func (c *collegeDataCase) GetCollegeNameByID(ctx context.Context, id uint) (string, error) {
