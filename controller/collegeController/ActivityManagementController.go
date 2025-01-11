@@ -33,3 +33,7 @@ func (a *ActivityManagementController) GetAdmissionRecord(c *gin.Context) {
 func (a *ActivityManagementController) UpdateAdmissionRecord(c *gin.Context) {
 	a.activityManagementSerivce.UpdateAdmissionRecord(c)
 }
+
+func (a *ActivityManagementController) AddActivity(c *gin.Context) {
+	a.activityManagementSerivce.AddActivity(c)
+}
