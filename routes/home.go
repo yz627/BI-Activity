@@ -12,16 +12,8 @@ import (
 )
 
 func InitHomeRouter(r *gin.Engine) {
-<<<<<<< HEAD
-	conf := configs.InitConfig("../configs/")
-	db, fn := dao.NewDataDao(conf.Database, logrus.New())
-	redis, fn2 := dao.NewRedisDao(conf.Redis, logrus.New())
-	defer fn()
-	defer fn2()
-=======
 	conf := configs.InitConfig("./configs/")
 	redis, _ := dao.NewRedisDao(conf.Redis, logrus.New())
->>>>>>> 676784c24d7df0c2f7a1fdb63d25a348922dd0ce
 	logger := logrus.New()
 
 	// 数据层
