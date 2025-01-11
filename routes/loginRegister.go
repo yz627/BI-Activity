@@ -16,9 +16,10 @@ import (
 func loginRegisterRouter(r *gin.Engine) {
 	sdc := loginRegisterDao.NewStudentDataCase(data, logrus.New())
 	cdc := loginRegisterDao.NewCollegeDataCase(data, logrus.New())
+	adc := loginRegisterDao.NewAdminDataCase(data, logrus.New())
 
 	// 登录相关
-	ls := loginService.NewLoginService(sdc, cdc, logrus.New())
+	ls := loginService.NewLoginService(sdc, cdc, adc, logrus.New())
 	lh := loginController.NewLoginHandler(ls, logrus.New())
 
 	// 学生注册相关

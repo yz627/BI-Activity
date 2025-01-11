@@ -49,4 +49,3 @@ AliOSS:
   AccessKeyId: ""
   AccessKeySecret: ""
   BucketName: "bi-activity-bucket"
-  BasePath: "uploads"
