@@ -5,6 +5,7 @@ import (
 	"bi-activity/controller/collegeController"
 	"bi-activity/dao"
 	"bi-activity/dao/collegeDAO"
+	"bi-activity/middleware"
 	"bi-activity/service/collegeService"
 	"bi-activity/utils/collegeUtils"
 	"github.com/gin-gonic/gin"
@@ -33,10 +34,13 @@ func personalCenter(r *gin.Engine) {
 
 	pc := collegeController.NewPersonalCenter(pcService)
 	pcGroup := r.Group("/college/personalCenter")
-	pcGroup.GET("/collegeInfo", pc.GetCollegeInfo)
-	pcGroup.POST("/collegeInfo", pc.UpdateCollegeInfo)
-	pcGroup.GET("/adminInfo", pc.GetAdminInfo)
-	pcGroup.POST("/adminInfo", pc.UpdateAdminInfo)
+	pcGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		pcGroup.GET("/collegeInfo", pc.GetCollegeInfo)     // 已优化
+		pcGroup.POST("/collegeInfo", pc.UpdateCollegeInfo) // 无需更改
+		pcGroup.GET("/adminInfo", pc.GetAdminInfo)         // 已优化
+		pcGroup.POST("/adminInfo", pc.UpdateAdminInfo)     // 无需更改
+	}
 }
 
 func memberManagement(r *gin.Engine) {
