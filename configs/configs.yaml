@@ -28,6 +28,8 @@ Jwt:
 
 OSS:
   Endpoint: "oss-cn-shenzhen.aliyuncs.com"
+  AccessKeyID: 
+  AccessKeySecret: 
   BucketName: "bi-activity"
   BasePath: "uploads"
 
@@ -41,3 +43,10 @@ SMS:
   SignName: "Bi活动"
   TemplateCode: "SMS_476280302"
   RegionId: "cn-hangzhou"
+
+AliOSS:
+  Endpoint: "oss-cn-shenzhen.aliyuncs.com"
+  AccessKeyId: 
+  AccessKeySecret: 
+  BucketName: "bi-activity"
+  BasePath: "uploads"

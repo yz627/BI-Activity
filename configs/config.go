@@ -24,6 +24,7 @@ type Config struct {
 	OSS        *OSS        `yaml:"OSS"`
 	Email      *Email      `yaml:"Email"`
 	SMS        *SMS        `yaml:"SMS"`
+	AliOSS     *AliOSS     `yaml:"AliOSS"`
 }
 
 func InitConfig(path ...string) *Config {
@@ -140,4 +141,13 @@ type SMS struct {
     SignName        string `yaml:"SignName"`
     TemplateCode    string `yaml:"TemplateCode"`
     RegionId        string `yaml:"RegionId"`
+}
+
+
+type AliOSS struct {
+    Endpoint        string `yaml:"Endpoint"`
+    AccessKeyId     string `yaml:"AccessKeyId"`
+    AccessKeySecret string `yaml:"AccessKeySecret"`
+    BucketName      string `yaml:"BucketName"`
+    BasePath        string `yaml:"BasePath"`
 }
