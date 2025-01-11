@@ -6,7 +6,6 @@ import (
 	"bi-activity/service/collegeService"
 	"github.com/gin-gonic/gin"
 	"log"
-	"strconv"
 )
 
 type PersonalCenter struct {
@@ -22,9 +21,10 @@ func NewPersonalCenter(pcService *collegeService.PcService) PersonalCenter {
 
 func (p *PersonalCenter) GetCollegeInfo(c *gin.Context) {
 
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := c.Get("id")
+	collegeId := id.(uint)
 	log.Println("查询学院信息：", id)
-	collegeInfo := p.pcService.GetCollegeInfo(id)
+	collegeInfo := p.pcService.GetCollegeInfo(collegeId)
 	c.JSON(response.Success(collegeInfo))
 }
 
@@ -39,9 +39,10 @@ func (p *PersonalCenter) UpdateCollegeInfo(c *gin.Context) {
 }
 
 func (p *PersonalCenter) GetAdminInfo(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := c.Get("id")
+	collegeId := id.(uint)
 	log.Println("查询学院管理员信息：", id)
-	adminInfo := p.pcService.GetAdminInfo(id)
+	adminInfo := p.pcService.GetAdminInfo(collegeId)
 	c.JSON(response.Success(adminInfo))
 }
 

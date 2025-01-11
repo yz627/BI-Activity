@@ -21,14 +21,49 @@ func NewPcDAO(data *dao.Data) *PcDAO {
 	}
 }
 
-func (p *PcDAO) GetCollegeInfo(id int) *college.CollegeInfo {
-	collegeInfo := &college.CollegeInfo{}
-	sql := fmt.Sprintf("SELECT c.id, c.college_account, c.college_name, c.campus, c.college_address, c.college_introduction, concat(i.url, i.file_name) as college_avatar_url " +
-		"FROM college c, image i " +
-		"WHERE c.id = ? AND c.college_avatar_id = i.id;")
+func (p *PcDAO) GetCollegeInfo(id uint) *college.CollegeInfo {
+	//collegeInfo := &college.CollegeInfo{}
+	//sql := fmt.Sprintf("SELECT c.id, c.college_account, c.college_name, c.campus, c.college_address, c.college_introduction, concat(i.url, i.file_name) as college_avatar_url " +
+	//	"FROM college c, image i " +
+	//	"WHERE c.id = ? AND c.college_avatar_id = i.id;")
+	//db := p.data.DB()
+	//db.Raw(sql, id).Scan(collegeInfo)
+	//return collegeInfo
+
 	db := p.data.DB()
-	db.Raw(sql, id).Scan(collegeInfo)
-	return collegeInfo
+	// 查询 college 表中的 college_avatar_id
+	var clg models.College
+	if err := db.Where("id = ?", id).First(&clg).Error; err != nil {
+		log.Println("学院头像信息查询失败: ", err)
+		return nil
+	}
+
+	// 如果 college_avatar_id 为空，先在 image 表中插入一条空记录
+	if clg.CollegeAvatarID == 0 {
+		var newImage models.Image
+		if err := db.Create(&newImage).Error; err != nil {
+			log.Println("image记录创建失败: ", err)
+			return nil
+		}
+		// 更新 college 表中的 college_avatar_id
+		if err := db.Model(&models.College{}).Where("id = ?", id).Update("college_avatar_id", newImage.ID).Error; err != nil {
+			log.Println("学员头像更新失败：", err)
+			return nil
+		}
+		clg.CollegeAvatarID = newImage.ID
+	}
+
+	// 进行多表查询
+	var collegeInfo college.CollegeInfo
+	sql := fmt.Sprintf("SELECT c.id, c.college_account, c.college_name, c.campus, c.college_address, c.college_introduction, concat(i.url, i.file_name) as college_avatar_url " +
+		"FROM college c " +
+		"JOIN image i ON c.college_avatar_id = i.id " +
+		"WHERE c.id = ?")
+	if err := db.Raw(sql, id).Scan(&collegeInfo).Error; err != nil {
+		log.Println("学员信息查询失败：", err)
+	}
+
+	return &collegeInfo
 }
 
 func (p *PcDAO) UpdateCollegeInfo(collegeInfo *college.CollegeInfo) {
@@ -57,7 +92,7 @@ func (p *PcDAO) UpdateCollegeInfo(collegeInfo *college.CollegeInfo) {
 	db.Exec(sql3, collegeInfo.Campus, collegeInfo.CollegeAddress, collegeInfo.CollegeIntroduction, now, collegeInfo.ID)
 }
 
-func (p *PcDAO) GetAdminInfo(id int) *college.AdminInfo {
+func (p *PcDAO) GetAdminInfo(id uint) *college.AdminInfo {
 	adminInfo := &college.AdminInfo{}
 	sql := fmt.Sprintf("SELECT c.id, c.admin_name, c.admin_id_number, c.admin_image_id, c.admin_phone, c.admin_email, concat(i.url, i.file_name) as admin_image_url " +
 		"FROM college c, image i " +
