@@ -22,7 +22,7 @@ func NewMmDAO(data *dao.Data) *MmDAO {
 	}
 }
 
-func (m *MmDAO) GetAuditRecord(id, status, page, size int) *cr.Result {
+func (m *MmDAO) GetAuditRecord(id uint, status int, page, size uint) *cr.Result {
 	// 数据库连接实例
 	db := m.data.DB()
 	// 查询结果
@@ -62,16 +62,16 @@ func (m *MmDAO) UpdateAuditRecord(audit *college.Audit) {
 	}
 }
 
-func (m *MmDAO) QueryMember(id, page, size int, studentName, studentId, start, end string) *cr.Result {
+func (m *MmDAO) QueryMember(id, page, size uint, studentName, studentId, start, end string) *cr.Result {
 	// 数据库连接实例
 	db := m.data.DB()
 	// 查询结果
 	total := 0
 	records := []college.Member{}
 	// sql操作
-	sql1 := "SELECT count(*) FROM student s, join_college_audit j " + "WHERE s.college_id = j.college_id"
+	sql1 := "SELECT count(*) FROM student s, join_college_audit j " + "WHERE s.college_id = j.college_id and s.id = j.student_id and j.status = 2 and s.college_id = ? "
 	// 条件分页查询条目
-	sql2 := "SELECT s.student_name, s.student_id, j.updated_at FROM student s, join_college_audit j " + "WHERE s.college_id = j.college_id "
+	sql2 := "SELECT s.student_name, s.student_id, j.updated_at FROM student s, join_college_audit j " + "WHERE s.college_id = j.college_id and s.id = j.student_id and j.status = 2 and s.college_id = ? "
 	if studentName != "" {
 		sql1 += fmt.Sprintf(" AND s.student_name like '%%%s%%'", studentName)
 		sql2 += fmt.Sprintf("AND s.student_name like '%%%s%%' ", studentName)
@@ -87,8 +87,8 @@ func (m *MmDAO) QueryMember(id, page, size int, studentName, studentId, start, e
 
 	sql1 += ";"
 	sql2 += "ORDER BY j.updated_at DESC LIMIT ?, ?;"
-	db.Raw(sql1).Scan(&total)
-	db.Raw(sql2, (page-1)*size, size).Scan(&records)
+	db.Raw(sql1, id).Scan(&total)
+	db.Raw(sql2, id, (page-1)*size, size).Scan(&records)
 	result := cr.NewResult(total, records)
 	log.Println(result)
 	return result
