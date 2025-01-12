@@ -68,11 +68,14 @@ func activityManagement(r *gin.Engine) {
 
 	amController := collegeController.NewActivityManagementController(amService)
 	amGroup := r.Group("/college/activityManagement")
-	amGroup.GET("/activity", amController.GetAuditRecord)
-	amGroup.POST("/activity", amController.UpdateAuditRecord)
-	amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)
-	amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord)
-	amGroup.POST("/activityRelease", amController.AddActivity)
+	amGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		amGroup.GET("/activity", amController.GetAuditRecord)
+		amGroup.POST("/activity", amController.UpdateAuditRecord)
+		amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)
+		amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord)
+		amGroup.POST("/activityRelease", amController.AddActivity)
+	}
 }
 
 func uploadRouter(r *gin.Engine) {
@@ -83,5 +86,5 @@ func uploadRouter(r *gin.Engine) {
 	log.Println(config.AliOSS.AccessKeySecret)
 	log.Println(config.AliOSS.BucketName)
 	uploadController := collegeController.NewUploadController(uploadUtils)
-	r.POST("/college/upload", uploadController.Upload)
+	r.POST("/college/upload", uploadController.Upload) // 无需优化
 }

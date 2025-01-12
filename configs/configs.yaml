@@ -45,7 +45,7 @@ SMS:
   RegionId: "cn-hangzhou"
 
 AliOSS:
-  Endpoint: "oss-cn-guangzhou.aliyuncs.com"
+  Endpoint: "https://oss-cn-guangzhou.aliyuncs.com"
   AccessKeyId: ""
   AccessKeySecret: ""
   BucketName: "bi-activity-bucket"

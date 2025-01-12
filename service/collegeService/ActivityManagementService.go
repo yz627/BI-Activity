@@ -3,8 +3,10 @@ package collegeService
 import (
 	"bi-activity/dao/collegeDAO"
 	"bi-activity/models"
+	"bi-activity/models/college"
 	cr "bi-activity/response/college"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 )
 
@@ -55,5 +57,17 @@ func (a *ActivityManagementService) UpdateAdmissionRecord(c *gin.Context) {
 }
 
 func (a *ActivityManagementService) AddActivity(c *gin.Context) {
-	
+	// 获取请求体
+	var activityRelease = college.ActivityReleaseRequest{}
+	_ = c.ShouldBindJSON(&activityRelease)
+	// 分离数据
+	// activity
+	var activity = activityRelease.GetActivity()
+	id, _ := c.Get("id")
+	log.Println(id)
+	activityPublisherId := id.(uint)
+	activity.ActivityPublisherID = activityPublisherId
+	// image
+	var image = activityRelease.GetImage()
+	a.activityManagementDAO.AddActivity(activity, image)
 }
