@@ -29,11 +29,12 @@ func NewActivityManagementService(activityManagementDAO *collegeDAO.ActivityMana
 }
 
 func (a *ActivityManagementService) GetAuditRecord(c *gin.Context) *cr.Result {
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := c.Get("id")
+	collegeId := id.(uint)
 	status, _ := strconv.Atoi(c.Query("status"))
 	page, _ := strconv.Atoi(c.Query("page"))
 	size, _ := strconv.Atoi(c.Query("size"))
-	return a.activityManagementDAO.GetAuditRecord(uint(id), status, page, size)
+	return a.activityManagementDAO.GetAuditRecord(collegeId, status, page, size)
 }
 
 func (a *ActivityManagementService) UpdateAuditRecord(c *gin.Context) {
@@ -43,11 +44,12 @@ func (a *ActivityManagementService) UpdateAuditRecord(c *gin.Context) {
 }
 
 func (a *ActivityManagementService) GetAdmissionRecord(c *gin.Context) *cr.Result {
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := c.Get("id")
+	collegeId := id.(uint)
 	status, _ := strconv.Atoi(c.Query("status"))
 	page, _ := strconv.Atoi(c.Query("page"))
 	size, _ := strconv.Atoi(c.Query("size"))
-	return a.activityManagementDAO.GetAdmissionRecord(uint(id), status, page, size)
+	return a.activityManagementDAO.GetAdmissionRecord(collegeId, status, page, size)
 }
 
 func (a *ActivityManagementService) UpdateAdmissionRecord(c *gin.Context) {

@@ -70,10 +70,10 @@ func activityManagement(r *gin.Engine) {
 	amGroup := r.Group("/college/activityManagement")
 	amGroup.Use(middleware.JWTAuthMiddleware())
 	{
-		amGroup.GET("/activity", amController.GetAuditRecord)
-		amGroup.POST("/activity", amController.UpdateAuditRecord)
-		amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)
-		amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord)
+		amGroup.GET("/activity", amController.GetAuditRecord)                  // 已优化
+		amGroup.POST("/activity", amController.UpdateAuditRecord)              // 无需优化
+		amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)     // 已优化
+		amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord) // 无需优化
 		amGroup.POST("/activityRelease", amController.AddActivity)
 	}
 }

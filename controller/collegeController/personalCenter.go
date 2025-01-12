@@ -20,7 +20,6 @@ func NewPersonalCenter(pcService *collegeService.PcService) PersonalCenter {
 }
 
 func (p *PersonalCenter) GetCollegeInfo(c *gin.Context) {
-
 	id, _ := c.Get("id")
 	collegeId := id.(uint)
 	log.Println("查询学院信息：", id)
