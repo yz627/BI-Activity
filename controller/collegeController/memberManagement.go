@@ -21,12 +21,13 @@ func NewMemberManagement(mmService *collegeService.MmService) MemberManagement {
 }
 
 func (m *MemberManagement) GetAuditRecord(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := c.Get("id")
+	collegeId := id.(uint)
 	status, _ := strconv.Atoi(c.Query("status"))
 	page, _ := strconv.Atoi(c.Query("page"))
 	size, _ := strconv.Atoi(c.Query("size"))
 	log.Println("查询加入组织审核记录：id:", id, "status:", status, "page:", page, "size:", size)
-	result := m.mmService.GetAuditRecord(id, status, page, size)
+	result := m.mmService.GetAuditRecord(collegeId, status, uint(page), uint(size))
 	log.Println(response.Success(result))
 	c.JSON(response.Success(result))
 }
@@ -40,7 +41,8 @@ func (m *MemberManagement) UpdateAuditRecord(c *gin.Context) {
 }
 
 func (m *MemberManagement) QueryMember(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := c.Get("id")
+	collegeId := id.(uint)
 	page, _ := strconv.Atoi(c.Query("page"))
 	size, _ := strconv.Atoi(c.Query("size"))
 	studentName := c.Query("studentName")
@@ -51,7 +53,7 @@ func (m *MemberManagement) QueryMember(c *gin.Context) {
 	if studentName == "" || studentId == "" || start == "" || end == "" {
 		log.Println(true)
 	}
-	result := m.mmService.QueryMember(id, page, size, studentName, studentId, start, end)
+	result := m.mmService.QueryMember(collegeId, uint(page), uint(size), studentName, studentId, start, end)
 	log.Println(response.Success(result))
 	c.JSON(response.Success(result))
 }

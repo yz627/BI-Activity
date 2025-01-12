@@ -51,10 +51,13 @@ func memberManagement(r *gin.Engine) {
 
 	mm := collegeController.NewMemberManagement(mmService)
 	mmGroup := r.Group("/college/memberManagement")
-	mmGroup.GET("/audit", mm.GetAuditRecord)
-	mmGroup.POST("/audit", mm.UpdateAuditRecord)
-	mmGroup.GET("/query", mm.QueryMember)
-	mmGroup.DELETE("/delete", mm.DeleteMember)
+	mmGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		mmGroup.GET("/audit", mm.GetAuditRecord)     // 已优化
+		mmGroup.POST("/audit", mm.UpdateAuditRecord) // 无需优化
+		mmGroup.GET("/query", mm.QueryMember)        // 已优化
+		mmGroup.DELETE("/delete", mm.DeleteMember)   // 已优化
+	}
 }
 
 func activityManagement(r *gin.Engine) {
