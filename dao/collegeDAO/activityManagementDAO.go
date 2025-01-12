@@ -100,7 +100,7 @@ func (a *ActivityManagementDAO) GetAdmissionRecord(collegeId uint, status, page,
 	query = query.Select("count(*)")                                              // 选择计数
 	query = query.Joins("join activity on activity.id = participant.activity_id") // 连接Activity表
 	query = query.Joins("join student on student.id = participant.student_id")    // 连接Student表
-	query = query.Where("student.college_id = ?", collegeId)                      // 添加学院ID条件
+	query = query.Where("activity.activity_publisher_id = ?", collegeId)          // 添加学院ID条件
 	query = query.Where("participant.status = ?", status)                         // 添加状态条件
 	query = query.Where("activity.activity_nature = ?", label.ActivityNatureCollege)
 	query.Count(&total)
@@ -117,7 +117,7 @@ func (a *ActivityManagementDAO) GetAdmissionRecord(collegeId uint, status, page,
 		" participant.status as Status")
 	query2 = query2.Joins("join activity on activity.id = participant.activity_id") // 连接Activity表
 	query2 = query2.Joins("join student on student.id =participant.student_id")     // 连接Student表
-	query2 = query2.Where("student.college_id = ?", collegeId)                      // 添加学院ID条件
+	query2 = query2.Where("activity.activity_publisher_id = ?", collegeId)          // 添加学院ID条件
 	query2 = query2.Where("participant.status = ?", status)                         // 添加状态条件
 	query2 = query2.Where("activity.activity_nature = ?", label.ActivityNatureCollege)
 	// 排序
