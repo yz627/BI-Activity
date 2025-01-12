@@ -146,3 +146,17 @@ func (a *ActivityManagementDAO) UpdateAdmissionRecord(id uint, status int) {
 	log.Println("审核记录")
 	log.Println(participant)
 }
+
+func (a *ActivityManagementDAO) AddActivity(activity *models.Activity, image *models.Image) {
+	db := a.data.DB()
+
+	// 如果 image 不为 nil，则插入 Image 表
+	if image != nil {
+		db.Create(image)
+		// 将插入的 Image 记录的 ID 赋值给 Activity 的 ActivityImageID 字段
+		activity.ActivityImageID = image.ID
+	}
+
+	// 插入 Activity 表
+	db.Create(activity)
+}
