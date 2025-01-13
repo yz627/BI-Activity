@@ -50,4 +50,12 @@ var (
 	// 参与者相关错误
 	ErrParticipantNotFoundError = errors.New("participant not found")
 	ErrParticipantInvalidError  = errors.New("invalid participant")
+
+	// 消息相关错误
+    ErrMessageNotFoundError        = errors.New("message not found")
+    ErrInvalidReceiverError        = errors.New("invalid receiver")
+    ErrInvalidSenderError         = errors.New("invalid sender")
+    ErrCollegeChatNotAllowedError = errors.New("college to college chat not allowed")
+    ErrInvalidMessageTypeError    = errors.New("invalid message type")
+    ErrConversationNotFoundError  = errors.New("conversation not found")
 )

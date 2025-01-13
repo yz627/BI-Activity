@@ -49,6 +49,15 @@ const (
 	// 参与者相关错误码 (10501-10599)
 	ErrParticipantNotFound = 10501
 	ErrParticipantInvalid  = 10502
+
+
+	// 消息相关错误码 (10601-10699)
+	ErrMessageNotFound        = 10601 // 消息不存在
+    ErrInvalidReceiver        = 10602 // 无效的接收者
+    ErrInvalidSender         = 10603 // 无效的发送者
+    ErrCollegeChatNotAllowed = 10604 // 学院之间不允许聊天
+    ErrInvalidMessageType    = 10605 // 无效的消息类型
+    ErrConversationNotFound  = 10606 // 会话不存在
 )
 
 // 错误码对应的错误信息
@@ -99,4 +108,12 @@ var errMsgMap = map[int]string{
 	// 参与者相关错误
 	ErrParticipantNotFound: "参与记录不存在",
 	ErrParticipantInvalid:  "无效的参与记录",
+
+	// 消息相关错误
+    ErrMessageNotFound:        "消息不存在",
+    ErrInvalidReceiver:        "无效的接收者",
+    ErrInvalidSender:         "无效的发送者",
+    ErrCollegeChatNotAllowed: "学院之间不允许聊天",
+    ErrInvalidMessageType:    "无效的消息类型",
+    ErrConversationNotFound:  "会话不存在",
 }

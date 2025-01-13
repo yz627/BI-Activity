@@ -115,6 +115,21 @@ func GetErrorCode(err error) int {
 	case errors.Is(err, ErrParticipantInvalidError):
 		return ErrParticipantInvalid
 
+	// 消息相关错误
+	case errors.Is(err, ErrMessageNotFoundError):
+		return ErrMessageNotFound
+	case errors.Is(err, ErrInvalidReceiverError):
+		return ErrInvalidReceiver
+	case errors.Is(err, ErrInvalidSenderError):
+		return ErrInvalidSender
+	case errors.Is(err, ErrCollegeChatNotAllowedError):
+		return ErrCollegeChatNotAllowed
+	case errors.Is(err, ErrInvalidMessageTypeError):
+		return ErrInvalidMessageType
+	case errors.Is(err, ErrConversationNotFoundError):
+		return ErrConversationNotFound
+
+
 	default:
 		return -1
 	}
