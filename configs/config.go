@@ -35,7 +35,6 @@ func InitConfig(path ...string) *Config {
 	viper.AddConfigPath(configPath)
 	viper.SetConfigName("configs")
 	viper.SetConfigType("yaml")
-	viper.SetConfigFile("D:\\Codelib\\BI-Activity\\configs\\configs.yaml") // 临时设置
 	err := viper.ReadInConfig()
 	if err != nil {
 		logrus.Fatalf("config file load failed: %s", err)
