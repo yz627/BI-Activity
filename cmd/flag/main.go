@@ -9,7 +9,9 @@ import (
 
 // 表的迁移
 func main() {
+
 	conf := configs.InitConfig("../../configs/")
+
 	data, fn := dao.NewDataDao(conf.Database, logrus.New())
 	defer fn()
 

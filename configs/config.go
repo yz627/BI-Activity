@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	configPath = ".\\..\\configs"
+	configPath        = ".\\..\\configs"
 	GlobalEmailSender *student_email.EmailSender
-	GlobalSMSSender *student_sms.SMSSender
+	GlobalSMSSender   *student_sms.SMSSender
 )
 
 // Config 全局配置信息
@@ -55,23 +55,23 @@ func InitConfig(path ...string) *Config {
 
 // InitSMS 初始化短信发送器
 func InitSMS(config *Config) {
-    GlobalSMSSender = student_sms.NewSMSSender(student_sms.SMSConfig{
-        AccessKeyId:     config.SMS.AccessKeyId,
-        AccessKeySecret: config.SMS.AccessKeySecret,
-        SignName:        config.SMS.SignName,
-        TemplateCode:    config.SMS.TemplateCode,
-        RegionId:        config.SMS.RegionId,
-    })
+	GlobalSMSSender = student_sms.NewSMSSender(student_sms.SMSConfig{
+		AccessKeyId:     config.SMS.AccessKeyId,
+		AccessKeySecret: config.SMS.AccessKeySecret,
+		SignName:        config.SMS.SignName,
+		TemplateCode:    config.SMS.TemplateCode,
+		RegionId:        config.SMS.RegionId,
+	})
 }
 
 func InitEmail(config *Config) {
-    GlobalEmailSender = student_email.NewEmailSender(student_email.EmailConfig{
-        Host:     config.Email.Host,
-        Port:     config.Email.Port,
-        Username: config.Email.Username,
-        Password: config.Email.Password,
-        From:     config.Email.From,
-    })
+	GlobalEmailSender = student_email.NewEmailSender(student_email.EmailConfig{
+		Host:     config.Email.Host,
+		Port:     config.Email.Port,
+		Username: config.Email.Username,
+		Password: config.Email.Password,
+		From:     config.Email.From,
+	})
 }
 
 // Database 数据库配置映射
@@ -119,35 +119,34 @@ type UserStatus struct {
 
 // OSS OSS配置信息
 type OSS struct {
-    Endpoint        string `yaml:"Endpoint"`
-    AccessKeyID     string `yaml:"AccessKeyID"`
-    AccessKeySecret string `yaml:"AccessKeySecret"`
-    BucketName      string `yaml:"BucketName"`
-    BasePath        string `yaml:"BasePath"`
+	Endpoint        string `yaml:"Endpoint"`
+	AccessKeyID     string `yaml:"AccessKeyID"`
+	AccessKeySecret string `yaml:"AccessKeySecret"`
+	BucketName      string `yaml:"BucketName"`
+	BasePath        string `yaml:"BasePath"`
 }
 
 // 邮件配置结构
 type Email struct {
-    Host     string `yaml:"Host"`
-    Port     int    `yaml:"Port"`
-    Username string `yaml:"Username"`
-    Password string `yaml:"Password"`
-    From     string `yaml:"From"`
+	Host     string `yaml:"Host"`
+	Port     int    `yaml:"Port"`
+	Username string `yaml:"Username"`
+	Password string `yaml:"Password"`
+	From     string `yaml:"From"`
 }
 
 type SMS struct {
-    AccessKeyId     string `yaml:"AccessKeyId"`
-    AccessKeySecret string `yaml:"AccessKeySecret"`
-    SignName        string `yaml:"SignName"`
-    TemplateCode    string `yaml:"TemplateCode"`
-    RegionId        string `yaml:"RegionId"`
+	AccessKeyId     string `yaml:"AccessKeyId"`
+	AccessKeySecret string `yaml:"AccessKeySecret"`
+	SignName        string `yaml:"SignName"`
+	TemplateCode    string `yaml:"TemplateCode"`
+	RegionId        string `yaml:"RegionId"`
 }
 
-
 type AliOSS struct {
-    Endpoint        string `yaml:"Endpoint"`
-    AccessKeyId     string `yaml:"AccessKeyId"`
-    AccessKeySecret string `yaml:"AccessKeySecret"`
-    BucketName      string `yaml:"BucketName"`
-    BasePath        string `yaml:"BasePath"`
+	Endpoint        string `yaml:"Endpoint"`
+	AccessKeyId     string `yaml:"AccessKeyId"`
+	AccessKeySecret string `yaml:"AccessKeySecret"`
+	BucketName      string `yaml:"BucketName"`
+	BasePath        string `yaml:"BasePath"`
 }

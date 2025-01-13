@@ -6,9 +6,9 @@ import (
 )
 
 type PcDAO interface {
-	GetCollegeInfo(id int) *college.CollegeInfo
+	GetCollegeInfo(id uint) *college.CollegeInfo
 	UpdateCollegeInfo(collegeInfo *college.CollegeInfo)
-	GetAdminInfo(id int) *college.AdminInfo
+	GetAdminInfo(id uint) *college.AdminInfo
 	UpdateAdminInfo(adminInfo *college.AdminInfo)
 }
 
@@ -23,7 +23,7 @@ func NewPcService(pcDAO *collegeDAO.PcDAO) *PcService {
 	}
 }
 
-func (p *PcService) GetCollegeInfo(id int) *college.CollegeInfo {
+func (p *PcService) GetCollegeInfo(id uint) *college.CollegeInfo {
 	return p.pcDAO.GetCollegeInfo(id)
 }
 
@@ -31,7 +31,7 @@ func (p *PcService) UpdateCollegeInfo(collegeInfo *college.CollegeInfo) {
 	p.pcDAO.UpdateCollegeInfo(collegeInfo)
 }
 
-func (p *PcService) GetAdminInfo(id int) *college.AdminInfo {
+func (p *PcService) GetAdminInfo(id uint) *college.AdminInfo {
 	return p.pcDAO.GetAdminInfo(id)
 }
 

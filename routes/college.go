@@ -5,6 +5,7 @@ import (
 	"bi-activity/controller/collegeController"
 	"bi-activity/dao"
 	"bi-activity/dao/collegeDAO"
+	"bi-activity/middleware"
 	"bi-activity/service/collegeService"
 	"bi-activity/utils/collegeUtils"
 	"github.com/gin-gonic/gin"
@@ -33,10 +34,13 @@ func personalCenter(r *gin.Engine) {
 
 	pc := collegeController.NewPersonalCenter(pcService)
 	pcGroup := r.Group("/college/personalCenter")
-	pcGroup.GET("/collegeInfo", pc.GetCollegeInfo)
-	pcGroup.POST("/collegeInfo", pc.UpdateCollegeInfo)
-	pcGroup.GET("/adminInfo", pc.GetAdminInfo)
-	pcGroup.POST("/adminInfo", pc.UpdateAdminInfo)
+	pcGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		pcGroup.GET("/collegeInfo", pc.GetCollegeInfo)     // 已优化
+		pcGroup.POST("/collegeInfo", pc.UpdateCollegeInfo) // 无需更改
+		pcGroup.GET("/adminInfo", pc.GetAdminInfo)         // 已优化
+		pcGroup.POST("/adminInfo", pc.UpdateAdminInfo)     // 无需更改
+	}
 }
 
 func memberManagement(r *gin.Engine) {
@@ -47,10 +51,13 @@ func memberManagement(r *gin.Engine) {
 
 	mm := collegeController.NewMemberManagement(mmService)
 	mmGroup := r.Group("/college/memberManagement")
-	mmGroup.GET("/audit", mm.GetAuditRecord)
-	mmGroup.POST("/audit", mm.UpdateAuditRecord)
-	mmGroup.GET("/query", mm.QueryMember)
-	mmGroup.DELETE("/delete", mm.DeleteMember)
+	mmGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		mmGroup.GET("/audit", mm.GetAuditRecord)     // 已优化
+		mmGroup.POST("/audit", mm.UpdateAuditRecord) // 无需优化
+		mmGroup.GET("/query", mm.QueryMember)        // 已优化
+		mmGroup.DELETE("/delete", mm.DeleteMember)   // 已优化
+	}
 }
 
 func activityManagement(r *gin.Engine) {
@@ -61,11 +68,14 @@ func activityManagement(r *gin.Engine) {
 
 	amController := collegeController.NewActivityManagementController(amService)
 	amGroup := r.Group("/college/activityManagement")
-	amGroup.GET("/activity", amController.GetAuditRecord)
-	amGroup.POST("/activity", amController.UpdateAuditRecord)
-	amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)
-	amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord)
-	amGroup.POST("/activityRelease", amController.AddActivity)
+	amGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		amGroup.GET("/activity", amController.GetAuditRecord)                  // 已优化
+		amGroup.POST("/activity", amController.UpdateAuditRecord)              // 无需优化
+		amGroup.GET("/activityAdmission", amController.GetAdmissionRecord)     // 已优化
+		amGroup.POST("/activityAdmission", amController.UpdateAdmissionRecord) // 无需优化
+		amGroup.POST("/activityRelease", amController.AddActivity)
+	}
 }
 
 func uploadRouter(r *gin.Engine) {
@@ -76,5 +86,5 @@ func uploadRouter(r *gin.Engine) {
 	log.Println(config.AliOSS.AccessKeySecret)
 	log.Println(config.AliOSS.BucketName)
 	uploadController := collegeController.NewUploadController(uploadUtils)
-	r.POST("/college/upload", uploadController.Upload)
+	r.POST("/college/upload", uploadController.Upload) // 无需优化
 }

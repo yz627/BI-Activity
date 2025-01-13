@@ -12,6 +12,7 @@ import (
 func sendSMS(phone, code string) error {
 	// 创建阿里云短信客户端
 	// TODO: key值创建客户端
+
 	// if err != nil {
 	// 	return err
 	// }
@@ -34,6 +35,30 @@ func sendSMS(phone, code string) error {
 	// if response.Code != "OK" {
 	// 	return fmt.Errorf("短信发送失败: %s", response.Message)
 	// }
+
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//// 构造发送短信的请求
+	//request := dysmsapi.CreateSendSmsRequest()
+	//request.Scheme = "https"
+	//request.PhoneNumbers = phone
+	//request.SignName = "Bi活动"              // 这里是你的短信签名
+	//request.TemplateCode = "SMS_476410162" // 这里是短信模板ID
+	//request.TemplateParam = fmt.Sprintf(`{"code":"%s"}`, code)
+	//
+	//// 发送短信
+	//response, err := client.SendSms(request)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//// 检查返回的状态码
+	//if response.Code != "OK" {
+	//	return fmt.Errorf("短信发送失败: %s", response.Message)
+	//}
+
 
 	return nil
 }

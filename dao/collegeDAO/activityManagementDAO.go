@@ -100,7 +100,7 @@ func (a *ActivityManagementDAO) GetAdmissionRecord(collegeId uint, status, page,
 	query = query.Select("count(*)")                                              // 选择计数
 	query = query.Joins("join activity on activity.id = participant.activity_id") // 连接Activity表
 	query = query.Joins("join student on student.id = participant.student_id")    // 连接Student表
-	query = query.Where("student.college_id = ?", collegeId)                      // 添加学院ID条件
+	query = query.Where("activity.activity_publisher_id = ?", collegeId)          // 添加学院ID条件
 	query = query.Where("participant.status = ?", status)                         // 添加状态条件
 	query = query.Where("activity.activity_nature = ?", label.ActivityNatureCollege)
 	query.Count(&total)
@@ -117,7 +117,7 @@ func (a *ActivityManagementDAO) GetAdmissionRecord(collegeId uint, status, page,
 		" participant.status as Status")
 	query2 = query2.Joins("join activity on activity.id = participant.activity_id") // 连接Activity表
 	query2 = query2.Joins("join student on student.id =participant.student_id")     // 连接Student表
-	query2 = query2.Where("student.college_id = ?", collegeId)                      // 添加学院ID条件
+	query2 = query2.Where("activity.activity_publisher_id = ?", collegeId)          // 添加学院ID条件
 	query2 = query2.Where("participant.status = ?", status)                         // 添加状态条件
 	query2 = query2.Where("activity.activity_nature = ?", label.ActivityNatureCollege)
 	// 排序
@@ -145,4 +145,18 @@ func (a *ActivityManagementDAO) UpdateAdmissionRecord(id uint, status int) {
 	db.Model(&participant).Update("status", status).Update("updated_at", now)
 	log.Println("审核记录")
 	log.Println(participant)
+}
+
+func (a *ActivityManagementDAO) AddActivity(activity *models.Activity, image *models.Image) {
+	db := a.data.DB()
+
+	// 如果 image 不为 nil，则插入 Image 表
+	if image != nil {
+		db.Create(image)
+		// 将插入的 Image 记录的 ID 赋值给 Activity 的 ActivityImageID 字段
+		activity.ActivityImageID = image.ID
+	}
+
+	// 插入 Activity 表
+	db.Create(activity)
 }
