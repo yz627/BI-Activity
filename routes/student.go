@@ -37,6 +37,8 @@ func InitStudentRouter(router *gin.Engine) {
 	participantDao := student_dao.NewParticipantDao(data)
 	studentActivityAuditDao := student_dao.NewActivityAuditDao(data)
 	imageDao := student_dao.NewImageDao(data)
+	messageDao := student_dao.NewMessageDAO(data)
+    conversationDao := student_dao.NewConversationDAO(data)
 
 	// 初始化 Service
 	studentService := student_service.NewStudentService(studentDao)
@@ -44,6 +46,7 @@ func InitStudentRouter(router *gin.Engine) {
 	securityService := student_service.NewSecurityService(studentDao, codeVerifier, configs.GlobalSMSSender)
 	activityService := student_service.NewActivityService(activityDao, participantDao, studentActivityAuditDao, studentDao, collegeDao)
 	imageService := student_service.NewImageService(imageDao, configs.GlobalOSSUploader)
+	messageService := student_service.NewMessageService(messageDao, conversationDao, studentDao, imageDao)
 
 	// 初始化 Controller
 	studentController := student_controller.NewStudentController(studentService)
@@ -51,6 +54,7 @@ func InitStudentRouter(router *gin.Engine) {
 	securityController := student_controller.NewSecurityController(securityService)
 	activityController := student_controller.NewActivityController(activityService)
 	imageController := student_controller.NewImageController(imageService)
+	messageController := student_controller.NewMessageController(messageService, configs.GlobalOSSUploader, logger)
 
 	// 学生个人中心模块路由组
 	studentPersonalCenter := router.Group("/api/studentPersonalCenter")
@@ -118,6 +122,22 @@ func InitStudentRouter(router *gin.Engine) {
 			image.POST("/upload", imageController.UploadImage)
 			image.GET("/:id", imageController.GetImage)
 			image.DELETE("/:id", imageController.DeleteImage)
+		}
+
+		message := studentPersonalCenter.Group("/message")
+		{
+			// 发送消息
+			message.POST("/text", messageController.SendTextMessage)
+			message.POST("/image", messageController.UploadAndSendImageMessage)
+			
+			// 会话和消息管理
+			message.GET("/conversations", messageController.GetUserConversations)
+			message.GET("/messages/:conversation_id", messageController.GetConversationMessages)
+			message.PUT("/read/:message_id", messageController.ReadMessage)
+
+			// 删除消息相关
+			message.DELETE("/:message_id", messageController.DeleteMessage)
+			message.DELETE("/conversation/:conversation_id", messageController.DeleteConversationMessages)
 		}
 	}
 }

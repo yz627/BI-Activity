@@ -9,8 +9,8 @@ import (
 
 // 表的迁移
 func main() {
-	conf := configs.InitConfig("./configs/")
-	data, fn := dao.NewDateDao(conf.Database, logrus.New())
+	conf := configs.InitConfig("../../configs/")
+	data, fn := dao.NewDataDao(conf.Database, logrus.New())
 	defer fn()
 
 	err := data.DB().AutoMigrate(
@@ -27,6 +27,8 @@ func main() {
 		&models.CollegeRegistrationAudit{},
 		&models.CollegeNameToAccount{},
 		&models.Problem{},
+		&models.Message{},
+		&models.Conversation{},
 	)
 	if err != nil {
 		panic(err)
