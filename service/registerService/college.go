@@ -119,6 +119,7 @@ func (crs *CollegeRegisterService) CollegeRegister(ctx context.Context, req Coll
 }
 
 type CollegeNameAndAccount struct {
+	Id      uint
 	Name    string
 	Account string
 }
@@ -130,11 +131,65 @@ func (crs *CollegeRegisterService) GetCollegeNameAndAccount(ctx context.Context)
 	}
 	for _, item := range res {
 		list = append(list, &CollegeNameAndAccount{
+			Id:      item.ID,
 			Name:    item.CollegeName,
 			Account: item.Account,
 		})
 	}
 	return list, nil
+}
+
+type CollegeNameAndAccountRequest struct {
+	Account string `json:"Account"`
+	Name    string `json:"Name"`
+}
+
+func (crs *CollegeRegisterService) PostCollegeNameAndAccount(ctx context.Context, req CollegeNameAndAccountRequest) (err error) {
+	nameToAccount := models.CollegeNameToAccount{
+		Account:     req.Account,
+		CollegeName: req.Name,
+	}
+	if err := crs.car.InsertCollege(ctx, &nameToAccount); err != nil {
+		return errors.New("学院名账号映射插入失败")
+	}
+	return nil
+}
+
+// PutCollegeNameAndAccount 用于更新学院名和账号映射
+func (crs *CollegeRegisterService) PutCollegeNameAndAccount(ctx context.Context, id string, req CollegeNameAndAccountRequest) (err error) {
+	// 将请求参数转为模型
+	nameToAccount := models.CollegeNameToAccount{
+		Account:     req.Account,
+		CollegeName: req.Name,
+	}
+
+	// 将ID从string转换为uint，假设id是数据库中对应记录的ID
+	// 请根据实际情况调整ID类型
+	idUint, err := strconv.Atoi(id)
+	if err != nil {
+		return errors.New("无效的ID")
+	}
+
+	// 调用 DAO 层根据ID更新记录
+	if err := crs.car.UpdateCollegeByID(ctx, uint(idUint), &nameToAccount); err != nil {
+		return errors.New("学院名账号映射更新失败")
+	}
+	return nil
+}
+
+// DeleteCollegeNameAndAccount 用于删除学院名和账号映射
+func (crs *CollegeRegisterService) DeleteCollegeNameAndAccount(ctx context.Context, id string) (err error) {
+	// 将ID从string转换为uint
+	idUint, err := strconv.Atoi(id)
+	if err != nil {
+		return errors.New("无效的ID")
+	}
+
+	// 调用 DAO 层根据ID删除记录
+	if err := crs.car.DeleteCollegeByID(ctx, uint(idUint)); err != nil {
+		return errors.New("学院名账号映射删除失败")
+	}
+	return nil
 }
 
 // 校验身份证号码是否有效
