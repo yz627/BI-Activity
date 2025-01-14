@@ -28,6 +28,10 @@ func GetErrorCode(err error) int {
 		return ErrStudentNoCollege
 	case errors.Is(err, ErrCollegeListNotFoundError):
 		return ErrCollegeListNotFound
+	case errors.Is(err, ErrAuditNotFoundError):
+		return ErrAuditNotFound
+	case errors.Is(err, ErrAuditExistsError):
+		return ErrAuditExists
 
 	// 安全设置相关错误
 	case errors.Is(err, ErrPasswordIncorrectError):
@@ -53,11 +57,11 @@ func GetErrorCode(err error) int {
 	case errors.Is(err, ErrPhoneSendFailedError):
 		return ErrPhoneSendFailed
 	case errors.Is(err, ErrCaptchaGenerateFailedError):
-        return ErrCaptchaGenerateFailed
-    case errors.Is(err, ErrInvalidCaptchaError):
-        return ErrInvalidCaptcha
-    case errors.Is(err, ErrInvalidParamsError):
-        return ErrInvalidParams
+		return ErrCaptchaGenerateFailed
+	case errors.Is(err, ErrInvalidCaptchaError):
+		return ErrInvalidCaptcha
+	case errors.Is(err, ErrInvalidParamsError):
+		return ErrInvalidParams
 
 	// 图片相关错误
 	case errors.Is(err, ErrImageNotFoundError):
@@ -128,7 +132,6 @@ func GetErrorCode(err error) int {
 		return ErrInvalidMessageType
 	case errors.Is(err, ErrConversationNotFoundError):
 		return ErrConversationNotFound
-
 
 	default:
 		return -1

@@ -12,6 +12,8 @@ const (
 	ErrCollegeNotFound     = 10101
 	ErrStudentNoCollege    = 10102
 	ErrCollegeListNotFound = 10103
+	ErrAuditNotFound       = 10104
+	ErrAuditExists         = 10105
 
 	// 安全设置相关错误码 (10201-10299)
 	ErrPasswordIncorrect     = 10201
@@ -50,14 +52,13 @@ const (
 	ErrParticipantNotFound = 10501
 	ErrParticipantInvalid  = 10502
 
-
 	// 消息相关错误码 (10601-10699)
-	ErrMessageNotFound        = 10601 // 消息不存在
-    ErrInvalidReceiver        = 10602 // 无效的接收者
-    ErrInvalidSender         = 10603 // 无效的发送者
-    ErrCollegeChatNotAllowed = 10604 // 学院之间不允许聊天
-    ErrInvalidMessageType    = 10605 // 无效的消息类型
-    ErrConversationNotFound  = 10606 // 会话不存在
+	ErrMessageNotFound       = 10601 // 消息不存在
+	ErrInvalidReceiver       = 10602 // 无效的接收者
+	ErrInvalidSender         = 10603 // 无效的发送者
+	ErrCollegeChatNotAllowed = 10604 // 学院之间不允许聊天
+	ErrInvalidMessageType    = 10605 // 无效的消息类型
+	ErrConversationNotFound  = 10606 // 会话不存在
 )
 
 // 错误码对应的错误信息
@@ -71,6 +72,8 @@ var errMsgMap = map[int]string{
 	ErrCollegeNotFound:     "学院不存在",
 	ErrStudentNoCollege:    "学生没有组织归属",
 	ErrCollegeListNotFound: "未找到组织列表",
+	ErrAuditNotFound:       "无审核记录",
+	ErrAuditExists:         "已有审核记录",
 
 	// 安全设置相关错误
 	ErrPasswordIncorrect:     "密码不正确",
@@ -110,10 +113,10 @@ var errMsgMap = map[int]string{
 	ErrParticipantInvalid:  "无效的参与记录",
 
 	// 消息相关错误
-    ErrMessageNotFound:        "消息不存在",
-    ErrInvalidReceiver:        "无效的接收者",
-    ErrInvalidSender:         "无效的发送者",
-    ErrCollegeChatNotAllowed: "学院之间不允许聊天",
-    ErrInvalidMessageType:    "无效的消息类型",
-    ErrConversationNotFound:  "会话不存在",
+	ErrMessageNotFound:       "消息不存在",
+	ErrInvalidReceiver:       "无效的接收者",
+	ErrInvalidSender:         "无效的发送者",
+	ErrCollegeChatNotAllowed: "学院之间不允许聊天",
+	ErrInvalidMessageType:    "无效的消息类型",
+	ErrConversationNotFound:  "会话不存在",
 }

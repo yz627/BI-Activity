@@ -39,10 +39,12 @@ func InitStudentRouter(router *gin.Engine) {
 	imageDao := student_dao.NewImageDao(data)
 	messageDao := student_dao.NewMessageDAO(data)
     conversationDao := student_dao.NewConversationDAO(data)
+	// 加入组织审核
+	auditDao := student_dao.NewJoinCollegeAuditDao(data)
 
 	// 初始化 Service
 	studentService := student_service.NewStudentService(studentDao)
-	collegeService := student_service.NewCollegeService(collegeDao, studentDao)
+	collegeService := student_service.NewCollegeService(collegeDao, studentDao, auditDao)
 	securityService := student_service.NewSecurityService(studentDao, codeVerifier, configs.GlobalSMSSender)
 	activityService := student_service.NewActivityService(activityDao, participantDao, studentActivityAuditDao, studentDao, collegeDao)
 	imageService := student_service.NewImageService(imageDao, configs.GlobalOSSUploader)
@@ -50,7 +52,7 @@ func InitStudentRouter(router *gin.Engine) {
 
 	// 初始化 Controller
 	studentController := student_controller.NewStudentController(studentService)
-	collegeController := student_controller.NewCollegeController(collegeService)
+	collegeController := student_controller.NewCollegeController(collegeService, studentService)
 	securityController := student_controller.NewSecurityController(securityService)
 	activityController := student_controller.NewActivityController(activityService)
 	imageController := student_controller.NewImageController(imageService)
@@ -83,6 +85,8 @@ func InitStudentRouter(router *gin.Engine) {
 			affiliatedOrganizations.PUT("", collegeController.UpdateStudentCollege)
 			affiliatedOrganizations.DELETE("", collegeController.RemoveStudentCollege)
 			affiliatedOrganizations.GET("/list", collegeController.GetCollegeList)
+			affiliatedOrganizations.POST("/audit", collegeController.ApplyJoinCollege)
+			affiliatedOrganizations.GET("/audit", collegeController.GetAuditStatus)
 		}
 
 		// 安全设置路由

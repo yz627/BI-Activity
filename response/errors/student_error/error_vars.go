@@ -7,12 +7,14 @@ var (
 	// 基础错误
 	ErrStudentNotFoundError  = errors.New("student not found")
 	ErrInvalidStudentIDError = errors.New("invalid student id")
-	ErrUnauthorizedError = errors.New("unauthorized")
+	ErrUnauthorizedError     = errors.New("unauthorized")
 
 	// 组织相关错误
 	ErrCollegeNotFoundError     = errors.New("college not found")
 	ErrStudentNoCollegeError    = errors.New("student has no college")
 	ErrCollegeListNotFoundError = errors.New("there is no college")
+	ErrAuditNotFoundError       = errors.New("there is no audit")
+	ErrAuditExistsError         = errors.New("audit already exists")
 
 	// 安全设置相关错误
 	ErrPasswordIncorrectError     = errors.New("password incorrect")
@@ -52,10 +54,10 @@ var (
 	ErrParticipantInvalidError  = errors.New("invalid participant")
 
 	// 消息相关错误
-    ErrMessageNotFoundError        = errors.New("message not found")
-    ErrInvalidReceiverError        = errors.New("invalid receiver")
-    ErrInvalidSenderError         = errors.New("invalid sender")
-    ErrCollegeChatNotAllowedError = errors.New("college to college chat not allowed")
-    ErrInvalidMessageTypeError    = errors.New("invalid message type")
-    ErrConversationNotFoundError  = errors.New("conversation not found")
+	ErrMessageNotFoundError       = errors.New("message not found")
+	ErrInvalidReceiverError       = errors.New("invalid receiver")
+	ErrInvalidSenderError         = errors.New("invalid sender")
+	ErrCollegeChatNotAllowedError = errors.New("college to college chat not allowed")
+	ErrInvalidMessageTypeError    = errors.New("invalid message type")
+	ErrConversationNotFoundError  = errors.New("conversation not found")
 )
