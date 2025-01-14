@@ -12,6 +12,15 @@ import (
 type ImageRepo interface {
 	// GetAllBannerImage 获取轮播图
 	GetAllBannerImage(ctx context.Context) ([]*models.Image, error)
+
+	// AddBannerImage 添加轮播图
+	AddBannerImage(ctx context.Context, image *models.Image) (*models.Image, error)
+
+	// DeleteImageByID 根据ID删除图片
+	DeleteImageByID(ctx context.Context, id int) error
+
+	// UpdateImageByID 根据ID更新图片
+	UpdateImageByID(ctx context.Context, id int, fileName string) error
 }
 
 var _ ImageRepo = (*imageDataCase)(nil)
@@ -38,4 +47,22 @@ func (i *imageDataCase) GetAllBannerImage(ctx context.Context) (list []*models.I
 	}
 
 	return list, nil
+}
+
+func (i *imageDataCase) DeleteImageByID(ctx context.Context, id int) error {
+	return i.db.DB().WithContext(ctx).
+		Delete(&models.Image{}, id).Error
+}
+
+func (i *imageDataCase) AddBannerImage(ctx context.Context, image *models.Image) (*models.Image, error) {
+	err := i.db.DB().WithContext(ctx).
+		Create(image).Error
+	return image, err
+}
+
+func (i *imageDataCase) UpdateImageByID(ctx context.Context, id int, fileName string) error {
+	return i.db.DB().WithContext(ctx).
+		Model(&models.Image{}).
+		Where("id = ?", id).
+		Update("file_name", fileName).Error
 }

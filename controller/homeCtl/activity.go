@@ -172,3 +172,51 @@ func (h *ActivityHandler) ParticipateActivity(c *gin.Context) {
 
 	c.JSON(response.Success())
 }
+
+func (h *ActivityHandler) EditActivityType(c *gin.Context) {
+	editType := &EditType{}
+	if err := c.ShouldBindJSON(&editType); err != nil {
+		c.JSON(response.Failf(errors.JsonRequestParseError, "参数解析错误"))
+		return
+	}
+
+	err := h.srv.EditActivityType(c.Request.Context(), editType.Id, editType.TypeName)
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
+	}
+
+	c.JSON(response.Success())
+}
+
+func (h *ActivityHandler) DeleteActivityType(c *gin.Context) {
+	id, ok := c.GetQuery("id")
+	if !ok {
+		c.JSON(response.Failf(errors.TypeEditTypeIdError, "解析活动ID错误[ctl]"))
+		return
+	}
+
+	tID, _ := strconv.Atoi(id)
+	err := h.srv.DeleteActivityType(c.Request.Context(), tID)
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
+	}
+
+	c.JSON(response.Success())
+}
+
+func (h *ActivityHandler) AddActivityType(c *gin.Context) {
+	addType := &AddType{}
+	if err := c.ShouldBindJSON(&addType); err != nil {
+		c.JSON(response.Failf(errors.JsonRequestParseError, "参数解析错误"))
+		return
+	}
+
+	data, err := h.srv.AddActivityType(c.Request.Context(), addType.ImageId, addType.TypeName)
+	if err != nil {
+		c.JSON(response.Fail(err.(errors.SelfError)))
+		return
+	}
+	c.JSON(response.Success(data))
+}

@@ -394,3 +394,31 @@ func (as *ActivityService) ParticipateActivity(ctx context.Context, stuID, activ
 	}
 	return nil
 }
+
+func (as *ActivityService) EditActivityType(ctx context.Context, id int, name string) error {
+	if id <= 0 {
+		return errors.TypeEditTypeIdError
+	}
+
+	if name == "" {
+		return errors.TypeEditTypeNameError
+	}
+
+	return as.tr.UpdateActivityTypeByID(ctx, id, name)
+}
+
+func (as *ActivityService) DeleteActivityType(ctx context.Context, id int) error {
+	if id <= 0 {
+		return errors.TypeEditTypeIdError
+	}
+
+	return as.tr.DeleteActivityTypeByID(ctx, id)
+}
+
+func (as *ActivityService) AddActivityType(ctx context.Context, imageId int, typeName string) (*models.ActivityType, error) {
+	if imageId <= 0 {
+		return nil, errors.TypeEditTypeIdError
+	}
+
+	return as.tr.AddActivityType(ctx, imageId, typeName)
+}

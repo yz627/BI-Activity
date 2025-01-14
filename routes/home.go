@@ -76,4 +76,15 @@ func InitHomeRouter(r *gin.Engine) {
 	{
 		v6.GET("/params", actCtl.MyActivity)
 	}
+
+	v7 := r.Group("/api/admin")
+	{
+		v7.PUT("/update-type", actCtl.EditActivityType)
+		v7.DELETE("/delete-type", actCtl.DeleteActivityType)
+		v7.POST("/add-type", actCtl.AddActivityType)
+
+		v7.POST("/add-image", imgCtl.AddBannerImage)
+		v7.DELETE("/delete-image", imgCtl.DeleteImage)
+		v7.PUT("/update-image", imgCtl.EditImage)
+	}
 }

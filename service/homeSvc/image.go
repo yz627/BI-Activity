@@ -2,6 +2,8 @@ package homeSvc
 
 import (
 	"bi-activity/dao/homeDao"
+	"bi-activity/models"
+	"bi-activity/models/label"
 	"bi-activity/response/errors"
 	"bi-activity/utils/copyStruct"
 	"context"
@@ -34,4 +36,32 @@ func (s *ImageService) LoopImages(ctx context.Context) (list []*Image, err error
 		list = append(list, &img)
 	}
 	return list, nil
+}
+
+func (s *ImageService) AddBannerImage(ctx context.Context, fileName, url string) (*Image, error) {
+	if fileName == "" || url == "" {
+		return nil, errors.ImageAddLoopImageError
+	}
+
+	image, err := s.ir.AddBannerImage(ctx, &models.Image{
+		FileName: fileName,
+		URL:      url,
+		Type:     label.ImageTypeBanner,
+	})
+	if err != nil {
+		return nil, errors.ImageAddLoopImageError
+	}
+	return &Image{
+		FileName: image.FileName,
+		ID:       image.ID,
+		URL:      image.URL,
+	}, nil
+}
+
+func (s *ImageService) DeleteImage(ctx context.Context, id int) error {
+	return s.ir.DeleteImageByID(ctx, id)
+}
+
+func (s *ImageService) EditImage(ctx context.Context, id int, name string) error {
+	return s.ir.UpdateImageByID(ctx, id, name)
 }

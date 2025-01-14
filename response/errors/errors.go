@@ -22,11 +22,14 @@ var (
 
 	// image
 
-	ImageLoopImagesError = NewSelfError("轮播图获取错误")
+	ImageLoopImagesError   = NewSelfError("轮播图获取错误")
+	ImageAddLoopImageError = NewSelfError("添加轮播图失败")
 
 	// activity-type
 
 	TypeGetAllActivityTypeError = NewSelfError("获取所有活动类型失败")
+	TypeEditTypeIdError         = NewSelfError("活动类型ID不合法")
+	TypeEditTypeNameError       = NewSelfError("活动类型名称不合法")
 
 	// activity
 
@@ -104,6 +107,9 @@ var (
 		HelpInfoError:                  http.StatusInternalServerError,
 		ParticipateParamsNotValid:      http.StatusBadRequest,
 		ParticipateStatusError:         http.StatusInternalServerError,
+		TypeEditTypeIdError:            http.StatusBadRequest,
+		TypeEditTypeNameError:          http.StatusBadRequest,
+		ImageAddLoopImageError:         http.StatusInternalServerError,
 	}
 )
 
@@ -130,6 +136,7 @@ var (
 		HelpInfoError:                  500211,
 		ParticipateStatusError:         500212,
 		ParticipateActivityErrorType3:  500213,
+		ImageAddLoopImageError:         500214,
 
 		// home-400错误
 		ActivityIdParserError:         400201,
@@ -140,6 +147,8 @@ var (
 		ParticipateParamsNotValid:     400206,
 		ParticipateActivityErrorType1: 400207,
 		ParticipateActivityErrorType2: 400208,
+		TypeEditTypeIdError:           400209,
+		TypeEditTypeNameError:         400210,
 
 		// home-404错误
 		ActivityNotFoundError: 404200,

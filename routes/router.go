@@ -10,13 +10,13 @@ func InitRouter() *gin.Engine {
 	router.Use(middleware.CORSMiddleware())
 
 	// 首页路由
-	//InitHomeRouter(router)
+	InitHomeRouter(router)
 	// 登录注册相关路由
 	loginRegisterRouter(router)
 	// 学院相关的路由
 	College(router)
 	// 学生个人中心路由
-	//InitStudentRouter(router)
+	InitStudentRouter(router)
 
 	return router
 }
