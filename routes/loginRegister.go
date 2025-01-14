@@ -47,6 +47,9 @@ func loginRegisterRouter(r *gin.Engine) {
 	r.POST("/register/student", srh.Register)
 	// 学院注册相关
 	r.GET("register/college/name_to_account", crh.GetCollegeNameAndAccount)
+	r.POST("register/college/name_to_account", crh.PostCollegeNameAndAccount)
+	r.PUT("register/college/name_to_account/:id", crh.PutCollegeNameAndAccount)
+	r.DELETE("register/college/name_to_account/:id", crh.DeleteCollegeNameAndAccount)
 	r.POST("register/college", crh.Register)
 	// 忘记密码相关
 	r.POST("/forget/student", fph.FindPassword)
