@@ -11,7 +11,7 @@ import (
 )
 
 // 允许的图片后缀
-var AllowedExt = []string{".jpg", ".jpeg", ".png"}
+var AllowedExt = []string{".jpg", ".jpeg", ".png", ".svg"}
 
 // 检查文件后缀是否允许
 func CheckExt(fileName string) bool {
