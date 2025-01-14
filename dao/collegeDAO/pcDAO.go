@@ -94,7 +94,7 @@ func (p *PcDAO) UpdateCollegeInfo(collegeInfo *college.CollegeInfo) {
 
 func (p *PcDAO) GetAdminInfo(id uint) *college.AdminInfo {
 	adminInfo := &college.AdminInfo{}
-	sql := fmt.Sprintf("SELECT c.id, c.admin_name, c.admin_id_number, c.admin_image_id, c.admin_phone, c.admin_email, concat(i.url, i.file_name) as admin_image_url " +
+	sql := fmt.Sprintf("SELECT c.id, c.admin_name, c.admin_id_number, c.admin_image_id, c.admin_phone, c.admin_email, i.url as admin_image_url " +
 		"FROM college c, image i " +
 		"WHERE c.id = ? AND c.admin_image_id = i.id;")
 	db := p.data.DB()

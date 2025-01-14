@@ -59,6 +59,14 @@ func InitStudentRouter(router *gin.Engine) {
 	// 学生个人中心模块路由组
 	studentPersonalCenter := router.Group("/api/studentPersonalCenter")
 	{
+		// 图片相关路由
+		image := studentPersonalCenter.Group("/image")
+		{
+			image.POST("/upload", imageController.UploadImage)
+			image.GET("/:id", imageController.GetImage)
+			image.DELETE("/:id", imageController.DeleteImage)
+		}
+
 		studentPersonalCenter.Use(middleware.JWTAuthMiddleware())
 		// 学生个人资料路由
 		studentPersonalInfo := studentPersonalCenter.Group("/studentPersonalInfo")
@@ -116,13 +124,7 @@ func InitStudentRouter(router *gin.Engine) {
 			activityManage.PUT("/participant/:participantId", activityController.UpdateParticipantStatus)
 		}
 
-		// 图片相关路由
-		image := studentPersonalCenter.Group("/image")
-		{
-			image.POST("/upload", imageController.UploadImage)
-			image.GET("/:id", imageController.GetImage)
-			image.DELETE("/:id", imageController.DeleteImage)
-		}
+		
 
 		message := studentPersonalCenter.Group("/message")
 		{
